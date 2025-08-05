@@ -1,7 +1,8 @@
 package com.walhay.gregtechenergistics.api.capability;
 
 import appeng.api.AEApi;
-import appeng.api.networking.crafting.ICraftingPatternDetails;
+import appeng.api.networking.crafting.ICraftingMedium;
+import appeng.api.networking.crafting.ICraftingProviderHelper;
 import appeng.api.storage.channels.IFluidStorageChannel;
 import appeng.api.storage.channels.IItemStorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
@@ -16,7 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
-public abstract class AbstractPatternHelper implements ICraftingPatternDetails, ISubstitutionHandler {
+public abstract class AbstractPatternHelper implements IPatternProvidable, ISubstitutionHandler {
 
 	protected static final IItemStorageChannel itemChannel =
 			AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
@@ -67,6 +68,11 @@ public abstract class AbstractPatternHelper implements ICraftingPatternDetails, 
 
 			inputs[entry.getKey()] = itemChannel.createStack(stack);
 		}
+	}
+
+	@Override
+	public void providePattern(ICraftingMedium medium, ICraftingProviderHelper helper) {
+		helper.addCraftingOption(medium, this);
 	}
 
 	@Override

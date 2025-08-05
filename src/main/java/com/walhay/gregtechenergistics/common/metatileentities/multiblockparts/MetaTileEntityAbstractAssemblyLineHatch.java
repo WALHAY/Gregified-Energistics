@@ -29,7 +29,6 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
 import com.walhay.gregtechenergistics.api.capability.AbstractPatternHelper;
-import com.walhay.gregtechenergistics.api.capability.ISubstitutionHandler;
 import com.walhay.gregtechenergistics.api.capability.impl.SubstitutionStorage;
 import com.walhay.gregtechenergistics.api.gui.GTEGuiTextures;
 import com.walhay.gregtechenergistics.api.render.GTETextures;
@@ -310,12 +309,15 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 	public void provideCrafting(ICraftingProviderHelper craftingHelper) {
 		if (isAttachedToMultiBlock()) {
 			for (ICraftingPatternDetails details : getPatterns()) {
-				if (details instanceof ISubstitutionHandler substitutionHandler) {
-					substitutionHandler.injectSubstitutions(substitutionStorage);
+				if (details instanceof AbstractPatternHelper helper) {
+					helper.injectSubstitutions(substitutionStorage);
+					helper.providePattern(this, craftingHelper);
+					continue;
 				}
 
 				if (details != null) {
 					details.setPriority(priority);
+
 					craftingHelper.addCraftingOption(this, details);
 				}
 			}

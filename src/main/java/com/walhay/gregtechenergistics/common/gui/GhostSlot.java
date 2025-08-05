@@ -1,13 +1,12 @@
 package com.walhay.gregtechenergistics.common.gui;
 
-import java.util.function.Consumer;
-
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.IRenderContext;
 import gregtech.api.gui.Widget;
 import gregtech.api.recipes.ingredients.GTRecipeInput;
 import gregtech.api.util.Position;
 import gregtech.api.util.Size;
+import java.util.function.Consumer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 

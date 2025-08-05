@@ -8,10 +8,16 @@ import net.minecraft.item.ItemStack;
 public class RecipePatternHelper extends AbstractPatternHelper {
 
 	private final Recipe recipe;
+	private final ItemStack item;
+
+	public RecipePatternHelper(@Nonnull Recipe recipe, @Nonnull ItemStack item) {
+		this.recipe = recipe;
+		this.item = item;
+		parseRecipe(recipe);
+	}
 
 	public RecipePatternHelper(@Nonnull Recipe recipe) {
-		this.recipe = recipe;
-		parseRecipe(recipe);
+		this(recipe, ItemStack.EMPTY);
 	}
 
 	public Recipe getRecipe() {
@@ -20,7 +26,7 @@ public class RecipePatternHelper extends AbstractPatternHelper {
 
 	@Override
 	public ItemStack getPattern() {
-		return ItemStack.EMPTY;
+		return item;
 	}
 
 	@Override

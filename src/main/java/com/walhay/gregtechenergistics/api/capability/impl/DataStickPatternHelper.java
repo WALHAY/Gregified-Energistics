@@ -1,6 +1,9 @@
 package com.walhay.gregtechenergistics.api.capability.impl;
 
+import appeng.api.networking.crafting.ICraftingMedium;
+import appeng.api.networking.crafting.ICraftingProviderHelper;
 import com.walhay.gregtechenergistics.api.capability.AbstractPatternHelper;
+import com.walhay.gregtechenergistics.api.capability.ISubstitutionStorage;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.recipes.machines.IResearchRecipeMap;
@@ -12,13 +15,12 @@ import net.minecraft.item.ItemStack;
 
 public class DataStickPatternHelper extends AbstractPatternHelper {
 
-	private final ItemStack dataStick;
+	private AbstractPatternHelper[] patterns;
 
 	public DataStickPatternHelper(@Nonnull ItemStack dataStick) {
 		if (!AssemblyLineManager.isStackDataItem(dataStick, true))
 			throw new IllegalArgumentException("Invalid data stick");
 
-		this.dataStick = dataStick;
 		if (!AssemblyLineManager.hasResearchTag(dataStick)) return;
 
 		String researchId = AssemblyLineManager.readResearchId(dataStick);
@@ -30,11 +32,28 @@ public class DataStickPatternHelper extends AbstractPatternHelper {
 
 		if (recipes == null) return;
 
-		recipes.stream().filter(Objects::nonNull).findFirst().ifPresent(this::parseRecipe);
+		patterns = recipes.stream()
+				.filter(Objects::nonNull)
+				.map(recipe -> new RecipePatternHelper(recipe, dataStick))
+				.toArray(AbstractPatternHelper[]::new);
 	}
 
 	@Override
 	public ItemStack getPattern() {
-		return dataStick;
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void injectSubstitutions(ISubstitutionStorage storage) {
+		for (AbstractPatternHelper pattern : patterns) {
+			pattern.injectSubstitutions(storage);
+		}
+	}
+
+	@Override
+	public void providePattern(ICraftingMedium medium, ICraftingProviderHelper helper) {
+		for (AbstractPatternHelper pattern : patterns) {
+			pattern.providePattern(medium, helper);
+		}
 	}
 }
