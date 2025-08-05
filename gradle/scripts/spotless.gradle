@@ -1,0 +1,13 @@
+spotless {
+	enforceCheck = true
+	java {
+		target 'src/**/*.java'
+
+		removeUnusedImports()
+		cleanthat()
+		palantirJavaFormat('2.61.0').formatJavadoc(true)
+		trimTrailingWhitespace()
+		leadingSpacesToTabs()
+		formatAnnotations()
+	}
+}
