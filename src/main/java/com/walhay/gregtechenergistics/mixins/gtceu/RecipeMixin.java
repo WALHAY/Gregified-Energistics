@@ -27,6 +27,5 @@ public class RecipeMixin implements IRecipeMixinAccessor {
 	@Inject(method = "<init>", at = @At("RETURN"), remap = false)
 	private void onConstructorHead(CallbackInfo ci) {
 		this.recipeId = autoId();
-		System.out.println("Generate id " + recipeId);
 	}
 }

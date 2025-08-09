@@ -3,7 +3,6 @@ bin
 *.launch
 .settings
 .metadata
-.classpath
 .project
 
 # idea
@@ -12,6 +11,10 @@ out
 *.iws
 *.iml
 .idea
+
+# lsp
+.factorypath
+.classpath
 
 # gradle
 build
