@@ -9,6 +9,7 @@ import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
 import com.walhay.gregtechenergistics.GregTechEnergisticsConfig;
 import com.walhay.gregtechenergistics.api.capability.GTEDataCodes;
+import com.walhay.gregtechenergistics.api.capability.IRecipeMixinAccessor;
 import com.walhay.gregtechenergistics.api.capability.ISubstitutionHandler;
 import com.walhay.gregtechenergistics.api.capability.impl.RecipePatternHelper;
 import com.walhay.gregtechenergistics.common.gui.GhostGridWidget;
@@ -24,7 +25,6 @@ import gregtech.client.renderer.texture.Textures;
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.entity.player.EntityPlayer;
@@ -227,28 +227,23 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 
 		private void decodeRecipes(Set<Recipe> recipes, PacketBuffer buf) {
 			int size = buf.readShort();
-			if (size == 0) return;
-			int maxLen = buf.readInt();
-
+			if(size == 0) return;
 			for (int i = 0; i < size; ++i) {
-				String name = buf.readString(maxLen);
-
+				int id = buf.readInt();
 				RecipeMaps.ASSEMBLY_LINE_RECIPES.getRecipeList().stream()
-						.filter(r -> r.toString().equals(name))
+						.filter(recipe -> ((IRecipeMixinAccessor) recipe).getRecipeId() == id)
 						.forEach(recipes::add);
 			}
 		}
 
 		public void encodeRecipes(Set<Recipe> recipes, PacketBuffer buf) {
-			buf.writeShort(recipes.size());
-			var maxLen = recipes.stream()
-					.map(Objects::toString)
-					.mapToInt(String::length)
-					.max();
-			if (!maxLen.isPresent()) return;
+			int size = recipes.size();
+			buf.writeShort(size);
+			if(size == 0) return;
 
-			buf.writeInt(maxLen.getAsInt());
-			recipes.stream().map(Recipe::toString).forEach(buf::writeString);
+			recipes.stream()
+					.map(recipe -> ((IRecipeMixinAccessor) recipe).getRecipeId())
+					.forEach(buf::writeInt);
 		}
 	}
 }
