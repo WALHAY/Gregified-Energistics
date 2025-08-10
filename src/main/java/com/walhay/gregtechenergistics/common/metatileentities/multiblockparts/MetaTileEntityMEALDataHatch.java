@@ -98,7 +98,7 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 		} else if (dataId == GTEDataCodes.PATTERNS_CHANGE) {
 			patterns.clear();
 
-			int size = buf.readShort();
+			int size = buf.readInt();
 			if (size == 0) return;
 
 			IntOpenHashSet ids = new IntOpenHashSet();
@@ -146,7 +146,7 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 			patterns = recipes.stream().map(RecipePatternHelper::new).collect(Collectors.toList());
 
 			writeCustomData(GTEDataCodes.PATTERNS_CHANGE, buf -> {
-				buf.writeShort(recipes.size());
+				buf.writeInt(recipes.size());
 				for (Recipe recipe : recipes) {
 					buf.writeInt(((IRecipeMixinAccessor) recipe).getRecipeId());
 				}

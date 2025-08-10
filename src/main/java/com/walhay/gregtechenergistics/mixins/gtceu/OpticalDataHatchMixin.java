@@ -38,7 +38,6 @@ public abstract class OpticalDataHatchMixin implements IOpticalDataHandler {
 
 				var recipes = getRecipes(controller.getAbilities(MultiblockAbility.DATA_ACCESS_HATCH), seen);
 				recipes.addAll(getRecipes(controller.getAbilities(MultiblockAbility.OPTICAL_DATA_RECEPTION), seen));
-				System.out.println("Recipes: " + recipes);
 				return recipes;
 			} else {
 				BlockPos pos = hatch.getPos();
