@@ -1,13 +1,12 @@
 package com.walhay.gregtechenergistics.mixins.gtceu;
 
+import com.walhay.gregtechenergistics.api.capability.IRecipeMixinAccessor;
 import gregtech.api.recipes.Recipe;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import com.walhay.gregtechenergistics.api.capability.IRecipeMixinAccessor;
 
 @Mixin(Recipe.class)
 public class RecipeMixin implements IRecipeMixinAccessor {

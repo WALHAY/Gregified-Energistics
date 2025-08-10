@@ -7,9 +7,9 @@ import codechicken.lib.raytracer.CuboidRayTraceResult;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
-import com.walhay.gregtechenergistics.GregTechEnergisticsConfig;
 import com.walhay.gregtechenergistics.api.capability.GTEDataCodes;
-import com.walhay.gregtechenergistics.api.capability.IRecipeMixinAccessor;
+import com.walhay.gregtechenergistics.api.capability.GregTechEnergisticsCapabilities;
+import com.walhay.gregtechenergistics.api.capability.IOpticalDataHandler;
 import com.walhay.gregtechenergistics.api.capability.ISubstitutionHandler;
 import com.walhay.gregtechenergistics.api.capability.impl.RecipePatternHelper;
 import com.walhay.gregtechenergistics.common.gui.GhostGridWidget;
@@ -19,12 +19,12 @@ import gregtech.api.gui.Widget;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.recipes.Recipe;
-import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.recipes.ingredients.GTRecipeInput;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,12 +34,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.capabilities.Capability;
 
-public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyLineHatch {
+public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyLineHatch
+		implements IOpticalDataHandler {
 
-	private final RecipeSyncHandler recipeSyncHandler = new RecipeSyncHandler();
-
-	private final Set<RecipePatternHelper> patterns = new HashSet<>();
+	private List<RecipePatternHelper> patterns = Collections.emptyList();
 	private EnumFacing opticalFacing = EnumFacing.DOWN;
 
 	public MetaTileEntityMEALDataHatch(ResourceLocation metaTileEntityId, int tier) {
@@ -53,7 +53,6 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 			if (opticalFacing != facing) {
 				opticalFacing = facing;
 				writeCustomData(CHANGE_OPTICAL_SIDE, buf -> buf.writeEnumValue(opticalFacing));
-				updatePatternData();
 			}
 
 			return true;
@@ -93,17 +92,15 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 			opticalFacing = buf.readEnumValue(EnumFacing.class);
 			scheduleRenderUpdate();
 		} else if (dataId == GTEDataCodes.PATTERNS_CHANGE) {
-			recipeSyncHandler.decode(buf);
-			if (!recipeSyncHandler.isEmpty()) {
-				recipeSyncHandler.getAddition().stream()
-						.map(RecipePatternHelper::new)
-						.forEach(patterns::add);
-
-				recipeSyncHandler.getDeletion().stream()
-						.map(RecipePatternHelper::new)
-						.forEach(patterns::remove);
-			}
 		}
+	}
+
+	@Override
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+		if (facing == opticalFacing && capability == GregTechEnergisticsCapabilities.CAPABILITY_DATA_HANDLER) {
+			return GregTechEnergisticsCapabilities.CAPABILITY_DATA_HANDLER.cast(this);
+		}
+		return super.getCapability(capability, facing);
 	}
 
 	@Override
@@ -112,43 +109,20 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 		Textures.OPTICAL_DATA_ACCESS_HATCH.renderSided(opticalFacing, renderState, translation, pipeline);
 	}
 
-	@Override
-	public void update() {
-		super.update();
-		if (updateTick % GregTechEnergisticsConfig.getUpdateTime() == 0 || isFirstTick()) {
-			updatePatternData();
-		}
-	}
-
 	private void updatePatternData() {
 		if (!isAttachedToMultiBlock()) return;
 
 		TileEntity te = getWorld().getTileEntity(getPos().offset(opticalFacing));
 		if (te instanceof TileEntityOpticalPipe) {
-			IDataAccessHatch data =
+			IOpticalDataHandler data = (IOpticalDataHandler)
 					te.getCapability(GregtechTileCapabilities.CAPABILITY_DATA_ACCESS, opticalFacing.getOpposite());
 
 			if (data == null) return;
 
-			RecipeMaps.ASSEMBLY_LINE_RECIPES.getRecipeList().stream()
-					.filter(data::isRecipeAvailable)
-					.filter(r -> patterns.stream()
-							.map(RecipePatternHelper::getRecipe)
-							.noneMatch(rec -> rec.equals(r)))
-					.forEach(r -> {
-						patterns.add(new RecipePatternHelper(r));
-						recipeSyncHandler.addAddition(r);
-					});
+			var recipes = data.getRecipes();
+			if (recipes == null) recipes = Collections.emptyList();
 
-			patterns.stream()
-					.map(RecipePatternHelper::getRecipe)
-					.filter(r -> !data.isRecipeAvailable(r))
-					.forEach(recipeSyncHandler::addDeletion);
-		}
-		if (!recipeSyncHandler.isEmpty()) {
-			patterns.removeIf(r -> recipeSyncHandler.getDeletion().contains(r.getRecipe()));
-			writeCustomData(GTEDataCodes.PATTERNS_CHANGE, recipeSyncHandler::encode);
-			notifyPatternChange();
+			patterns = recipes.stream().map(RecipePatternHelper::new).collect(Collectors.toList());
 		}
 	}
 
@@ -183,67 +157,25 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 		return patterns;
 	}
 
-	private class RecipeSyncHandler {
+	@Override
+	public boolean isCreative() {
+		return false;
+	}
 
-		private Set<Recipe> addition = new HashSet<>();
-		private Set<Recipe> deletion = new HashSet<>();
+	@Override
+	public boolean isRecipeAvailable(Recipe arg0, Collection<IDataAccessHatch> arg1) {
+		return false;
+	}
 
-		private void clear() {
-			addition.clear();
-			deletion.clear();
-		}
+	@Override
+	public void onRecipesUpdate() {
+		updatePatternData();
+		notifyPatternChange();
+	}
 
-		private boolean isEmpty() {
-			return addition.isEmpty() && deletion.isEmpty();
-		}
-
-		private void addDeletion(Recipe recipe) {
-			deletion.add(recipe);
-		}
-
-		private void addAddition(Recipe recipe) {
-			addition.add(recipe);
-		}
-
-		private Set<Recipe> getAddition() {
-			return addition;
-		}
-
-		private Set<Recipe> getDeletion() {
-			return deletion;
-		}
-
-		private void decode(PacketBuffer buf) {
-			clear();
-			decodeRecipes(addition, buf);
-			decodeRecipes(deletion, buf);
-		}
-
-		private void encode(PacketBuffer buf) {
-			encodeRecipes(addition, buf);
-			encodeRecipes(deletion, buf);
-			clear();
-		}
-
-		private void decodeRecipes(Set<Recipe> recipes, PacketBuffer buf) {
-			int size = buf.readShort();
-			if(size == 0) return;
-			for (int i = 0; i < size; ++i) {
-				int id = buf.readInt();
-				RecipeMaps.ASSEMBLY_LINE_RECIPES.getRecipeList().stream()
-						.filter(recipe -> ((IRecipeMixinAccessor) recipe).getRecipeId() == id)
-						.forEach(recipes::add);
-			}
-		}
-
-		public void encodeRecipes(Set<Recipe> recipes, PacketBuffer buf) {
-			int size = recipes.size();
-			buf.writeShort(size);
-			if(size == 0) return;
-
-			recipes.stream()
-					.map(recipe -> ((IRecipeMixinAccessor) recipe).getRecipeId())
-					.forEach(buf::writeInt);
-		}
+	@Override
+	public Collection<Recipe> getRecipes(Collection<IDataAccessHatch> seen) {
+		seen.add(this);
+		return null;
 	}
 }

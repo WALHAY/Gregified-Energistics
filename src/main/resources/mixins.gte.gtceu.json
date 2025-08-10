@@ -6,6 +6,12 @@
   "compatibilityLevel" : "JAVA_8",
   "mixins" : [
     "AssemblyLineMixin",
+	"OpticalNetHandlerMixin",
+	"DataAccessHatchMixin",
+	"OpticalDataHatchMixin",
+	"DataBankMixin",
+	"RecipeMixin",
+	"BlockOpticalPipeMixin",
   ],
   "client": [],
   "server" : []
