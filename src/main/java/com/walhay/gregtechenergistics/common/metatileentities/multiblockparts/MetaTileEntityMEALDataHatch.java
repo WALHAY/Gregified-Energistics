@@ -197,6 +197,7 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 
 	@Override
 	public void onRecipesUpdate() {
+		System.out.println("Notified");
 		updatePatternData();
 		notifyPatternChange();
 	}

@@ -1,7 +1,5 @@
 package com.walhay.gregtechenergistics.common.metatileentities.multiblockparts;
 
-import static com.walhay.gregtechenergistics.api.capability.GTEDataCodes.ONLINE_STATUS_UPDATE;
-
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.networking.GridFlags;
@@ -33,7 +31,6 @@ import com.walhay.gregtechenergistics.api.capability.impl.SubstitutionStorage;
 import com.walhay.gregtechenergistics.api.gui.GTEGuiTextures;
 import com.walhay.gregtechenergistics.api.render.GTETextures;
 import com.walhay.gregtechenergistics.api.util.BlockingMode;
-
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.impl.MultiblockRecipeLogic;
 import gregtech.api.capability.impl.NotifiableItemStackHandler;
@@ -254,7 +251,7 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 		super.receiveCustomData(dataId, buf);
 		if (dataId == GregtechDataCodes.UPDATE_ONLINE_STATUS) {
 			boolean isOnline = buf.readBoolean();
-			if(this.isOnline != isOnline) {
+			if (this.isOnline != isOnline) {
 				this.isOnline = isOnline;
 				scheduleRenderUpdate();
 			}
@@ -301,9 +298,10 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 	}
 
 	protected boolean updateMEStatus() {
-		boolean isOnline = getProxy() != null && getProxy().isActive() && getProxy().isPowered();
+		boolean isOnline =
+				getProxy() != null && getProxy().isActive() && getProxy().isPowered();
 
-		if(this.isOnline != isOnline) {
+		if (this.isOnline != isOnline) {
 			writeCustomData(GregtechDataCodes.UPDATE_ONLINE_STATUS, buf -> buf.writeBoolean(isOnline));
 			this.isOnline = isOnline;
 		}
