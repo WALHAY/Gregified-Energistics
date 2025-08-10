@@ -1,4 +1,4 @@
-package com.walhay.gregtechenergistics.api.capability;
+package com.walhay.gregtechenergistics.mixins.interfaces;
 
 public interface IDataBankUpdateHandler {
 	void updateData();

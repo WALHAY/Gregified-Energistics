@@ -10,18 +10,22 @@ import codechicken.lib.vec.Matrix4;
 import com.walhay.gregtechenergistics.api.capability.GTEDataCodes;
 import com.walhay.gregtechenergistics.api.capability.GregTechEnergisticsCapabilities;
 import com.walhay.gregtechenergistics.api.capability.IOpticalDataHandler;
+import com.walhay.gregtechenergistics.api.capability.IRecipeMixinAccessor;
 import com.walhay.gregtechenergistics.api.capability.ISubstitutionHandler;
 import com.walhay.gregtechenergistics.api.capability.impl.RecipePatternHelper;
 import com.walhay.gregtechenergistics.common.gui.GhostGridWidget;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.IDataAccessHatch;
+import gregtech.api.capability.IOpticalDataAccessHatch;
 import gregtech.api.gui.Widget;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.recipes.Recipe;
+import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.recipes.ingredients.GTRecipeInput;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +41,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 
 public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyLineHatch
-		implements IOpticalDataHandler {
+		implements IOpticalDataHandler, IOpticalDataAccessHatch {
 
 	private List<RecipePatternHelper> patterns = Collections.emptyList();
 	private EnumFacing opticalFacing = EnumFacing.DOWN;
@@ -92,6 +96,18 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 			opticalFacing = buf.readEnumValue(EnumFacing.class);
 			scheduleRenderUpdate();
 		} else if (dataId == GTEDataCodes.PATTERNS_CHANGE) {
+			patterns.clear();
+
+			int size = buf.readShort();
+			if (size == 0) return;
+
+			IntOpenHashSet ids = new IntOpenHashSet();
+			for (int i = 0; i < size; ++i) ids.add(buf.readInt());
+
+			patterns = RecipeMaps.ASSEMBLY_LINE_RECIPES.getRecipeList().stream()
+					.filter(recipe -> ids.contains(((IRecipeMixinAccessor) recipe).getRecipeId()))
+					.map(RecipePatternHelper::new)
+					.collect(Collectors.toList());
 		}
 	}
 
@@ -99,6 +115,8 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if (facing == opticalFacing && capability == GregTechEnergisticsCapabilities.CAPABILITY_DATA_HANDLER) {
 			return GregTechEnergisticsCapabilities.CAPABILITY_DATA_HANDLER.cast(this);
+		} else if (facing == opticalFacing && capability == GregtechTileCapabilities.CAPABILITY_DATA_ACCESS) {
+			return GregtechTileCapabilities.CAPABILITY_DATA_ACCESS.cast(this);
 		}
 		return super.getCapability(capability, facing);
 	}
@@ -120,9 +138,19 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 			if (data == null) return;
 
 			var recipes = data.getRecipes();
-			if (recipes == null) recipes = Collections.emptyList();
+			if (recipes == null) {
+				patterns = Collections.emptyList();
+				return;
+			}
 
 			patterns = recipes.stream().map(RecipePatternHelper::new).collect(Collectors.toList());
+
+			writeCustomData(GTEDataCodes.PATTERNS_CHANGE, buf -> {
+				buf.writeShort(recipes.size());
+				for (Recipe recipe : recipes) {
+					buf.writeInt(((IRecipeMixinAccessor) recipe).getRecipeId());
+				}
+			});
 		}
 	}
 
@@ -177,5 +205,10 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 	public Collection<Recipe> getRecipes(Collection<IDataAccessHatch> seen) {
 		seen.add(this);
 		return null;
+	}
+
+	@Override
+	public boolean isTransmitter() {
+		return false;
 	}
 }

@@ -40,6 +40,11 @@ public abstract class DataAccessHatchMixin implements IOpticalDataHandler {
 	}
 
 	@Override
+	public void onRecipesUpdate() {
+		// TODO: split interfaces
+	}
+
+	@Override
 	public Collection<Recipe> getRecipes(Collection<IDataAccessHatch> seen) {
 		seen.add(this);
 

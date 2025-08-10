@@ -1,7 +1,7 @@
 package com.walhay.gregtechenergistics.mixins.gtceu;
 
-import com.walhay.gregtechenergistics.api.capability.IDataBankUpdateHandler;
 import com.walhay.gregtechenergistics.api.capability.IOpticalDataHandler;
+import com.walhay.gregtechenergistics.mixins.interfaces.IDataBankUpdateHandler;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.IDataAccessHatch;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
