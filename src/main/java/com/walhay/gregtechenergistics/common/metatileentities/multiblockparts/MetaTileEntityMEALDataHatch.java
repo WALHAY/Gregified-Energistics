@@ -10,12 +10,11 @@ import codechicken.lib.vec.Matrix4;
 import com.walhay.gregtechenergistics.api.capability.GTEDataCodes;
 import com.walhay.gregtechenergistics.api.capability.GregTechEnergisticsCapabilities;
 import com.walhay.gregtechenergistics.api.capability.IOpticalDataHandler;
+import com.walhay.gregtechenergistics.api.capability.IRecipeMapAccessor;
 import com.walhay.gregtechenergistics.api.capability.IRecipeMixinAccessor;
 import com.walhay.gregtechenergistics.api.capability.ISubstitutionHandler;
 import com.walhay.gregtechenergistics.api.capability.impl.RecipePatternHelper;
 import com.walhay.gregtechenergistics.common.gui.GhostGridWidget;
-
-import gregtech.GregTechMod;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.IDataAccessHatch;
 import gregtech.api.capability.IOpticalDataAccessHatch;
@@ -25,10 +24,9 @@ import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.recipes.ingredients.GTRecipeInput;
-import gregtech.api.util.GTLog;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -104,11 +102,13 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 			int size = buf.readInt();
 			if (size == 0) return;
 
-			IntOpenHashSet ids = new IntOpenHashSet();
+			List<Integer> ids = new ArrayList<>(size);
 			for (int i = 0; i < size; ++i) ids.add(buf.readInt());
 
-			patterns = RecipeMaps.ASSEMBLY_LINE_RECIPES.getRecipeList().stream()
-					.filter(recipe -> ids.contains(((IRecipeMixinAccessor) recipe).getRecipeId()))
+			IRecipeMapAccessor accessor = (IRecipeMapAccessor) RecipeMaps.ASSEMBLY_LINE_RECIPES;
+
+			patterns = ids.stream()
+					.map(accessor::getRecipeById)
 					.map(RecipePatternHelper::new)
 					.collect(Collectors.toList());
 		}
@@ -143,6 +143,7 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 			var recipes = data.getRecipes();
 			if (recipes == null) {
 				patterns = Collections.emptyList();
+				writeCustomData(GTEDataCodes.PATTERNS_CHANGE, buf -> buf.writeInt(0));
 				return;
 			}
 
@@ -200,7 +201,7 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 
 	@Override
 	public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
-		if(seen.contains(this)) return;
+		if (seen.contains(this)) return;
 		seen.add(this);
 		updatePatternData();
 		notifyPatternChange();

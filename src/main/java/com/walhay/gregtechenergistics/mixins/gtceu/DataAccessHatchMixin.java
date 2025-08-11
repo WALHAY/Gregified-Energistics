@@ -2,16 +2,12 @@ package com.walhay.gregtechenergistics.mixins.gtceu;
 
 import com.walhay.gregtechenergistics.api.capability.IOpticalDataHandler;
 import com.walhay.gregtechenergistics.mixins.interfaces.IDataBankUpdateHandler;
-
 import gregtech.api.capability.IDataAccessHatch;
-import gregtech.api.capability.IOpticalDataAccessHatch;
-import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.recipes.Recipe;
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityDataBank;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityDataAccessHatch;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityMultiblockPart;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

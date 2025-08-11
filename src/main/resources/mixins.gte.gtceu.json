@@ -11,6 +11,7 @@
 	"OpticalDataHatchMixin",
 	"DataBankMixin",
 	"RecipeMixin",
+	"RecipeMapMixin",
 	"BlockOpticalPipeMixin",
   ],
   "client": [],

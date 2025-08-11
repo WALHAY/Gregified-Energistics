@@ -5,7 +5,6 @@ import com.walhay.gregtechenergistics.mixins.interfaces.IDataBankUpdateHandler;
 import gregtech.api.capability.IOpticalDataAccessHatch;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityDataBank;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,7 +26,7 @@ public class DataBankMixin implements IDataBankUpdateHandler {
 		for (IOpticalDataAccessHatch hatch : transmitters) {
 			IOpticalDataHandler updater = (IOpticalDataHandler) hatch;
 
-			if(seen.contains(updater)) continue;
+			if (seen.contains(updater)) continue;
 
 			updater.onRecipesUpdate(seen);
 		}
