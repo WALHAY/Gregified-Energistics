@@ -1,4 +1,4 @@
-package com.walhay.gregifiedenergistics.mixins.gtceu;
+package com.walhay.gregifiedenergistics.mixins.gtceu.recipes;
 
 import com.walhay.gregifiedenergistics.api.capability.*;
 import gregtech.api.recipes.Recipe;

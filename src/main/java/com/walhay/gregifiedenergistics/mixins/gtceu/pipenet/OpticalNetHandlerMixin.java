@@ -1,4 +1,4 @@
-package com.walhay.gregifiedenergistics.mixins.gtceu;
+package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
 
 import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
 import gregtech.api.capability.IDataAccessHatch;

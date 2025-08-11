@@ -1,4 +1,4 @@
-package com.walhay.gregifiedenergistics.mixins.gtceu;
+package com.walhay.gregifiedenergistics.mixins.gtceu.metatileentities;
 
 import static com.walhay.gregifiedenergistics.common.metatileentities.MetaTileEntities.ME_ASSEMBLY_LINE_DATA_HATCH;
 import static com.walhay.gregifiedenergistics.common.metatileentities.MetaTileEntities.ME_ASSEMBLY_LINE_HATCH;
