@@ -40,8 +40,8 @@ public abstract class OpticalNetHandlerMixin implements IOpticalDataHandler {
 	protected abstract void callSetPipesActive();
 
 	@Override
-	@Unique public void onRecipesUpdate() {
-		traverseOnUpdate();
+	@Unique public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
+		traverseOnUpdate(seen);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public abstract class OpticalNetHandlerMixin implements IOpticalDataHandler {
 		return recipes;
 	}
 
-	@Unique private void traverseOnUpdate() {
+	@Unique private void traverseOnUpdate(Collection<IOpticalDataHandler> seen) {
 		if (callIsNetInvalidForTraversal()) return;
 
 		OpticalRoutePath inv = net.getNetData(pipe.getPipePos(), facing);
@@ -61,7 +61,7 @@ public abstract class OpticalNetHandlerMixin implements IOpticalDataHandler {
 		if (hatch == null) return;
 
 		if (!hatch.isTransmitter()) {
-			((IOpticalDataHandler) hatch).onRecipesUpdate();
+			((IOpticalDataHandler) hatch).onRecipesUpdate(seen);
 		}
 	}
 

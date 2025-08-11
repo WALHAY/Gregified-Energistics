@@ -69,7 +69,9 @@ public abstract class OpticalDataHatchMixin implements IOpticalDataHandler {
 	}
 
 	@Override
-	@Unique public void onRecipesUpdate() {
+	@Unique public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
+		if(seen.contains(this)) return;
+		seen.add(this);
 		MetaTileEntityOpticalDataHatch hatch = (MetaTileEntityOpticalDataHatch) (Object) this;
 
 		if (isTransmitter) {
@@ -84,7 +86,9 @@ public abstract class OpticalDataHatchMixin implements IOpticalDataHandler {
 
 				IOpticalDataHandler updated = (IOpticalDataHandler) data;
 
-				updated.onRecipesUpdate();
+				if(seen.contains(updated)) return;
+
+				updated.onRecipesUpdate(seen);
 			}
 		} else {
 			if (hatch.getController() instanceof MetaTileEntityDataBank dataBank) {

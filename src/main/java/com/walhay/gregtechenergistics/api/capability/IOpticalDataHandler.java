@@ -7,7 +7,13 @@ import java.util.Collection;
 
 public interface IOpticalDataHandler extends IDataAccessHatch {
 
-	void onRecipesUpdate();
+	void onRecipesUpdate(Collection<IOpticalDataHandler> seen);
+
+	default void onRecipesUpdate() {
+		Collection<IOpticalDataHandler> seen = new ArrayList<>();
+		seen.add(this);
+		onRecipesUpdate(seen);
+	}
 
 	default Collection<Recipe> getRecipes() {
 		Collection<IDataAccessHatch> seen = new ArrayList<>();

@@ -14,6 +14,8 @@ import com.walhay.gregtechenergistics.api.capability.IRecipeMixinAccessor;
 import com.walhay.gregtechenergistics.api.capability.ISubstitutionHandler;
 import com.walhay.gregtechenergistics.api.capability.impl.RecipePatternHelper;
 import com.walhay.gregtechenergistics.common.gui.GhostGridWidget;
+
+import gregtech.GregTechMod;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.IDataAccessHatch;
 import gregtech.api.capability.IOpticalDataAccessHatch;
@@ -23,6 +25,7 @@ import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.recipes.ingredients.GTRecipeInput;
+import gregtech.api.util.GTLog;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -196,8 +199,9 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 	}
 
 	@Override
-	public void onRecipesUpdate() {
-		System.out.println("Notified");
+	public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
+		if(seen.contains(this)) return;
+		seen.add(this);
 		updatePatternData();
 		notifyPatternChange();
 	}

@@ -1,6 +1,8 @@
 package com.walhay.gregtechenergistics.mixins.gtceu;
 
 import com.walhay.gregtechenergistics.api.capability.IOpticalDataHandler;
+import com.walhay.gregtechenergistics.mixins.interfaces.IDataBankUpdateHandler;
+
 import gregtech.api.capability.IDataAccessHatch;
 import gregtech.api.capability.IOpticalDataAccessHatch;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
@@ -24,23 +26,18 @@ public abstract class DataAccessHatchMixin implements IOpticalDataHandler {
 	@Final
 	private Set<Recipe> recipes;
 
-	@Inject(method = "rebuildData", at = @At("TAIL"), remap = false)
+	@Inject(method = "rebuildData", at = @At("RETURn"), remap = false)
 	private void tailRebuildData(CallbackInfo ci) {
 		MetaTileEntityMultiblockPart part = (MetaTileEntityMultiblockPart) (Object) this;
 
 		if (part.isAttachedToMultiBlock() && part.getController() instanceof MetaTileEntityDataBank dataBank) {
-			List<IOpticalDataAccessHatch> transmitters =
-					dataBank.getAbilities(MultiblockAbility.OPTICAL_DATA_TRANSMISSION);
-
-			for (IOpticalDataAccessHatch hatch : transmitters) {
-				IOpticalDataHandler updateAccessor = (IOpticalDataHandler) hatch;
-				updateAccessor.onRecipesUpdate();
-			}
+			((IDataBankUpdateHandler) dataBank).updateData();
 		}
 	}
 
 	@Override
-	public void onRecipesUpdate() {
+	public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
+		seen.add(this);
 		// TODO: split interfaces
 	}
 
