@@ -1,0 +1,12 @@
+gregifiedenergistics.machine.me_assembly_line_hatch.name=ME Люк Шаблонов
+gregifiedenergistics.machine.me_assembly_line_hatch.info0=Автоматизация сборочной линии всегда была проблемой... но не для меня
+gregifiedenergistics.machine.me_assembly_line_hatch.info1=Помещает предметны из шаблоны по люкам сборочной линии в зависимости от позиции предмета в шаблоне
+gregifiedenergistics.gui.me_network.offline=Статус: Оффлайн
+gregifiedenergistics.gui.me_network.online=Статус: Онлайн
+gregifiedenergistics.gui.item_slot=Входной Слот
+gregifiedenergistics.gui.no_blocking=Режим Блокировки Отключен
+gregifiedenergistics.gui.blocking_mode=Режим Блокировки
+gregifiedenergistics.gui.crafting_blocking_mode=Режим Блокировки При Крафте
+gregifiedenergistics.gui.fluid_mode.enabled=Жидкостный Режим: Включен
+gregifiedenergistics.gui.fluid_mode.disabled=Жидкостный Режим: Отключен
+gregifiedenergistics.gui.pattern_list=Шаблоны: %s
