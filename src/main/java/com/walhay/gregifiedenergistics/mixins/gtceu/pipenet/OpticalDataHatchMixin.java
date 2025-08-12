@@ -1,17 +1,13 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
 
 import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
-import com.walhay.gregifiedenergistics.mixins.interfaces.IDataBankUpdateHandler;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.IDataAccessHatch;
-import gregtech.api.metatileentity.multiblock.MultiblockAbility;
-import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
 import gregtech.api.recipes.Recipe;
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityDataBank;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityOpticalDataHatch;
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
 import java.util.Collection;
-import java.util.LinkedList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -28,25 +24,25 @@ public abstract class OpticalDataHatchMixin implements IOpticalDataHandler {
 	@Override
 	public Collection<Recipe> getRecipes(Collection<IDataAccessHatch> seen) {
 		MetaTileEntityOpticalDataHatch hatch = (MetaTileEntityOpticalDataHatch) (Object) this;
-
 		seen.add(this);
-		EnumFacing facing = hatch.getFrontFacing();
-		if (hatch.isAttachedToMultiBlock()) {
-			MultiblockControllerBase controller = hatch.getController();
-			if (!controller.isActive()) return null;
 
+		if (hatch.isAttachedToMultiBlock()) {
 			if (hatch.isTransmitter()) {
-				var recipes = getRecipes(controller.getAbilities(MultiblockAbility.DATA_ACCESS_HATCH), seen);
-				recipes.addAll(getRecipes(controller.getAbilities(MultiblockAbility.OPTICAL_DATA_RECEPTION), seen));
-				return recipes;
+				if (hatch.getController() instanceof MetaTileEntityDataBank dataBank) {
+					IOpticalDataHandler handler = (IOpticalDataHandler) dataBank;
+					if (seen.contains(handler)) return null;
+
+					return handler.getRecipes(seen);
+				}
 			} else {
 				BlockPos pos = hatch.getPos();
-				TileEntity tileEntity = hatch.getWorld().getTileEntity(pos.offset(facing));
-				if (tileEntity == null) return null;
+				EnumFacing facing = hatch.getFrontFacing();
+				TileEntity te = hatch.getWorld().getTileEntity(pos.offset(facing));
+				if (te == null) return null;
 
-				if (tileEntity instanceof TileEntityOpticalPipe) {
-					IOpticalDataHandler cap = (IOpticalDataHandler) tileEntity.getCapability(
-							GregtechTileCapabilities.CAPABILITY_DATA_ACCESS, facing.getOpposite());
+				if (te instanceof TileEntityOpticalPipe) {
+					IOpticalDataHandler cap = (IOpticalDataHandler)
+							te.getCapability(GregtechTileCapabilities.CAPABILITY_DATA_ACCESS, facing.getOpposite());
 
 					if (cap == null) return null;
 					return cap.getRecipes(seen);
@@ -56,43 +52,28 @@ public abstract class OpticalDataHatchMixin implements IOpticalDataHandler {
 		return null;
 	}
 
-	private static Collection<Recipe> getRecipes(
-			Iterable<? extends IDataAccessHatch> hatches, Collection<IDataAccessHatch> seen) {
-		var result = new LinkedList<Recipe>();
-		for (IDataAccessHatch hatch : hatches) {
-			if (seen.contains(hatch)) continue;
-
-			var recipes = ((IOpticalDataHandler) hatch).getRecipes(seen);
-			if (recipes != null) result.addAll(recipes);
-		}
-		return result;
-	}
-
 	@Override
 	@Unique public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
-		if (seen.contains(this)) return;
-		seen.add(this);
 		MetaTileEntityOpticalDataHatch hatch = (MetaTileEntityOpticalDataHatch) (Object) this;
+		seen.add(this);
 
 		if (isTransmitter) {
-			EnumFacing facing = hatch.getFrontFacing();
-
 			BlockPos pos = hatch.getPos();
+			EnumFacing facing = hatch.getFrontFacing();
 			TileEntity te = hatch.getWorld().getTileEntity(pos.offset(facing));
 
 			if (te instanceof TileEntityOpticalPipe pipe) {
 				IDataAccessHatch data =
 						pipe.getCapability(GregtechTileCapabilities.CAPABILITY_DATA_ACCESS, facing.getOpposite());
 
-				IOpticalDataHandler updated = (IOpticalDataHandler) data;
-
-				if (seen.contains(updated)) return;
-
-				updated.onRecipesUpdate(seen);
+				((IOpticalDataHandler) data).onRecipesUpdate(seen);
 			}
 		} else {
 			if (hatch.getController() instanceof MetaTileEntityDataBank dataBank) {
-				((IDataBankUpdateHandler) dataBank).updateData();
+				IOpticalDataHandler handler = (IOpticalDataHandler) dataBank;
+				if (seen.contains(handler)) return;
+
+				handler.onRecipesUpdate(seen);
 			}
 		}
 	}

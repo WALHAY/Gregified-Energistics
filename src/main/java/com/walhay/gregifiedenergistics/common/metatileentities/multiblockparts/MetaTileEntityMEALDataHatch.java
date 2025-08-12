@@ -201,7 +201,6 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 
 	@Override
 	public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
-		if (seen.contains(this)) return;
 		seen.add(this);
 		updatePatternData();
 		notifyPatternChange();

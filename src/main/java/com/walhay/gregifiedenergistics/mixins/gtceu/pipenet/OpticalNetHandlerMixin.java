@@ -42,13 +42,12 @@ public abstract class OpticalNetHandlerMixin implements IOpticalDataHandler {
 	@Override
 	@Unique public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
 		traverseOnUpdate(seen);
-		callSetPipesActive();
 	}
 
 	@Override
 	@Unique public Collection<Recipe> getRecipes(Collection<IDataAccessHatch> seen) {
-		Collection<Recipe> recipes = traverseGetRecipes(seen);
-		return recipes;
+		callSetPipesActive();
+		return traverseGetRecipes(seen);
 	}
 
 	@Unique private void traverseOnUpdate(Collection<IOpticalDataHandler> seen) {
