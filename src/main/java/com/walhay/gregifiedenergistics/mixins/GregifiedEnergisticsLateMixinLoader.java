@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import zone.rong.mixinbooter.ILateMixinLoader;
 
-public class GregTechEnergisticsLateMixinLoader implements ILateMixinLoader {
+public class GregifiedEnergisticsLateMixinLoader implements ILateMixinLoader {
 
 	@Override
 	public List<String> getMixinConfigs() {
