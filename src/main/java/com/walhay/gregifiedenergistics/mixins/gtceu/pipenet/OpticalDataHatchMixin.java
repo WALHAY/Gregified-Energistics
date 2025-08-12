@@ -32,10 +32,10 @@ public abstract class OpticalDataHatchMixin implements IOpticalDataHandler {
 		seen.add(this);
 		EnumFacing facing = hatch.getFrontFacing();
 		if (hatch.isAttachedToMultiBlock()) {
-			if (hatch.isTransmitter()) {
-				MultiblockControllerBase controller = hatch.getController();
-				if (!controller.isActive()) return null;
+			MultiblockControllerBase controller = hatch.getController();
+			if (!controller.isActive()) return null;
 
+			if (hatch.isTransmitter()) {
 				var recipes = getRecipes(controller.getAbilities(MultiblockAbility.DATA_ACCESS_HATCH), seen);
 				recipes.addAll(getRecipes(controller.getAbilities(MultiblockAbility.OPTICAL_DATA_RECEPTION), seen));
 				return recipes;
