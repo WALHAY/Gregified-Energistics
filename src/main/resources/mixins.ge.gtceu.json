@@ -11,6 +11,7 @@
 	"pipenet.OpticalDataHatchMixin",
 	"pipenet.BlockOpticalPipeMixin",
 	"pipenet.OpticalNetHandlerMixin",
+	"pipenet.TileEntityOpticalPipeMixin",
 	"recipes.RecipeMixin",
 	"recipes.RecipeMapMixin",
   ],

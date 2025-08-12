@@ -1,8 +1,7 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
 
+import com.walhay.gregifiedenergistics.api.capability.GECapabilities;
 import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
-import gregtech.api.capability.GregtechTileCapabilities;
-import gregtech.api.capability.IDataAccessHatch;
 import gregtech.api.recipes.Recipe;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityOpticalDataHatch;
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
@@ -42,8 +41,8 @@ public abstract class OpticalDataHatchMixin implements IOpticalDataHandler {
 				if (te == null) return null;
 
 				if (te instanceof TileEntityOpticalPipe) {
-					IOpticalDataHandler cap = (IOpticalDataHandler)
-							te.getCapability(GregtechTileCapabilities.CAPABILITY_DATA_ACCESS, facing.getOpposite());
+					IOpticalDataHandler cap =
+							te.getCapability(GECapabilities.CAPABILITY_DATA_HANDLER, facing.getOpposite());
 
 					if (cap == null) return null;
 					return cap.getRecipes(seen);
@@ -64,10 +63,10 @@ public abstract class OpticalDataHatchMixin implements IOpticalDataHandler {
 			TileEntity te = hatch.getWorld().getTileEntity(pos.offset(facing));
 
 			if (te instanceof TileEntityOpticalPipe pipe) {
-				IDataAccessHatch data =
-						pipe.getCapability(GregtechTileCapabilities.CAPABILITY_DATA_ACCESS, facing.getOpposite());
+				IOpticalDataHandler data =
+						pipe.getCapability(GECapabilities.CAPABILITY_DATA_HANDLER, facing.getOpposite());
 
-				((IOpticalDataHandler) data).onRecipesUpdate(seen);
+				if (data != null) data.onRecipesUpdate(seen);
 			}
 		} else {
 			if (hatch.getController() instanceof IOpticalDataHandler handler) {

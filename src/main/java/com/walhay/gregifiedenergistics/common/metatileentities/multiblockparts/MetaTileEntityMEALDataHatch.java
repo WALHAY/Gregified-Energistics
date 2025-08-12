@@ -135,8 +135,8 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 
 		TileEntity te = getWorld().getTileEntity(getPos().offset(opticalFacing));
 		if (te instanceof TileEntityOpticalPipe) {
-			IOpticalDataHandler data = (IOpticalDataHandler)
-					te.getCapability(GregtechTileCapabilities.CAPABILITY_DATA_ACCESS, opticalFacing.getOpposite());
+			IOpticalDataHandler data =
+					te.getCapability(GECapabilities.CAPABILITY_DATA_HANDLER, opticalFacing.getOpposite());
 
 			if (data == null) return;
 

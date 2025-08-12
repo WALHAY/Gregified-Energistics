@@ -3,6 +3,7 @@ package com.walhay.gregifiedenergistics.api.capability;
 import gregtech.api.recipes.Recipe;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.annotation.Nullable;
 
 public interface IOpticalDataHandler {
 
@@ -14,11 +15,11 @@ public interface IOpticalDataHandler {
 		onRecipesUpdate(seen);
 	}
 
-	default Collection<Recipe> getRecipes() {
+	@Nullable default Collection<Recipe> getRecipes() {
 		Collection<IOpticalDataHandler> seen = new ArrayList<>();
 		seen.add(this);
 		return getRecipes(seen);
 	}
 
-	Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen);
+	@Nullable Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen);
 }
