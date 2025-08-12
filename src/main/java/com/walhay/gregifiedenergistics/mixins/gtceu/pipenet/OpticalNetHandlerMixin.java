@@ -1,7 +1,7 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
 
 import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
-import gregtech.api.capability.IOpticalDataAccessHatch;
+import com.walhay.gregifiedenergistics.mixins.interfaces.IOpticalRouteAccessor;
 import gregtech.api.recipes.Recipe;
 import gregtech.common.pipelike.optical.net.OpticalNetHandler;
 import gregtech.common.pipelike.optical.net.OpticalPipeNet;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(OpticalNetHandler.class)
-@Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "recipes$"))
+@Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "dataHandler$"))
 public abstract class OpticalNetHandlerMixin implements IOpticalDataHandler {
 	@Shadow(remap = false)
 	private TileEntityOpticalPipe pipe;
@@ -56,12 +56,10 @@ public abstract class OpticalNetHandlerMixin implements IOpticalDataHandler {
 		if (callIsNetInvalidForTraversal()) return;
 
 		OpticalRoutePath inv = net.getNetData(pipe.getPipePos(), facing);
-		if (inv == null) return;
+		if (inv instanceof IOpticalRouteAccessor accessor) {
+			IOpticalDataHandler handler = accessor.getDataHandler();
+			if (handler == null) return;
 
-		IOpticalDataAccessHatch hatch = inv.getDataHatch();
-		if (hatch == null) return;
-
-		if (!hatch.isTransmitter() && hatch instanceof IOpticalDataHandler handler) {
 			handler.onRecipesUpdate(seen);
 		}
 	}
@@ -70,14 +68,13 @@ public abstract class OpticalNetHandlerMixin implements IOpticalDataHandler {
 		if (callIsNetInvalidForTraversal()) return null;
 
 		OpticalRoutePath inv = net.getNetData(pipe.getPipePos(), facing);
-		if (inv == null) return null;
+		if (inv instanceof IOpticalRouteAccessor accessor) {
+			IOpticalDataHandler handler = accessor.getDataHandler();
+			if (handler == null) return null;
 
-		IOpticalDataAccessHatch hatch = inv.getDataHatch();
-		if (hatch == null) return null;
-
-		if (hatch.isTransmitter() && hatch instanceof IOpticalDataHandler handler) {
 			return handler.getRecipes(seen);
 		}
+
 		return null;
 	}
 }

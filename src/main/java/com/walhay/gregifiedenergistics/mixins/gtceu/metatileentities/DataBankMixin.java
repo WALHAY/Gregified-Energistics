@@ -15,13 +15,14 @@ import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MetaTileEntityDataBank.class)
-@Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "recipes$"))
+@Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "dataHandler$"))
 public abstract class DataBankMixin extends MultiblockWithDisplayBase implements IOpticalDataHandler {
 
 	private DataBankMixin(ResourceLocation metaTileEntityId) {
@@ -51,7 +52,7 @@ public abstract class DataBankMixin extends MultiblockWithDisplayBase implements
 	}
 
 	@Override
-	public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
+	@Unique public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
 		seen.add(this);
 		for (IOpticalDataAccessHatch hatch : getAbilities(MultiblockAbility.OPTICAL_DATA_TRANSMISSION)) {
 			if (hatch instanceof IOpticalDataHandler handler) {
@@ -63,7 +64,7 @@ public abstract class DataBankMixin extends MultiblockWithDisplayBase implements
 	}
 
 	@Override
-	public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
+	@Unique public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
 		seen.add(this);
 
 		if (!isActive) return null;
@@ -76,7 +77,7 @@ public abstract class DataBankMixin extends MultiblockWithDisplayBase implements
 		return recipes;
 	}
 
-	private void getRecipesCollector(
+	@Unique private void getRecipesCollector(
 			Collection<Recipe> recipes,
 			Iterable<? extends IDataAccessHatch> hatches,
 			Collection<IOpticalDataHandler> seen) {

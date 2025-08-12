@@ -39,10 +39,9 @@ public abstract class TileEntityOpticalPipeMixin extends TileEntityPipeBase<Opti
 	@Invoker(remap = false)
 	protected abstract void invokeCheckNetwork();
 
-	@Inject(method = "getCapabilityInternal", at = @At(value = "TAIL"), remap = false, cancellable = true)
+	@Inject(method = "getCapabilityInternal", at = @At(value = "HEAD"), remap = false, cancellable = true)
 	private <I> void injectRecipeHandler(Capability<I> capability, EnumFacing facing, CallbackInfoReturnable<I> cir) {
 		if (capability == GECapabilities.CAPABILITY_DATA_HANDLER) {
-			System.out.println("Nigga");
 			if (world.isRemote) {
 				cir.setReturnValue(GECapabilities.CAPABILITY_DATA_HANDLER.cast(clientRecipesHandler));
 			}

@@ -8,15 +8,20 @@ import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityOptic
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
 import java.util.Collection;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.capabilities.Capability;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MetaTileEntityOpticalDataHatch.class)
-@Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "recipes$"))
+@Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "dataHandler$"))
 public abstract class OpticalDataHatchMixin extends MetaTileEntityMultiblockNotifiablePart
 		implements IOpticalDataHandler {
 
@@ -27,8 +32,15 @@ public abstract class OpticalDataHatchMixin extends MetaTileEntityMultiblockNoti
 	@Shadow(remap = false)
 	private boolean isTransmitter;
 
+	@Inject(method = "getCapability", at = @At("HEAD"), remap = false, cancellable = true)
+	private <I> void injectNewCapability(Capability<I> capability, EnumFacing facing, CallbackInfoReturnable<I> cir) {
+		if (capability == GECapabilities.CAPABILITY_DATA_HANDLER) {
+			cir.setReturnValue(GECapabilities.CAPABILITY_DATA_HANDLER.cast(this));
+		}
+	}
+
 	@Override
-	public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
+	@Unique public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
 		seen.add(this);
 
 		if (isAttachedToMultiBlock()) {

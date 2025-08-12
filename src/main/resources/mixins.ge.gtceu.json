@@ -12,6 +12,8 @@
 	"pipenet.BlockOpticalPipeMixin",
 	"pipenet.OpticalNetHandlerMixin",
 	"pipenet.TileEntityOpticalPipeMixin",
+	"pipenet.OpticalRoutePathMixin",
+	"pipenet.OpticalNetWalkerMixin",
 	"recipes.RecipeMixin",
 	"recipes.RecipeMapMixin",
   ],

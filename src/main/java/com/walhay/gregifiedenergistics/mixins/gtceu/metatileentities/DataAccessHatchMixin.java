@@ -12,12 +12,13 @@ import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MetaTileEntityDataAccessHatch.class)
-@Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "recipes$"))
+@Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "dataHandler$"))
 public abstract class DataAccessHatchMixin extends MetaTileEntityMultiblockNotifiablePart
 		implements IOpticalDataHandler {
 
@@ -30,12 +31,12 @@ public abstract class DataAccessHatchMixin extends MetaTileEntityMultiblockNotif
 	private Set<Recipe> recipes;
 
 	@Inject(method = "rebuildData", at = @At("RETURN"), remap = false)
-	private void tailRebuildData(CallbackInfo ci) {
+	private void updateOnRebuildData(CallbackInfo ci) {
 		onRecipesUpdate();
 	}
 
 	@Override
-	public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
+	@Unique public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
 		seen.add(this);
 
 		if (isAttachedToMultiBlock() && getController() instanceof IOpticalDataHandler handler) {
@@ -46,7 +47,7 @@ public abstract class DataAccessHatchMixin extends MetaTileEntityMultiblockNotif
 	}
 
 	@Override
-	public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
+	@Unique public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
 		seen.add(this);
 
 		return recipes;
