@@ -18,7 +18,7 @@ public class BlockOpticalPipeMixin {
 
 	@Inject(
 			method = "canPipeConnectToBlock",
-			at = @At(value = "RETURN", ordinal = 1),
+			at = @At(value = "RETURN", ordinal = 2),
 			remap = false,
 			cancellable = true)
 	private void canPipeConnectToBlock(

@@ -48,8 +48,9 @@ public abstract class OpticalNetHandlerMixin implements IOpticalDataHandler {
 
 	@Override
 	@Unique public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
-		callSetPipesActive();
-		return traverseGetRecipes(seen);
+		var recipes = traverseGetRecipes(seen);
+		if (recipes != null) callSetPipesActive();
+		return recipes;
 	}
 
 	@Unique private void traverseOnUpdate(Collection<IOpticalDataHandler> seen) {
