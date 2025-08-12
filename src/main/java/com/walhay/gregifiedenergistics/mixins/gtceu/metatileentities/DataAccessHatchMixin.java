@@ -3,9 +3,10 @@ package com.walhay.gregifiedenergistics.mixins.gtceu.metatileentities;
 import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
 import gregtech.api.recipes.Recipe;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityDataAccessHatch;
-import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityMultiblockPart;
+import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityMultiblockNotifiablePart;
 import java.util.Collection;
 import java.util.Set;
+import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
@@ -17,7 +18,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MetaTileEntityDataAccessHatch.class)
 @Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "recipes$"))
-public abstract class DataAccessHatchMixin implements IOpticalDataHandler {
+public abstract class DataAccessHatchMixin extends MetaTileEntityMultiblockNotifiablePart
+		implements IOpticalDataHandler {
+
+	private DataAccessHatchMixin(ResourceLocation metaTileEntityId, int tier, boolean isExportHatch) {
+		super(metaTileEntityId, tier, isExportHatch);
+	}
+
 	@Shadow(remap = false)
 	@Final
 	private Set<Recipe> recipes;
@@ -29,11 +36,9 @@ public abstract class DataAccessHatchMixin implements IOpticalDataHandler {
 
 	@Override
 	public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
-		MetaTileEntityMultiblockPart part = (MetaTileEntityMultiblockPart) (Object) this;
-
 		seen.add(this);
 
-		if (part.isAttachedToMultiBlock() && part.getController() instanceof IOpticalDataHandler handler) {
+		if (isAttachedToMultiBlock() && getController() instanceof IOpticalDataHandler handler) {
 			if (seen.contains(handler)) return;
 
 			handler.onRecipesUpdate(seen);

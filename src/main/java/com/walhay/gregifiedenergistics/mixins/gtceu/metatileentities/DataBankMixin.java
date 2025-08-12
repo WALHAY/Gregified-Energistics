@@ -4,10 +4,12 @@ import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
 import gregtech.api.capability.IDataAccessHatch;
 import gregtech.api.capability.IOpticalDataAccessHatch;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
+import gregtech.api.metatileentity.multiblock.MultiblockWithDisplayBase;
 import gregtech.api.recipes.Recipe;
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityDataBank;
 import java.util.ArrayList;
 import java.util.Collection;
+import net.minecraft.util.ResourceLocation;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
@@ -20,7 +22,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MetaTileEntityDataBank.class)
 @Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "recipes$"))
-public class DataBankMixin implements IOpticalDataHandler {
+public abstract class DataBankMixin extends MultiblockWithDisplayBase implements IOpticalDataHandler {
+
+	private DataBankMixin(ResourceLocation metaTileEntityId) {
+		super(metaTileEntityId);
+	}
 
 	@Shadow(remap = false)
 	private boolean isActive;
@@ -47,8 +53,7 @@ public class DataBankMixin implements IOpticalDataHandler {
 	@Override
 	public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
 		seen.add(this);
-		MetaTileEntityDataBank dataBank = (MetaTileEntityDataBank) (Object) this;
-		for (IOpticalDataAccessHatch hatch : dataBank.getAbilities(MultiblockAbility.OPTICAL_DATA_TRANSMISSION)) {
+		for (IOpticalDataAccessHatch hatch : getAbilities(MultiblockAbility.OPTICAL_DATA_TRANSMISSION)) {
 			if (hatch instanceof IOpticalDataHandler handler) {
 				if (seen.contains(handler)) continue;
 
@@ -63,11 +68,10 @@ public class DataBankMixin implements IOpticalDataHandler {
 
 		if (!isActive) return null;
 
-		MetaTileEntityDataBank dataBank = (MetaTileEntityDataBank) (Object) this;
 		Collection<Recipe> recipes = new ArrayList<>();
 
-		getRecipesCollector(recipes, dataBank.getAbilities(MultiblockAbility.DATA_ACCESS_HATCH), seen);
-		getRecipesCollector(recipes, dataBank.getAbilities(MultiblockAbility.OPTICAL_DATA_RECEPTION), seen);
+		getRecipesCollector(recipes, getAbilities(MultiblockAbility.DATA_ACCESS_HATCH), seen);
+		getRecipesCollector(recipes, getAbilities(MultiblockAbility.OPTICAL_DATA_RECEPTION), seen);
 
 		return recipes;
 	}
