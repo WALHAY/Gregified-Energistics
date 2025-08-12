@@ -4,32 +4,33 @@ import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.IDataAccessHatch;
 import gregtech.api.recipes.Recipe;
-import gregtech.common.metatileentities.multi.electric.MetaTileEntityDataBank;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityOpticalDataHatch;
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
 import java.util.Collection;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(MetaTileEntityOpticalDataHatch.class)
+@Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "recipes$"))
 public abstract class OpticalDataHatchMixin implements IOpticalDataHandler {
 
 	@Shadow(remap = false)
 	private boolean isTransmitter;
 
 	@Override
-	public Collection<Recipe> getRecipes(Collection<IDataAccessHatch> seen) {
+	public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
 		MetaTileEntityOpticalDataHatch hatch = (MetaTileEntityOpticalDataHatch) (Object) this;
 		seen.add(this);
 
 		if (hatch.isAttachedToMultiBlock()) {
 			if (hatch.isTransmitter()) {
-				if (hatch.getController() instanceof MetaTileEntityDataBank dataBank) {
-					IOpticalDataHandler handler = (IOpticalDataHandler) dataBank;
+				if (hatch.getController() instanceof IOpticalDataHandler handler) {
 					if (seen.contains(handler)) return null;
 
 					return handler.getRecipes(seen);
@@ -69,8 +70,7 @@ public abstract class OpticalDataHatchMixin implements IOpticalDataHandler {
 				((IOpticalDataHandler) data).onRecipesUpdate(seen);
 			}
 		} else {
-			if (hatch.getController() instanceof MetaTileEntityDataBank dataBank) {
-				IOpticalDataHandler handler = (IOpticalDataHandler) dataBank;
+			if (hatch.getController() instanceof IOpticalDataHandler handler) {
 				if (seen.contains(handler)) return;
 
 				handler.onRecipesUpdate(seen);

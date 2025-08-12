@@ -207,7 +207,7 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 	}
 
 	@Override
-	public Collection<Recipe> getRecipes(Collection<IDataAccessHatch> seen) {
+	public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
 		seen.add(this);
 		return null;
 	}

@@ -2,12 +2,15 @@ package com.walhay.gregifiedenergistics.mixins.gtceu.metatileentities;
 
 import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
 import gregtech.api.capability.IDataAccessHatch;
+import gregtech.api.capability.IOpticalDataAccessHatch;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.recipes.Recipe;
 import gregtech.common.metatileentities.multi.electric.MetaTileEntityDataBank;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Implements;
+import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MetaTileEntityDataBank.class)
+@Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "recipes$"))
 public class DataBankMixin implements IOpticalDataHandler {
 
 	@Shadow(remap = false)
@@ -41,28 +45,20 @@ public class DataBankMixin implements IOpticalDataHandler {
 	}
 
 	@Override
-	public boolean isCreative() {
-		return false;
-	}
-
-	@Override
-	public boolean isRecipeAvailable(Recipe recipe, Collection<IDataAccessHatch> seen) {
-		throw new UnsupportedOperationException("Method isRecipeAvailable shouldn't be used in case of databank");
-	}
-
-	@Override
 	public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
 		seen.add(this);
 		MetaTileEntityDataBank dataBank = (MetaTileEntityDataBank) (Object) this;
-		for (IDataAccessHatch hatch : dataBank.getAbilities(MultiblockAbility.OPTICAL_DATA_TRANSMISSION)) {
-			if (seen.contains(hatch)) continue;
+		for (IOpticalDataAccessHatch hatch : dataBank.getAbilities(MultiblockAbility.OPTICAL_DATA_TRANSMISSION)) {
+			if (hatch instanceof IOpticalDataHandler handler) {
+				if (seen.contains(handler)) continue;
 
-			((IOpticalDataHandler) hatch).onRecipesUpdate(seen);
+				handler.onRecipesUpdate(seen);
+			}
 		}
 	}
 
 	@Override
-	public Collection<Recipe> getRecipes(Collection<IDataAccessHatch> seen) {
+	public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
 		seen.add(this);
 
 		if (!isActive) return null;
@@ -79,13 +75,15 @@ public class DataBankMixin implements IOpticalDataHandler {
 	private void getRecipesCollector(
 			Collection<Recipe> recipes,
 			Iterable<? extends IDataAccessHatch> hatches,
-			Collection<IDataAccessHatch> seen) {
+			Collection<IOpticalDataHandler> seen) {
 		for (IDataAccessHatch hatch : hatches) {
-			if (seen.contains(hatch)) continue;
+			if (hatch instanceof IOpticalDataHandler handler) {
+				if (seen.contains(handler)) continue;
 
-			Collection<Recipe> hatchRecipes = ((IOpticalDataHandler) hatch).getRecipes(seen);
+				Collection<Recipe> hatchRecipes = handler.getRecipes(seen);
 
-			if (hatchRecipes != null) recipes.addAll(hatchRecipes);
+				if (hatchRecipes != null) recipes.addAll(hatchRecipes);
+			}
 		}
 	}
 }
