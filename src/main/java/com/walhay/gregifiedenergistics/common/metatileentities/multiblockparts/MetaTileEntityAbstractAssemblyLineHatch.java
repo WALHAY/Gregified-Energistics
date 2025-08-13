@@ -216,6 +216,15 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 	}
 
 	@Override
+	    public void receiveCustomData(int descriptor, PacketBuffer buf) {
+			super.receiveCustomData(descriptor, buf);
+			if(descriptor == GregtechDataCodes.WORKING_ENABLED) {
+				this.workingEnabled = buf.readBoolean();
+				scheduleRenderUpdate();
+			}
+	    }
+
+	@Override
 	public MultiblockAbility<IItemHandlerModifiable> getAbility() {
 		return MultiblockAbility.IMPORT_ITEMS;
 	}
