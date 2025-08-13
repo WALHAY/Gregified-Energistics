@@ -2,23 +2,13 @@ package com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
-import appeng.api.networking.GridFlags;
-import appeng.api.networking.IGridNode;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.networking.crafting.ICraftingProvider;
 import appeng.api.networking.crafting.ICraftingProviderHelper;
 import appeng.api.networking.events.MENetworkCraftingPatternChange;
-import appeng.api.networking.security.IActionHost;
-import appeng.api.networking.security.IActionSource;
 import appeng.api.storage.channels.IFluidStorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
-import appeng.api.util.AECableType;
-import appeng.api.util.AEPartLocation;
-import appeng.api.util.DimensionalCoord;
 import appeng.me.GridAccessException;
-import appeng.me.helpers.AENetworkProxy;
-import appeng.me.helpers.IGridProxyable;
-import appeng.me.helpers.MachineSource;
 import appeng.util.InventoryAdaptor;
 import appeng.util.Platform;
 import appeng.util.inv.AdaptorItemHandler;
@@ -33,6 +23,7 @@ import com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionSt
 import com.walhay.gregifiedenergistics.api.render.GETextures;
 import com.walhay.gregifiedenergistics.api.util.BlockingMode;
 import gregtech.api.capability.GregtechDataCodes;
+import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.impl.MultiblockRecipeLogic;
 import gregtech.api.capability.impl.NotifiableItemStackHandler;
 import gregtech.api.gui.GuiTextures;
@@ -45,13 +36,11 @@ import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
-import gregtech.common.ConfigHolder;
-import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityMultiblockNotifiablePart;
+import gregtech.common.metatileentities.multi.multiblockpart.appeng.MetaTileEntityAEHostablePart;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -64,27 +53,19 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
-/*
- * This class can't use MetaTileEntityHolder's as IGridProxyable
- * Because of MTEH not implementing ICraftingProvider logic
- */
-public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEntityMultiblockNotifiablePart
-		implements IMultiblockAbilityPart<IItemHandlerModifiable>, IGridProxyable, IActionHost, ICraftingProvider {
+public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEntityAEHostablePart<IAEFluidStack>
+		implements IMultiblockAbilityPart<IItemHandlerModifiable>, ICraftingProvider {
 
-	private static final int ME_UPDATE_INTERVAL = ConfigHolder.compat.ae2.updateIntervals;
-	protected int updateTick = 0;
-	private boolean isOnline = false;
-	private final AENetworkProxy proxy = new AENetworkProxy(this, "proxy", getStackForm(), true);
-	private final IActionSource source = new MachineSource(this);
 	private Int2ObjectOpenHashMap<ItemStack> waitingToSend;
 	private Int2ObjectOpenHashMap<FluidStack> fluidWaitingToSend;
-	private int priority = 0;
 	private BlockingMode blockingMode = BlockingMode.NO_BLOCKING;
 	private boolean useFluids = true;
+	private boolean workingEnabled = true;
 	protected final ISubstitutionStorage substitutionStorage = new SubstitutionStorage();
 
 	/* ###########################
@@ -92,32 +73,24 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 	########################### */
 
 	public MetaTileEntityAbstractAssemblyLineHatch(ResourceLocation metaTileEntityId, int tier) {
-		super(metaTileEntityId, tier, false);
+		super(metaTileEntityId, tier, false, IFluidStorageChannel.class);
 	}
 
 	@Override
 	public void update() {
+		super.update();
 		if (getWorld().isRemote) return;
 
-		updateTick++;
-		if (!shouldSyncME()) return;
+		if (isWorkingEnabled() && shouldSyncME() && updateMEStatus()) {
+			if (hasItemsToSend()) pushItemsOut();
 
-		if (!updateMEStatus()) return;
-
-		if (hasItemsToSend()) pushItemsOut();
-
-		if (hasFluidsToSend()) pushFluidsOut();
+			if (hasFluidsToSend()) pushFluidsOut();
+		}
 	}
 
 	@Override
 	protected IItemHandlerModifiable createImportItemHandler() {
 		return new NotifiableItemStackHandler(this, 1, getController(), false);
-	}
-
-	@Override
-	public void setFrontFacing(EnumFacing newFrontFacing) {
-		super.setFrontFacing(newFrontFacing);
-		getProxy().setValidSides(EnumSet.of(newFrontFacing));
 	}
 
 	@Override
@@ -140,8 +113,8 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 						10,
 						15,
 						() -> isOnline
-								? I18n.format("gregifiedenergistics.gui.me_network.online")
-								: I18n.format("gregifiedenergistics.gui.me_network.offline"),
+								? I18n.format("gregtech.gui.me_network.online")
+								: I18n.format("gregtech.gui.me_network.offline"),
 						0xFFFFFFFF)
 				.dynamicLabel(
 						10,
@@ -204,8 +177,8 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound data) {
 		super.writeToNBT(data);
+		data.setBoolean("workingEnabled", workingEnabled);
 		data.setString("blockingMode", blockingMode.toString());
-		data.setInteger("priority", priority);
 		data.setBoolean("useFluids", useFluids);
 		data.setTag("substitutionStorage", substitutionStorage.serializeNBT());
 		return data;
@@ -214,8 +187,8 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 	@Override
 	public void readFromNBT(NBTTagCompound data) {
 		super.readFromNBT(data);
+		workingEnabled = data.getBoolean("workingEnabled");
 		blockingMode = BlockingMode.valueOf(data.getString("blockingMode"));
-		priority = data.getInteger("priority");
 		useFluids = data.getBoolean("useFluids");
 		substitutionStorage.deserializeNBT(data.getCompoundTag("substitutionStorage"));
 	}
@@ -223,42 +196,22 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 	@Override
 	public void writeInitialSyncData(PacketBuffer buf) {
 		super.writeInitialSyncData(buf);
+		buf.writeBoolean(workingEnabled);
 		buf.writeEnumValue(blockingMode);
-		buf.writeInt(priority);
 		buf.writeBoolean(useFluids);
-		buf.writeInt(updateTick);
-		buf.writeBoolean(isOnline);
-		NBTTagCompound proxyNBT = new NBTTagCompound();
-		proxy.writeToNBT(proxyNBT);
-		buf.writeCompoundTag(proxyNBT);
 		buf.writeCompoundTag(substitutionStorage.serializeNBT());
 	}
 
 	@Override
 	public void receiveInitialSyncData(PacketBuffer buf) {
 		super.receiveInitialSyncData(buf);
+		workingEnabled = buf.readBoolean();
 		blockingMode = buf.readEnumValue(BlockingMode.class);
-		priority = buf.readInt();
 		useFluids = buf.readBoolean();
-		updateTick = buf.readInt();
-		isOnline = buf.readBoolean();
 		try {
-			proxy.readFromNBT(buf.readCompoundTag());
 			substitutionStorage.deserializeNBT(buf.readCompoundTag());
 		} catch (IOException ignored) {
 			// :#
-		}
-	}
-
-	@Override
-	public void receiveCustomData(int dataId, PacketBuffer buf) {
-		super.receiveCustomData(dataId, buf);
-		if (dataId == GregtechDataCodes.UPDATE_ONLINE_STATUS) {
-			boolean isOnline = buf.readBoolean();
-			if (this.isOnline != isOnline) {
-				this.isOnline = isOnline;
-				scheduleRenderUpdate();
-			}
 		}
 	}
 
@@ -272,9 +225,21 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 		list.add(importItems);
 	}
 
+	@Override
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+		if (capability == GregtechTileCapabilities.CAPABILITY_CONTROLLABLE) {
+			return GregtechTileCapabilities.CAPABILITY_CONTROLLABLE.cast(this);
+		}
+		return super.getCapability(capability, facing);
+	}
+
 	protected SimpleOverlayRenderer getOverlay() {
 		if (isOnline) {
-			return GETextures.ME_AL_HATCH_CONNECTOR_ACTIVE;
+			if (isWorkingEnabled()) {
+				return GETextures.ME_AL_HATCH_CONNECTOR_ACTIVE;
+			} else {
+				return GETextures.ME_AL_HATCH_CONNECTOR_WAITING;
+			}
 		}
 		return GETextures.ME_AL_HATCH_CONNECTOR_INACTIVE;
 	}
@@ -285,51 +250,16 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 		getOverlay().renderSided(getFrontFacing(), renderState, translation, pipeline);
 	}
 
-	/* ##############################
-	###    AE2 GRID METHODS    ###
-	############################## */
-
-	@Nonnull
-	@Override
-	public AENetworkProxy getProxy() {
-		if (!proxy.isReady() && getWorld() != null) {
-			proxy.onReady();
-			proxy.setFlags(GridFlags.REQUIRE_CHANNEL);
-			proxy.setValidSides(EnumSet.of(frontFacing));
-			proxy.setIdlePowerUsage(ConfigHolder.compat.ae2.meHatchEnergyUsage);
-		}
-		return proxy;
-	}
-
-	protected boolean updateMEStatus() {
-		boolean isOnline =
-				getProxy() != null && getProxy().isActive() && getProxy().isPowered();
-
-		if (this.isOnline != isOnline) {
-			writeCustomData(GregtechDataCodes.UPDATE_ONLINE_STATUS, buf -> buf.writeBoolean(isOnline));
-			this.isOnline = isOnline;
-		}
-		return isOnline;
-	}
-
-	protected boolean shouldSyncME() {
-		return updateTick % ME_UPDATE_INTERVAL == 0;
-	}
-
 	// provide crafting patterns to the network
 	@Override
 	public void provideCrafting(ICraftingProviderHelper craftingHelper) {
-		if (isAttachedToMultiBlock()) {
+		if (isAttachedToMultiBlock() && isWorkingEnabled()) {
 			for (ICraftingPatternDetails details : getPatterns()) {
 				if (details instanceof AbstractPatternHelper helper) {
 					helper.injectSubstitutions(substitutionStorage);
 					helper.providePattern(this, craftingHelper);
 					continue;
-				}
-
-				if (details != null) {
-					details.setPriority(priority);
-
+				} else if (details != null) {
 					craftingHelper.addCraftingOption(this, details);
 				}
 			}
@@ -428,12 +358,11 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 	}
 
 	private boolean containsFluids(IAEFluidStack[] fluids) {
-		IFluidStorageChannel fluidChannel = AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class);
 		for (IAEFluidStack fluidStack : fluids) {
 			try {
 				IAEFluidStack find = getProxy()
 						.getStorage()
-						.getInventory(fluidChannel)
+						.getInventory(getStorageChannel())
 						.getStorageList()
 						.findPrecise(fluidStack);
 				if (find == null || find.getStackSize() < fluidStack.getStackSize()) {
@@ -455,7 +384,6 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 			return false;
 		}
 
-		IFluidStorageChannel storageChannel = AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class);
 		List<IFluidTank> inputHandlers = getController().getAbilities(MultiblockAbility.IMPORT_FLUIDS);
 
 		Iterator<IFluidTank> it = inputHandlers.iterator();
@@ -476,8 +404,8 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 			try {
 				IAEFluidStack result = getProxy()
 						.getStorage()
-						.getInventory(storageChannel)
-						.extractItems(fluidStack, Actionable.SIMULATE, source);
+						.getInventory(getStorageChannel())
+						.extractItems(fluidStack, Actionable.SIMULATE, getActionSource());
 				if (!result.equals(fluidStack)) {
 					return false;
 				}
@@ -522,7 +450,6 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 	}
 
 	private void pushFluidsOut() {
-		IFluidStorageChannel fluidChannel = AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class);
 		List<IFluidTank> inputHandlers = getController().getAbilities(MultiblockAbility.IMPORT_FLUIDS);
 
 		Iterator<Map.Entry<Integer, FluidStack>> it =
@@ -542,8 +469,9 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 				try {
 					IAEFluidStack extracted = getProxy()
 							.getStorage()
-							.getInventory(fluidChannel)
-							.extractItems(fluidChannel.createStack(stack), Actionable.MODULATE, source);
+							.getInventory(getStorageChannel())
+							.extractItems(
+									getStorageChannel().createStack(stack), Actionable.MODULATE, getActionSource());
 					int filled = inputHandlers.get(slot).fill(extracted.getFluidStack(), true);
 					if (filled == stack.amount) {
 						it.remove();
@@ -559,36 +487,6 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 		if (fluidWaitingToSend.isEmpty()) {
 			fluidWaitingToSend = null;
 		}
-	}
-
-	@Nonnull
-	@Override
-	public AECableType getCableConnectionType(@Nonnull AEPartLocation part) {
-		if (part.getFacing() != getFrontFacing()) {
-			return AECableType.NONE;
-		}
-		return AECableType.SMART;
-	}
-
-	@Nullable @Override
-	public IGridNode getGridNode(@Nonnull AEPartLocation partLocation) {
-		return getProxy().getNode();
-	}
-
-	@Nonnull
-	@Override
-	public IGridNode getActionableNode() {
-		return getProxy().getNode();
-	}
-
-	@Override
-	public DimensionalCoord getLocation() {
-		return new DimensionalCoord(getWorld(), getPos());
-	}
-
-	@Override
-	public void securityBreak() {
-		getWorld().destroyBlock(getPos(), shouldDropWhenDestroyed());
 	}
 
 	// notify grid network when patterns should be recalculated
@@ -646,5 +544,20 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 
 	public boolean getUsingFluids() {
 		return useFluids;
+	}
+
+	@Override
+	public void setWorkingEnabled(boolean workingEnabled) {
+		this.workingEnabled = workingEnabled;
+		World world = getWorld();
+		if (world != null && !world.isRemote) {
+			writeCustomData(GregtechDataCodes.WORKING_ENABLED, buf -> buf.writeBoolean(workingEnabled));
+			notifyPatternChange();
+		}
+	}
+
+	@Override
+	public boolean isWorkingEnabled() {
+		return workingEnabled;
 	}
 }

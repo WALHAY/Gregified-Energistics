@@ -17,6 +17,8 @@
 	"pipenet.OpticalPipeNetMixin",
 	"recipes.RecipeMixin",
 	"recipes.RecipeMapMixin",
+	"tileentities.MetaTileEntityMixin",
+	"tileentities.MetaTileEntityHolderMixin",
   ],
   "client": [],
   "server" : []
