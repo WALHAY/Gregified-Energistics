@@ -45,7 +45,7 @@ public class DataStickPatternHelper extends AbstractPatternHelper {
 
 	@Override
 	public void injectSubstitutions(ISubstitutionStorage storage) {
-		if(patterns == null) return;
+		if (patterns == null) return;
 
 		for (AbstractPatternHelper pattern : patterns) {
 			pattern.injectSubstitutions(storage);
@@ -54,7 +54,7 @@ public class DataStickPatternHelper extends AbstractPatternHelper {
 
 	@Override
 	public void providePattern(ICraftingMedium medium, ICraftingProviderHelper helper) {
-		if(patterns == null) return;
+		if (patterns == null) return;
 
 		for (AbstractPatternHelper pattern : patterns) {
 			pattern.providePattern(medium, helper);
