@@ -1,7 +1,6 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.metatileentities;
 
 import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
-import gregtech.api.capability.IControllable;
 import gregtech.api.capability.IDataAccessHatch;
 import gregtech.api.capability.IOpticalDataAccessHatch;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
