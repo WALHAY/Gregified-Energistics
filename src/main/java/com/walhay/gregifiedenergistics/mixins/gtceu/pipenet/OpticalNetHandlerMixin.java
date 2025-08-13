@@ -1,6 +1,7 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
 
-import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
+import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
+import com.walhay.gregifiedenergistics.api.capability.IOpticalNetRecipeHandler;
 import com.walhay.gregifiedenergistics.mixins.interfaces.IOpticalRouteAccessor;
 import gregtech.api.recipes.Recipe;
 import gregtech.common.pipelike.optical.net.OpticalNetHandler;
@@ -19,8 +20,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(OpticalNetHandler.class)
-@Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "dataHandler$"))
-public abstract class OpticalNetHandlerMixin implements IOpticalDataHandler {
+@Implements(@Interface(iface = INetRecipeHandler.class, prefix = "dataHandler$"))
+public abstract class OpticalNetHandlerMixin implements INetRecipeHandler {
 	@Shadow(remap = false)
 	private TileEntityOpticalPipe pipe;
 
@@ -42,23 +43,23 @@ public abstract class OpticalNetHandlerMixin implements IOpticalDataHandler {
 	protected abstract void callSetPipesActive();
 
 	@Override
-	@Unique public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
+	@Unique public void onRecipesUpdate(Collection<INetRecipeHandler> seen) {
 		traverseOnUpdate(seen);
 	}
 
 	@Override
-	@Unique public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
+	@Unique public Collection<Recipe> getRecipes(Collection<INetRecipeHandler> seen) {
 		var recipes = traverseGetRecipes(seen);
 		if (recipes != null) callSetPipesActive();
 		return recipes;
 	}
 
-	@Unique private void traverseOnUpdate(Collection<IOpticalDataHandler> seen) {
+	@Unique private void traverseOnUpdate(Collection<INetRecipeHandler> seen) {
 		if (callIsNetInvalidForTraversal()) return;
 
 		OpticalRoutePath inv = net.getNetData(pipe.getPipePos(), facing);
 		if (inv instanceof IOpticalRouteAccessor accessor) {
-			IOpticalDataHandler handler = accessor.getDataHandler();
+			IOpticalNetRecipeHandler handler = accessor.getDataHandler();
 			if (handler == null) return;
 
 			if (!handler.isTransmitter()) {
@@ -67,12 +68,12 @@ public abstract class OpticalNetHandlerMixin implements IOpticalDataHandler {
 		}
 	}
 
-	@Unique private Collection<Recipe> traverseGetRecipes(Collection<IOpticalDataHandler> seen) {
+	@Unique private Collection<Recipe> traverseGetRecipes(Collection<INetRecipeHandler> seen) {
 		if (callIsNetInvalidForTraversal()) return null;
 
 		OpticalRoutePath inv = net.getNetData(pipe.getPipePos(), facing);
 		if (inv instanceof IOpticalRouteAccessor accessor) {
-			IOpticalDataHandler handler = accessor.getDataHandler();
+			IOpticalNetRecipeHandler handler = accessor.getDataHandler();
 			if (handler == null) return null;
 
 			if (handler.isTransmitter()) {

@@ -1,7 +1,7 @@
 package com.walhay.gregifiedenergistics.mixins.interfaces;
 
-import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
+import com.walhay.gregifiedenergistics.api.capability.IOpticalNetRecipeHandler;
 
 public interface IOpticalRouteAccessor {
-	IOpticalDataHandler getDataHandler();
+	IOpticalNetRecipeHandler getDataHandler();
 }

@@ -1,7 +1,7 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
 
 import com.walhay.gregifiedenergistics.api.capability.GECapabilities;
-import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
+import com.walhay.gregifiedenergistics.api.capability.IOpticalNetRecipeHandler;
 import com.walhay.gregifiedenergistics.mixins.interfaces.IOpticalRouteAccessor;
 import gregtech.api.pipenet.IRoutePath;
 import gregtech.common.pipelike.optical.net.OpticalRoutePath;
@@ -16,7 +16,9 @@ import org.spongepowered.asm.mixin.Unique;
 public abstract class OpticalRoutePathMixin implements IRoutePath<TileEntityOpticalPipe>, IOpticalRouteAccessor {
 
 	@Override
-	@Unique public IOpticalDataHandler getDataHandler() {
-		return getTargetCapability(GECapabilities.CAPABILITY_DATA_HANDLER);
+	@Unique public IOpticalNetRecipeHandler getDataHandler() {
+		return getTargetCapability(GECapabilities.CAPABILITY_RECIPE_HANDLER) instanceof IOpticalNetRecipeHandler handler
+				? handler
+				: null;
 	}
 }

@@ -1,6 +1,6 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
 
-import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
+import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
 import com.walhay.gregifiedenergistics.mixins.interfaces.IOpticalRouteAccessor;
 import gregtech.api.pipenet.PipeNet;
 import gregtech.api.pipenet.WorldPipeNet;
@@ -34,7 +34,7 @@ public abstract class OpticalPipeNetMixin extends PipeNet<OpticalPipeProperties>
 		getAllNodes().keySet().stream().findFirst().ifPresent(pos -> {
 			for (EnumFacing facing : EnumFacing.values()) {
 				if (getNetData(pos, facing) instanceof IOpticalRouteAccessor accessor) {
-					IOpticalDataHandler handler = accessor.getDataHandler();
+					INetRecipeHandler handler = accessor.getDataHandler();
 					if (handler != null) {
 						handler.onRecipesUpdate();
 						return;

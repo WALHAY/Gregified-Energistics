@@ -26,6 +26,6 @@ public class BlockOpticalPipeMixin {
 			EnumFacing side,
 			@Nullable TileEntity tile,
 			CallbackInfoReturnable<Boolean> cir) {
-		if (tile.hasCapability(GECapabilities.CAPABILITY_DATA_HANDLER, side.getOpposite())) cir.setReturnValue(true);
+		if (tile.hasCapability(GECapabilities.CAPABILITY_RECIPE_HANDLER, side.getOpposite())) cir.setReturnValue(true);
 	}
 }

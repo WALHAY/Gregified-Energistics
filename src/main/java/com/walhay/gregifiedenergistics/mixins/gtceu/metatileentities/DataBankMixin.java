@@ -1,6 +1,7 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.metatileentities;
 
-import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
+import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
+import gregtech.api.capability.IControllable;
 import gregtech.api.capability.IDataAccessHatch;
 import gregtech.api.capability.IOpticalDataAccessHatch;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
@@ -22,8 +23,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MetaTileEntityDataBank.class)
-@Implements(@Interface(iface = IOpticalDataHandler.class, prefix = "dataHandler$"))
-public abstract class DataBankMixin extends MultiblockWithDisplayBase implements IOpticalDataHandler {
+@Implements(@Interface(iface = INetRecipeHandler.class, prefix = "dataHandler$"))
+public abstract class DataBankMixin extends MultiblockWithDisplayBase implements INetRecipeHandler {
 
 	private DataBankMixin(ResourceLocation metaTileEntityId) {
 		super(metaTileEntityId);
@@ -52,11 +53,11 @@ public abstract class DataBankMixin extends MultiblockWithDisplayBase implements
 	}
 
 	@Override
-	@Unique public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
+	@Unique public void onRecipesUpdate(Collection<INetRecipeHandler> seen) {
 		seen.add(this);
 
 		for (IOpticalDataAccessHatch hatch : getAbilities(MultiblockAbility.OPTICAL_DATA_TRANSMISSION)) {
-			if (hatch instanceof IOpticalDataHandler handler) {
+			if (hatch instanceof INetRecipeHandler handler) {
 				if (seen.contains(handler)) continue;
 
 				handler.onRecipesUpdate(seen);
@@ -65,10 +66,10 @@ public abstract class DataBankMixin extends MultiblockWithDisplayBase implements
 	}
 
 	@Override
-	@Unique public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
+	@Unique public Collection<Recipe> getRecipes(Collection<INetRecipeHandler> seen) {
 		seen.add(this);
 
-		if (!isActive) return null;
+		if (!isActive()) return null;
 
 		Collection<Recipe> recipes = new ArrayList<>();
 
@@ -81,9 +82,9 @@ public abstract class DataBankMixin extends MultiblockWithDisplayBase implements
 	@Unique private void getRecipesCollector(
 			Collection<Recipe> recipes,
 			Iterable<? extends IDataAccessHatch> hatches,
-			Collection<IOpticalDataHandler> seen) {
+			Collection<INetRecipeHandler> seen) {
 		for (IDataAccessHatch hatch : hatches) {
-			if (hatch instanceof IOpticalDataHandler handler) {
+			if (hatch instanceof INetRecipeHandler handler) {
 				if (seen.contains(handler)) continue;
 
 				Collection<Recipe> hatchRecipes = handler.getRecipes(seen);
@@ -91,10 +92,5 @@ public abstract class DataBankMixin extends MultiblockWithDisplayBase implements
 				if (hatchRecipes != null) recipes.addAll(hatchRecipes);
 			}
 		}
-	}
-
-	@Override
-	public boolean isTransmitter() {
-		return false;
 	}
 }

@@ -1,7 +1,7 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
 
 import com.walhay.gregifiedenergistics.api.capability.GECapabilities;
-import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
+import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
 import gregtech.api.pipenet.tile.TileEntityPipeBase;
 import gregtech.api.recipes.Recipe;
 import gregtech.common.pipelike.optical.OpticalPipeProperties;
@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(TileEntityOpticalPipe.class)
 public abstract class TileEntityOpticalPipeMixin extends TileEntityPipeBase<OpticalPipeType, OpticalPipeProperties> {
 
-	@Unique private final IOpticalDataHandler clientRecipesHandler = new DefaultRecipesHandler();
+	@Unique private final INetRecipeHandler clientRecipesHandler = new DefaultRecipesHandler();
 
 	@Shadow(remap = false)
 	@Final
@@ -41,33 +41,28 @@ public abstract class TileEntityOpticalPipeMixin extends TileEntityPipeBase<Opti
 
 	@Inject(method = "getCapabilityInternal", at = @At(value = "HEAD"), remap = false, cancellable = true)
 	private <I> void injectRecipeHandler(Capability<I> capability, EnumFacing facing, CallbackInfoReturnable<I> cir) {
-		if (capability == GECapabilities.CAPABILITY_DATA_HANDLER) {
+		if (capability == GECapabilities.CAPABILITY_RECIPE_HANDLER) {
 			if (world.isRemote) {
-				cir.setReturnValue(GECapabilities.CAPABILITY_DATA_HANDLER.cast(clientRecipesHandler));
+				cir.setReturnValue(GECapabilities.CAPABILITY_RECIPE_HANDLER.cast(clientRecipesHandler));
 			}
 
 			if (handlers.isEmpty()) invokeInitHandlers();
 
 			invokeCheckNetwork();
 			OpticalNetHandler handler = handlers.getOrDefault(facing, defaultHandler);
-			if (handler instanceof IOpticalDataHandler dataHandler)
-				cir.setReturnValue(GECapabilities.CAPABILITY_DATA_HANDLER.cast(dataHandler));
+			if (handler instanceof INetRecipeHandler dataHandler)
+				cir.setReturnValue(GECapabilities.CAPABILITY_RECIPE_HANDLER.cast(dataHandler));
 		}
 	}
 
-	@Unique private static class DefaultRecipesHandler implements IOpticalDataHandler {
+	@Unique private static class DefaultRecipesHandler implements INetRecipeHandler {
 
 		@Override
-		public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {}
+		public void onRecipesUpdate(Collection<INetRecipeHandler> seen) {}
 
 		@Override
-		public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
+		public Collection<Recipe> getRecipes(Collection<INetRecipeHandler> seen) {
 			return null;
-		}
-
-		@Override
-		public boolean isTransmitter() {
-			return false;
 		}
 	}
 }

@@ -5,23 +5,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.annotation.Nullable;
 
-public interface IOpticalDataHandler {
+public interface INetRecipeHandler {
 
-	void onRecipesUpdate(Collection<IOpticalDataHandler> seen);
+	void onRecipesUpdate(Collection<INetRecipeHandler> seen);
 
 	default void onRecipesUpdate() {
-		Collection<IOpticalDataHandler> seen = new ArrayList<>();
+		Collection<INetRecipeHandler> seen = new ArrayList<>();
 		seen.add(this);
 		onRecipesUpdate(seen);
 	}
 
 	@Nullable default Collection<Recipe> getRecipes() {
-		Collection<IOpticalDataHandler> seen = new ArrayList<>();
+		Collection<INetRecipeHandler> seen = new ArrayList<>();
 		seen.add(this);
 		return getRecipes(seen);
 	}
 
-	@Nullable Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen);
-
-	boolean isTransmitter();
+	@Nullable Collection<Recipe> getRecipes(Collection<INetRecipeHandler> seen);
 }

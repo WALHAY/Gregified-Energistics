@@ -1,9 +1,8 @@
 package com.walhay.gregifiedenergistics;
 
-import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
+import com.walhay.gregifiedenergistics.api.capability.GECapabilities;
 import com.walhay.gregifiedenergistics.api.render.GETextures;
 import com.walhay.gregifiedenergistics.common.metatileentities.MetaTileEntities;
-import gregtech.api.capability.SimpleCapabilityManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -26,6 +25,6 @@ public class GregifiedEnergisticsMod {
 	public void preInit(FMLPreInitializationEvent event) {
 		MetaTileEntities.init();
 		GETextures.init();
-		SimpleCapabilityManager.registerCapabilityWithNoDefault(IOpticalDataHandler.class);
+		GECapabilities.register();
 	}
 }

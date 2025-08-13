@@ -23,6 +23,6 @@ public class OpticalNetWalkerMixin {
 			remap = false)
 	private boolean modifyCapabilityCheck(TileEntity tile, Capability<?> capability, EnumFacing facing) {
 		return tile.hasCapability(capability, facing)
-				|| tile.hasCapability(GECapabilities.CAPABILITY_DATA_HANDLER, facing);
+				|| tile.hasCapability(GECapabilities.CAPABILITY_RECIPE_HANDLER, facing);
 	}
 }

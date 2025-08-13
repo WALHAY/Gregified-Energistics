@@ -9,7 +9,8 @@ import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
 import com.walhay.gregifiedenergistics.api.capability.GECapabilities;
 import com.walhay.gregifiedenergistics.api.capability.GEDataCodes;
-import com.walhay.gregifiedenergistics.api.capability.IOpticalDataHandler;
+import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
+import com.walhay.gregifiedenergistics.api.capability.IOpticalNetRecipeHandler;
 import com.walhay.gregifiedenergistics.api.capability.IRecipeAccessor;
 import com.walhay.gregifiedenergistics.api.capability.IRecipeMapAccessor;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionHandler;
@@ -39,7 +40,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 
 public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyLineHatch
-		implements IOpticalDataHandler {
+		implements IOpticalNetRecipeHandler {
 
 	private List<RecipePatternHelper> patterns = Collections.emptyList();
 	private EnumFacing opticalFacing = EnumFacing.DOWN;
@@ -113,8 +114,8 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		if (facing == opticalFacing && capability == GECapabilities.CAPABILITY_DATA_HANDLER) {
-			return GECapabilities.CAPABILITY_DATA_HANDLER.cast(this);
+		if (facing == opticalFacing && capability == GECapabilities.CAPABILITY_RECIPE_HANDLER) {
+			return GECapabilities.CAPABILITY_RECIPE_HANDLER.cast(this);
 		}
 		return super.getCapability(capability, facing);
 	}
@@ -130,8 +131,8 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 
 		TileEntity te = getWorld().getTileEntity(getPos().offset(opticalFacing));
 		if (te instanceof TileEntityOpticalPipe) {
-			IOpticalDataHandler data =
-					te.getCapability(GECapabilities.CAPABILITY_DATA_HANDLER, opticalFacing.getOpposite());
+			INetRecipeHandler data =
+					te.getCapability(GECapabilities.CAPABILITY_RECIPE_HANDLER, opticalFacing.getOpposite());
 
 			if (data == null) return;
 
@@ -185,14 +186,14 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 	}
 
 	@Override
-	public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
+	public void onRecipesUpdate(Collection<INetRecipeHandler> seen) {
 		seen.add(this);
 		updatePatternData();
 		notifyPatternChange();
 	}
 
 	@Override
-	public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
+	public Collection<Recipe> getRecipes(Collection<INetRecipeHandler> seen) {
 		seen.add(this);
 		return null;
 	}
