@@ -54,6 +54,7 @@ public abstract class DataBankMixin extends MultiblockWithDisplayBase implements
 	@Override
 	@Unique public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
 		seen.add(this);
+
 		for (IOpticalDataAccessHatch hatch : getAbilities(MultiblockAbility.OPTICAL_DATA_TRANSMISSION)) {
 			if (hatch instanceof IOpticalDataHandler handler) {
 				if (seen.contains(handler)) continue;
@@ -90,5 +91,10 @@ public abstract class DataBankMixin extends MultiblockWithDisplayBase implements
 				if (hatchRecipes != null) recipes.addAll(hatchRecipes);
 			}
 		}
+	}
+
+	@Override
+	public boolean isTransmitter() {
+		return false;
 	}
 }

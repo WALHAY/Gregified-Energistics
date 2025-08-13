@@ -61,7 +61,9 @@ public abstract class OpticalNetHandlerMixin implements IOpticalDataHandler {
 			IOpticalDataHandler handler = accessor.getDataHandler();
 			if (handler == null) return;
 
-			handler.onRecipesUpdate(seen);
+			if (!handler.isTransmitter()) {
+				handler.onRecipesUpdate(seen);
+			}
 		}
 	}
 
@@ -73,7 +75,9 @@ public abstract class OpticalNetHandlerMixin implements IOpticalDataHandler {
 			IOpticalDataHandler handler = accessor.getDataHandler();
 			if (handler == null) return null;
 
-			return handler.getRecipes(seen);
+			if (handler.isTransmitter()) {
+				return handler.getRecipes(seen);
+			}
 		}
 
 		return null;

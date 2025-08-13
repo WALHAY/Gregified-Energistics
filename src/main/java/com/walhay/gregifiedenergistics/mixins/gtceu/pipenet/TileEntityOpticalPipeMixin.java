@@ -64,5 +64,10 @@ public abstract class TileEntityOpticalPipeMixin extends TileEntityPipeBase<Opti
 		public Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen) {
 			return null;
 		}
+
+		@Override
+		public boolean isTransmitter() {
+			return false;
+		}
 	}
 }

@@ -14,7 +14,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -29,9 +28,6 @@ public abstract class OpticalDataHatchMixin extends MetaTileEntityMultiblockNoti
 		super(metaTileEntityId, tier, isExportHatch);
 	}
 
-	@Shadow(remap = false)
-	private boolean isTransmitter;
-
 	@Inject(method = "getCapability", at = @At("HEAD"), remap = false, cancellable = true)
 	private <I> void injectNewCapability(Capability<I> capability, EnumFacing facing, CallbackInfoReturnable<I> cir) {
 		if (capability == GECapabilities.CAPABILITY_DATA_HANDLER) {
@@ -44,7 +40,7 @@ public abstract class OpticalDataHatchMixin extends MetaTileEntityMultiblockNoti
 		seen.add(this);
 
 		if (isAttachedToMultiBlock()) {
-			if (isTransmitter) {
+			if (isTransmitter()) {
 				if (getController() instanceof IOpticalDataHandler handler) {
 					if (seen.contains(handler)) return null;
 
@@ -59,7 +55,7 @@ public abstract class OpticalDataHatchMixin extends MetaTileEntityMultiblockNoti
 							GECapabilities.CAPABILITY_DATA_HANDLER,
 							getFrontFacing().getOpposite());
 
-					if (cap == null) return null;
+					if (cap == null || seen.contains(cap)) return null;
 					return cap.getRecipes(seen);
 				}
 			}
@@ -71,14 +67,14 @@ public abstract class OpticalDataHatchMixin extends MetaTileEntityMultiblockNoti
 	@Unique public void onRecipesUpdate(Collection<IOpticalDataHandler> seen) {
 		seen.add(this);
 
-		if (isTransmitter) {
+		if (isTransmitter()) {
 			TileEntity te = getWorld().getTileEntity(getPos().offset(getFrontFacing()));
 
 			if (te instanceof TileEntityOpticalPipe pipe) {
 				IOpticalDataHandler data = pipe.getCapability(
 						GECapabilities.CAPABILITY_DATA_HANDLER, getFrontFacing().getOpposite());
 
-				if (data != null) data.onRecipesUpdate(seen);
+				if (data != null && !seen.contains(data)) data.onRecipesUpdate(seen);
 			}
 		} else {
 			if (getController() instanceof IOpticalDataHandler handler) {

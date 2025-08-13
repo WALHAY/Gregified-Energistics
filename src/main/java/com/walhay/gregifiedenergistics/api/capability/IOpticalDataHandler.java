@@ -22,4 +22,6 @@ public interface IOpticalDataHandler {
 	}
 
 	@Nullable Collection<Recipe> getRecipes(Collection<IOpticalDataHandler> seen);
+
+	boolean isTransmitter();
 }

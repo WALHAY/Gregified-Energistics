@@ -196,4 +196,9 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 		seen.add(this);
 		return null;
 	}
+
+	@Override
+	public boolean isTransmitter() {
+		return false;
+	}
 }
