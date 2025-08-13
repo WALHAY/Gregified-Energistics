@@ -1,0 +1,23 @@
+{
+  "package" : "com.walhay.gregifiedenergistics.mixins.gtceu",
+  "refmap" : "mixins.gregifiedenergistics.refmap.json",
+  "target" : "@env(DEFAULT)",
+  "minVersion" : "0.8",
+  "compatibilityLevel" : "JAVA_8",
+  "mixins" : [
+    "metatileentities.AssemblyLineMixin",
+	"metatileentities.DataAccessHatchMixin",
+	"metatileentities.DataBankMixin",
+	"pipenet.OpticalDataHatchMixin",
+	"pipenet.BlockOpticalPipeMixin",
+	"pipenet.OpticalNetHandlerMixin",
+	"pipenet.TileEntityOpticalPipeMixin",
+	"pipenet.OpticalRoutePathMixin",
+	"pipenet.OpticalNetWalkerMixin",
+	"pipenet.OpticalPipeNetMixin",
+	"recipes.RecipeMixin",
+	"recipes.RecipeMapMixin",
+  ],
+  "client": [],
+  "server" : []
+}

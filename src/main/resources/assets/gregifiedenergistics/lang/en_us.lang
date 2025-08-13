@@ -1,0 +1,12 @@
+gregifiedenergistics.machine.me_assembly_line_hatch.name=ME Assembly Line Hatch
+gregifiedenergistics.machine.me_assembly_line_hatch.info0=Automating Assembly Line Always a Problem.. But not for Me
+gregifiedenergistics.machine.me_assembly_line_hatch.info1=Puts all Items into the Input Hatches, Depending on the Slot in the Pattern
+gregifiedenergistics.gui.me_network.offline=Status: Offline
+gregifiedenergistics.gui.me_network.online=Status: Online
+gregifiedenergistics.gui.item_slot=Input Item Slot
+gregifiedenergistics.gui.no_blocking=No Blocking
+gregifiedenergistics.gui.blocking_mode=Blocking Mode
+gregifiedenergistics.gui.crafting_blocking_mode=Crafting Blocking Mode
+gregifiedenergistics.gui.fluid_mode.enabled=Fluid Mode: Enabled
+gregifiedenergistics.gui.fluid_mode.disabled=Fluid Mode: Disabled
+gregifiedenergistics.gui.pattern_list=Patterns: %s

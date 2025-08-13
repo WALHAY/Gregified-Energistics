@@ -11,3 +11,6 @@ spotless {
 		formatAnnotations()
 	}
 }
+
+build.dependsOn spotlessApply
+runClient.dependsOn spotlessApply
