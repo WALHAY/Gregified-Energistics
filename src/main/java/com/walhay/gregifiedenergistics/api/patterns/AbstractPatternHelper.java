@@ -72,6 +72,8 @@ public abstract class AbstractPatternHelper implements IPatternProvidable, ISubs
 
 	@Override
 	public void providePattern(ICraftingMedium medium, ICraftingProviderHelper helper) {
+		if(helper == null) return;
+
 		helper.addCraftingOption(medium, this);
 	}
 

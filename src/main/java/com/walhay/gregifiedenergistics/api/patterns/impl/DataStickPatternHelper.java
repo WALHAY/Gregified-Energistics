@@ -18,10 +18,8 @@ public class DataStickPatternHelper extends AbstractPatternHelper {
 	private AbstractPatternHelper[] patterns;
 
 	public DataStickPatternHelper(@Nonnull ItemStack dataStick) {
+		assert AssemblyLineManager.isStackDataItem(dataStick, true) : "Non datastick item passed to DataStickPatternHelper";
 		this.dataStick = dataStick;
-		if (!AssemblyLineManager.isStackDataItem(dataStick, true))
-			throw new IllegalArgumentException("Invalid data stick");
-
 		if (!AssemblyLineManager.hasResearchTag(dataStick)) return;
 
 		String researchId = AssemblyLineManager.readResearchId(dataStick);
@@ -48,6 +46,8 @@ public class DataStickPatternHelper extends AbstractPatternHelper {
 		if (patterns == null) return;
 
 		for (AbstractPatternHelper pattern : patterns) {
+			if(pattern == null) continue;
+
 			pattern.injectSubstitutions(storage);
 		}
 	}
@@ -57,6 +57,8 @@ public class DataStickPatternHelper extends AbstractPatternHelper {
 		if (patterns == null) return;
 
 		for (AbstractPatternHelper pattern : patterns) {
+			if(pattern == null) continue;
+
 			pattern.providePattern(medium, helper);
 		}
 	}

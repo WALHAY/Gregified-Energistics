@@ -266,10 +266,10 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 			for (ICraftingPatternDetails details : getPatterns()) {
 				if (details instanceof AbstractPatternHelper helper) {
 					helper.injectSubstitutions(substitutionStorage);
-					helper.providePattern(this, craftingHelper);
+					helper.providePattern((ICraftingProvider) getHolder(), craftingHelper);
 					continue;
 				} else if (details != null) {
-					craftingHelper.addCraftingOption(this, details);
+					craftingHelper.addCraftingOption((ICraftingProvider) getHolder(), details);
 				}
 			}
 		}
