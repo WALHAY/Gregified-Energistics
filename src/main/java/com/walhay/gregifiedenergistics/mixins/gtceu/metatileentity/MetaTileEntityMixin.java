@@ -1,8 +1,8 @@
-package com.walhay.gregifiedenergistics.mixins.gtceu.tileentities;
+package com.walhay.gregifiedenergistics.mixins.gtceu.metatileentity;
 
 import appeng.api.networking.crafting.ICraftingPatternDetails;
-import appeng.api.networking.crafting.ICraftingProvider;
 import appeng.api.networking.crafting.ICraftingProviderHelper;
+import com.walhay.gregifiedenergistics.api.metatileentity.ICraftingProviderAccessor;
 import gregtech.api.metatileentity.MetaTileEntity;
 import net.minecraft.inventory.InventoryCrafting;
 import org.spongepowered.asm.mixin.Implements;
@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(MetaTileEntity.class)
-@Implements(@Interface(iface = ICraftingProvider.class, prefix = "craftingProvider$"))
-public class MetaTileEntityMixin implements ICraftingProvider {
+@Implements(@Interface(iface = ICraftingProviderAccessor.class, prefix = "craftingProviderAccessor$"))
+public class MetaTileEntityMixin implements ICraftingProviderAccessor {
 
 	@Override
 	public boolean isBusy() {

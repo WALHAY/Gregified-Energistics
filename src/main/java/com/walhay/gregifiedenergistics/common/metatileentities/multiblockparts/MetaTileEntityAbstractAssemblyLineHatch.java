@@ -3,7 +3,6 @@ package com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
-import appeng.api.networking.crafting.ICraftingProvider;
 import appeng.api.networking.crafting.ICraftingProviderHelper;
 import appeng.api.networking.events.MENetworkCraftingPatternChange;
 import appeng.api.storage.channels.IFluidStorageChannel;
@@ -17,6 +16,7 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
 import com.walhay.gregifiedenergistics.api.gui.GTEGuiTextures;
+import com.walhay.gregifiedenergistics.api.metatileentity.MetaTileEntityCraftingProvider;
 import com.walhay.gregifiedenergistics.api.patterns.AbstractPatternHelper;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionStorage;
@@ -36,10 +36,12 @@ import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
-import gregtech.common.metatileentities.multi.multiblockpart.appeng.MetaTileEntityAEHostablePart;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.client.resources.I18n;
@@ -58,8 +60,8 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
-public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEntityAEHostablePart<IAEFluidStack>
-		implements IMultiblockAbilityPart<IItemHandlerModifiable>, ICraftingProvider {
+public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEntityCraftingProvider<IAEFluidStack>
+		implements IMultiblockAbilityPart<IItemHandlerModifiable> {
 
 	private Int2ObjectOpenHashMap<ItemStack> waitingToSend;
 	private Int2ObjectOpenHashMap<FluidStack> fluidWaitingToSend;
@@ -216,13 +218,13 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 	}
 
 	@Override
-	    public void receiveCustomData(int descriptor, PacketBuffer buf) {
-			super.receiveCustomData(descriptor, buf);
-			if(descriptor == GregtechDataCodes.WORKING_ENABLED) {
-				this.workingEnabled = buf.readBoolean();
-				scheduleRenderUpdate();
-			}
-	    }
+	public void receiveCustomData(int descriptor, PacketBuffer buf) {
+		super.receiveCustomData(descriptor, buf);
+		if (descriptor == GregtechDataCodes.WORKING_ENABLED) {
+			this.workingEnabled = buf.readBoolean();
+			scheduleRenderUpdate();
+		}
+	}
 
 	@Override
 	public MultiblockAbility<IItemHandlerModifiable> getAbility() {
@@ -266,10 +268,10 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 			for (ICraftingPatternDetails details : getPatterns()) {
 				if (details instanceof AbstractPatternHelper helper) {
 					helper.injectSubstitutions(substitutionStorage);
-					helper.providePattern(this, craftingHelper);
+					helper.providePattern(getCraftingProvider(), craftingHelper);
 					continue;
 				} else if (details != null) {
-					craftingHelper.addCraftingOption(this, details);
+					craftingHelper.addCraftingOption(getCraftingProvider(), details);
 				}
 			}
 		}
@@ -505,7 +507,7 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 				getProxy()
 						.getGrid()
 						.postEvent(new MENetworkCraftingPatternChange(
-								this, getProxy().getNode()));
+								getCraftingProvider(), getProxy().getNode()));
 			} catch (GridAccessException ignored) {
 			}
 		}

@@ -1,8 +1,9 @@
-package com.walhay.gregifiedenergistics.mixins.gtceu.tileentities;
+package com.walhay.gregifiedenergistics.mixins.gtceu.metatileentity;
 
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.networking.crafting.ICraftingProvider;
 import appeng.api.networking.crafting.ICraftingProviderHelper;
+import com.walhay.gregifiedenergistics.api.metatileentity.ICraftingProviderAccessor;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntityHolder;
 import net.minecraft.inventory.InventoryCrafting;
@@ -20,16 +21,18 @@ public abstract class MetaTileEntityHolderMixin implements ICraftingProvider {
 
 	@Override
 	public boolean isBusy() {
-		return metaTileEntity == null ? true : ((ICraftingProvider) metaTileEntity).isBusy();
+		return metaTileEntity == null ? true : ((ICraftingProviderAccessor) metaTileEntity).isBusy();
 	}
 
 	@Override
 	public boolean pushPattern(ICraftingPatternDetails details, InventoryCrafting inventory) {
-		return metaTileEntity == null ? false : ((ICraftingProvider) metaTileEntity).isBusy();
+		return metaTileEntity == null
+				? false
+				: ((ICraftingProviderAccessor) metaTileEntity).pushPattern(details, inventory);
 	}
 
 	@Override
 	public void provideCrafting(ICraftingProviderHelper helper) {
-		if (metaTileEntity != null) ((ICraftingProvider) metaTileEntity).provideCrafting(helper);
+		if (metaTileEntity != null) ((ICraftingProviderAccessor) metaTileEntity).provideCrafting(helper);
 	}
 }
