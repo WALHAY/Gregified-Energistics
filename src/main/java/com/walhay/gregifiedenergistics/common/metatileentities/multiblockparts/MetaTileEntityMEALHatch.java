@@ -114,13 +114,11 @@ public class MetaTileEntityMEALHatch extends MetaTileEntityAbstractAssemblyLineH
 
 		@Override
 		protected ICraftingPatternDetails getPatternFromItemStack(ItemStack stack) {
-			if (stack == ItemStack.EMPTY) return null;
+			if (stack.isEmpty()) return null;
 
 			if (AssemblyLineManager.isStackDataItem(stack, true)) {
 				return new DataStickPatternHelper(stack);
-			}
-
-			if (stack.getItem() instanceof ItemEncodedPattern itemPattern) {
+			} else if (stack.getItem() instanceof ItemEncodedPattern itemPattern) {
 				return itemPattern.getPatternForItem(stack, getWorld());
 			}
 			return null;

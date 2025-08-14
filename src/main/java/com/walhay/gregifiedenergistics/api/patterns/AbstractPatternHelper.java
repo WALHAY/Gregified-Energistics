@@ -62,6 +62,8 @@ public abstract class AbstractPatternHelper implements IPatternProvidable, ISubs
 
 	@Override
 	public void injectSubstitutions(ISubstitutionStorage storage) {
+		if (storage == null) return;
+
 		for (Map.Entry<Integer, GTRecipeInput> entry : subMap.entrySet()) {
 			GTRecipeInput input = entry.getValue();
 			ItemStack stack = input.getInputStacks()[storage.getOption(input.toString())];
@@ -72,6 +74,8 @@ public abstract class AbstractPatternHelper implements IPatternProvidable, ISubs
 
 	@Override
 	public void providePattern(ICraftingMedium medium, ICraftingProviderHelper helper) {
+		if (helper == null) return;
+
 		helper.addCraftingOption(medium, this);
 	}
 

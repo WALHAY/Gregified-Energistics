@@ -9,17 +9,17 @@ import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.recipes.machines.IResearchRecipeMap;
 import gregtech.api.util.AssemblyLineManager;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import java.util.Objects;
 import javax.annotation.Nonnull;
 import net.minecraft.item.ItemStack;
 
 public class DataStickPatternHelper extends AbstractPatternHelper {
 
+	private final ItemStack dataStick;
 	private AbstractPatternHelper[] patterns;
 
 	public DataStickPatternHelper(@Nonnull ItemStack dataStick) {
-		if (!AssemblyLineManager.isStackDataItem(dataStick, true))
-			throw new IllegalArgumentException("Invalid data stick");
+		assert AssemblyLineManager.isStackDataItem(dataStick, true) : "ItemStack is not DataStick";
+		this.dataStick = dataStick;
 
 		if (!AssemblyLineManager.hasResearchTag(dataStick)) return;
 
@@ -33,26 +33,33 @@ public class DataStickPatternHelper extends AbstractPatternHelper {
 		if (recipes == null) return;
 
 		patterns = recipes.stream()
-				.filter(Objects::nonNull)
 				.map(recipe -> new RecipePatternHelper(recipe, dataStick))
 				.toArray(AbstractPatternHelper[]::new);
 	}
 
 	@Override
 	public ItemStack getPattern() {
-		throw new UnsupportedOperationException();
+		return dataStick;
 	}
 
 	@Override
 	public void injectSubstitutions(ISubstitutionStorage storage) {
+		if (patterns == null) return;
+
 		for (AbstractPatternHelper pattern : patterns) {
+			if (pattern == null) continue;
+
 			pattern.injectSubstitutions(storage);
 		}
 	}
 
 	@Override
 	public void providePattern(ICraftingMedium medium, ICraftingProviderHelper helper) {
+		if (patterns == null) return;
+
 		for (AbstractPatternHelper pattern : patterns) {
+			if (pattern == null) continue;
+
 			pattern.providePattern(medium, helper);
 		}
 	}
