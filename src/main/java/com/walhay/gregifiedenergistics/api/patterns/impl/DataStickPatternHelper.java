@@ -1,6 +1,7 @@
 package com.walhay.gregifiedenergistics.api.patterns.impl;
 
 import appeng.api.networking.crafting.ICraftingMedium;
+import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.networking.crafting.ICraftingProviderHelper;
 import com.walhay.gregifiedenergistics.api.patterns.AbstractPatternHelper;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
@@ -9,6 +10,7 @@ import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.recipes.machines.IResearchRecipeMap;
 import gregtech.api.util.AssemblyLineManager;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import java.util.Arrays;
 import javax.annotation.Nonnull;
 import net.minecraft.item.ItemStack;
 
@@ -62,5 +64,11 @@ public class DataStickPatternHelper extends AbstractPatternHelper {
 
 			pattern.providePattern(medium, helper);
 		}
+	}
+
+	public boolean contains(ICraftingPatternDetails pattern) {
+		if (patterns == null) return false;
+
+		return Arrays.asList(patterns).contains(pattern);
 	}
 }

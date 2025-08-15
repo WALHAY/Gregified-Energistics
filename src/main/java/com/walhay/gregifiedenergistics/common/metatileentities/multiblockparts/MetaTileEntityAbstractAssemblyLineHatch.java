@@ -269,7 +269,6 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 				if (details instanceof AbstractPatternHelper helper) {
 					helper.injectSubstitutions(substitutionStorage);
 					helper.providePattern(getCraftingProvider(), craftingHelper);
-					continue;
 				} else if (details != null) {
 					craftingHelper.addCraftingOption(getCraftingProvider(), details);
 				}
@@ -302,13 +301,17 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 		return false;
 	}
 
+	protected boolean containsPattern(ICraftingPatternDetails pattern) {
+		return getPatterns().contains(pattern);
+	}
+
 	// try to push pattern to import buses
 	@Override
 	public boolean pushPattern(ICraftingPatternDetails pattern, InventoryCrafting inventoryCrafting) {
 		if (hasItemsToSend()
 				|| (useFluids && hasFluidsToSend())
 				|| !getProxy().isActive()
-				|| !getPatterns().contains(pattern)) {
+				|| !containsPattern(pattern)) {
 			return false;
 		}
 
