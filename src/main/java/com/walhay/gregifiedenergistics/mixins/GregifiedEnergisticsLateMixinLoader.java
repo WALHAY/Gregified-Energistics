@@ -11,6 +11,7 @@ public class GregifiedEnergisticsLateMixinLoader implements ILateMixinLoader {
 		List<String> configs = new ArrayList<>();
 
 		configs.add("mixins.ge.gtceu.json");
+		configs.add("mixins.ge.appeng.json");
 
 		return configs;
 	}
