@@ -42,15 +42,13 @@ public class MetaTileEntityMEALHatch extends MetaTileEntityAbstractAssemblyLineH
 
 	@Override
 	protected boolean containsPattern(ICraftingPatternDetails pattern) {
-		boolean result = super.containsPattern(pattern);
-		if (result) return true;
-
 		for (ICraftingPatternDetails details : getPatterns()) {
-			if (details instanceof DataStickPatternHelper handler) {
-				if (handler.contains(details)) return true;
-			}
-		}
+			if (details == null) continue;
 
+			if (details.equals(pattern)) return true;
+
+			if (details instanceof DataStickPatternHelper helper) if (helper.contains(pattern)) return true;
+		}
 		return false;
 	}
 
