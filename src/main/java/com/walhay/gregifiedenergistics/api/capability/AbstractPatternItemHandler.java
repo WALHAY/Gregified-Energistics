@@ -21,17 +21,22 @@ public abstract class AbstractPatternItemHandler extends ItemStackHandler {
 
 	@Override
 	protected void onContentsChanged(int slot) {
+		super.onContentsChanged(slot);
+
 		ItemStack stack = getStackInSlot(slot);
 		ICraftingPatternDetails pattern = patterns[slot];
-		if (stack.isEmpty() && pattern != null) {
-			patterns[slot] = null;
-			onPatternUpdate();
+
+		if (stack == null || stack.isEmpty()) {
+			if (pattern != null) {
+				patterns[slot] = null;
+				onPatternUpdate();
+			}
 			return;
 		}
 
-		if (ItemStack.areItemStacksEqual(pattern.getPattern(), stack)) return;
+		if (pattern != null && ItemStack.areItemStacksEqual(pattern.getPattern(), stack)) return;
 
-		ICraftingPatternDetails newPattern = getPatternDetails(slot);
+		ICraftingPatternDetails newPattern = getPatternFromStack(stack);
 
 		if (Objects.equal(pattern, newPattern)) return;
 
@@ -58,7 +63,7 @@ public abstract class AbstractPatternItemHandler extends ItemStackHandler {
 		return 1;
 	}
 
-	protected abstract ICraftingPatternDetails getPatternFromItemStack(ItemStack stack);
+	protected abstract ICraftingPatternDetails getPatternFromStack(ItemStack stack);
 
 	protected void onPatternUpdate() {}
 
@@ -66,7 +71,7 @@ public abstract class AbstractPatternItemHandler extends ItemStackHandler {
 	protected void onLoad() {
 		super.onLoad();
 		for (int i = 0; i < getSlots(); ++i) {
-			patterns[i] = getPatternFromItemStack(getStackInSlot(i));
+			patterns[i] = getPatternFromStack(getStackInSlot(i));
 		}
 		onPatternUpdate();
 	}

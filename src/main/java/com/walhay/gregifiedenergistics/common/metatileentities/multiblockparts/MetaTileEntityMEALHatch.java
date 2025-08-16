@@ -127,7 +127,7 @@ public class MetaTileEntityMEALHatch extends MetaTileEntityAbstractAssemblyLineH
 		}
 
 		@Override
-		protected ICraftingPatternDetails getPatternFromItemStack(ItemStack stack) {
+		protected ICraftingPatternDetails getPatternFromStack(ItemStack stack) {
 			if (stack.isEmpty()) return null;
 
 			if (AssemblyLineManager.isStackDataItem(stack, true)) {
