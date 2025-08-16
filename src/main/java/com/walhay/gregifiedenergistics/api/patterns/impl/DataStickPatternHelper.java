@@ -11,6 +11,7 @@ import gregtech.api.recipes.machines.IResearchRecipeMap;
 import gregtech.api.util.AssemblyLineManager;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Arrays;
+import java.util.Collection;
 import javax.annotation.Nonnull;
 import net.minecraft.item.ItemStack;
 
@@ -70,5 +71,9 @@ public class DataStickPatternHelper extends AbstractPatternHelper {
 		if (patterns == null) return false;
 
 		return Arrays.asList(patterns).contains(pattern);
+	}
+
+	public Collection<AbstractPatternHelper> getPatterns() {
+		return Arrays.asList(patterns);
 	}
 }

@@ -7,4 +7,6 @@ public interface ISubstitutionHandler {
 	Collection<GTRecipeInput> getSubstitutions();
 
 	void injectSubstitutions(ISubstitutionStorage storage);
+
+	ISubstitutionStorage getSubstitutionStorage();
 }

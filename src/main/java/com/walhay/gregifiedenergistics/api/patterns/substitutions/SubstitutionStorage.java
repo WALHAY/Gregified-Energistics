@@ -10,6 +10,8 @@ import net.minecraftforge.common.util.Constants.NBT;
 
 public class SubstitutionStorage implements ISubstitutionStorage {
 
+	public static final String STORAGE_TAG = "SubstitutionStorage";
+
 	private Map<String, Integer> subMap = new HashMap<>();
 
 	@Override

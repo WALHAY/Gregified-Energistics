@@ -9,6 +9,7 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.ingredients.GTRecipeInput;
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ public abstract class AbstractPatternHelper implements IPatternProvidable, ISubs
 	protected IAEFluidStack[] fluidInputs;
 	private int priority = 0;
 	private final Map<Integer, GTRecipeInput> subMap = new HashMap<>();
+	protected WeakReference<ISubstitutionStorage> substitutionStorage = new WeakReference<ISubstitutionStorage>(null);
 
 	protected void parseRecipe(Recipe recipe) {
 		inputs = recipe.getInputs().stream()
@@ -64,12 +66,20 @@ public abstract class AbstractPatternHelper implements IPatternProvidable, ISubs
 	public void injectSubstitutions(ISubstitutionStorage storage) {
 		if (storage == null) return;
 
+		if (substitutionStorage.get() != storage)
+			substitutionStorage = new WeakReference<>(storage);
+
 		for (Map.Entry<Integer, GTRecipeInput> entry : subMap.entrySet()) {
 			GTRecipeInput input = entry.getValue();
 			ItemStack stack = input.getInputStacks()[storage.getOption(input.toString())];
 
 			inputs[entry.getKey()] = itemChannel.createStack(stack);
 		}
+	}
+
+	@Override
+	public ISubstitutionStorage getSubstitutionStorage() {
+		return substitutionStorage.get();
 	}
 
 	@Override
