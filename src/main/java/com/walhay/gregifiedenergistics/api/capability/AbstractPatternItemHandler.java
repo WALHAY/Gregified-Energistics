@@ -65,11 +65,8 @@ public abstract class AbstractPatternItemHandler extends ItemStackHandler {
 	@Override
 	protected void onLoad() {
 		super.onLoad();
-		for (int slot = 0; slot < getSlots(); ++slot) {
-			ICraftingPatternDetails pattern = getPatternFromItemStack(getStackInSlot(slot));
-			if (pattern != null) {
-				patterns[slot] = pattern;
-			}
+		for (int i = 0; i < getSlots(); ++i) {
+			patterns[i] = getPatternFromItemStack(getStackInSlot(i));
 		}
 		onPatternUpdate();
 	}
