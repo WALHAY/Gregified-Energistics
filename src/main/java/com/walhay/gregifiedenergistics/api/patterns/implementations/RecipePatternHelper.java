@@ -1,4 +1,4 @@
-package com.walhay.gregifiedenergistics.api.patterns.impl;
+package com.walhay.gregifiedenergistics.api.patterns.implementations;
 
 import com.walhay.gregifiedenergistics.api.patterns.AbstractPatternHelper;
 import gregtech.api.recipes.Recipe;

@@ -6,7 +6,7 @@ import appeng.me.cluster.implementations.CraftingCPUCluster;
 import com.walhay.gregifiedenergistics.api.capability.IRecipeAccessor;
 import com.walhay.gregifiedenergistics.api.capability.IRecipeMapAccessor;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
-import com.walhay.gregifiedenergistics.api.patterns.impl.RecipePatternHelper;
+import com.walhay.gregifiedenergistics.api.patterns.implementations.RecipePatternHelper;
 import com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionStorage;
 import com.walhay.gregifiedenergistics.mixins.interfaces.ITaskProgressAccessor;
 import gregtech.api.recipes.Recipe;

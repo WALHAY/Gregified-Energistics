@@ -1,4 +1,4 @@
-package com.walhay.gregifiedenergistics.api.patterns.impl;
+package com.walhay.gregifiedenergistics.api.patterns.implementations;
 
 import appeng.api.networking.crafting.ICraftingMedium;
 import appeng.api.networking.crafting.ICraftingPatternDetails;

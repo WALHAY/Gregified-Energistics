@@ -66,8 +66,7 @@ public abstract class AbstractPatternHelper implements IPatternProvidable, ISubs
 	public void injectSubstitutions(ISubstitutionStorage storage) {
 		if (storage == null) return;
 
-		if (substitutionStorage.get() != storage)
-			substitutionStorage = new WeakReference<>(storage);
+		if (substitutionStorage.get() != storage) substitutionStorage = new WeakReference<>(storage);
 
 		for (Map.Entry<Integer, GTRecipeInput> entry : subMap.entrySet()) {
 			GTRecipeInput input = entry.getValue();

@@ -4,7 +4,7 @@ import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.items.misc.ItemEncodedPattern;
 import com.walhay.gregifiedenergistics.api.capability.AbstractPatternItemHandler;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionHandler;
-import com.walhay.gregifiedenergistics.api.patterns.impl.DataStickPatternHelper;
+import com.walhay.gregifiedenergistics.api.patterns.implementations.DataStickPatternHelper;
 import com.walhay.gregifiedenergistics.common.gui.GhostGridWidget;
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.Widget;
@@ -28,6 +28,8 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
 public class MetaTileEntityMEALHatch extends MetaTileEntityAbstractAssemblyLineHatch {
+
+	public static final String PATTERN_INVENTORY_TAG = "PatternInventory";
 
 	private final DataStickHandler patternHandler = new DataStickHandler(16);
 
@@ -87,7 +89,7 @@ public class MetaTileEntityMEALHatch extends MetaTileEntityAbstractAssemblyLineH
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound data) {
 		super.writeToNBT(data);
-		data.setTag("patterns", patternHandler.serializeNBT());
+		data.setTag(PATTERN_INVENTORY_TAG, patternHandler.serializeNBT());
 		return data;
 	}
 

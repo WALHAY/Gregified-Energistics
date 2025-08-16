@@ -1,5 +1,8 @@
 package com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts;
 
+import static com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionStorage.STORAGE_TAG;
+import static com.walhay.gregifiedenergistics.api.util.BlockingMode.BLOCKING_MODE_TAG;
+
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
@@ -62,6 +65,9 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 
 public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEntityCraftingProvider<IAEFluidStack>
 		implements IMultiblockAbilityPart<IItemHandlerModifiable> {
+
+	public static final String WORKING_ENABLED_TAG = "WorkingEnabled";
+	public static final String USE_FLUID_TAG = "FluidMode";
 
 	private Int2ObjectOpenHashMap<ItemStack> waitingToSend;
 	private Int2ObjectOpenHashMap<FluidStack> fluidWaitingToSend;
@@ -158,12 +164,12 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 				var nbt = new NBTTagCompound();
 				heldItem.writeToNBT(nbt);
 
-				nbt.setTag("substitutionData", substitutionStorage.serializeNBT());
+				nbt.setTag(STORAGE_TAG, substitutionStorage.serializeNBT());
 
 				heldItem.setTagCompound(nbt);
 				player.sendStatusMessage(new TextComponentString("Settings Saved"), true);
 			} else {
-				var tag = heldItem.getSubCompound("substitutionData");
+				var tag = heldItem.getSubCompound(STORAGE_TAG);
 				if (tag != null) {
 					substitutionStorage.deserializeNBT(tag);
 
@@ -179,20 +185,20 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound data) {
 		super.writeToNBT(data);
-		data.setBoolean("workingEnabled", workingEnabled);
-		data.setString("blockingMode", blockingMode.toString());
-		data.setBoolean("useFluids", useFluids);
-		data.setTag("substitutionStorage", substitutionStorage.serializeNBT());
+		data.setBoolean(WORKING_ENABLED_TAG, workingEnabled);
+		data.setString(BLOCKING_MODE_TAG, blockingMode.toString());
+		data.setBoolean(USE_FLUID_TAG, useFluids);
+		data.setTag(STORAGE_TAG, substitutionStorage.serializeNBT());
 		return data;
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound data) {
 		super.readFromNBT(data);
-		workingEnabled = data.getBoolean("workingEnabled");
-		blockingMode = BlockingMode.valueOf(data.getString("blockingMode"));
-		useFluids = data.getBoolean("useFluids");
-		substitutionStorage.deserializeNBT(data.getCompoundTag("substitutionStorage"));
+		workingEnabled = data.getBoolean(WORKING_ENABLED_TAG);
+		blockingMode = BlockingMode.valueOf(data.getString(BLOCKING_MODE_TAG));
+		useFluids = data.getBoolean(USE_FLUID_TAG);
+		substitutionStorage.deserializeNBT(data.getCompoundTag(STORAGE_TAG));
 	}
 
 	@Override
@@ -248,9 +254,8 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 		if (isOnline) {
 			if (isWorkingEnabled()) {
 				return GETextures.ME_AL_HATCH_CONNECTOR_ACTIVE;
-			} else {
-				return GETextures.ME_AL_HATCH_CONNECTOR_WAITING;
 			}
+			return GETextures.ME_AL_HATCH_CONNECTOR_WAITING;
 		}
 		return GETextures.ME_AL_HATCH_CONNECTOR_INACTIVE;
 	}

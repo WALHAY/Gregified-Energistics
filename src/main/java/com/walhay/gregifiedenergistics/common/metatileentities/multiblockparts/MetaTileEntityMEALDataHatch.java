@@ -14,7 +14,7 @@ import com.walhay.gregifiedenergistics.api.capability.IOpticalNetRecipeHandler;
 import com.walhay.gregifiedenergistics.api.capability.IRecipeAccessor;
 import com.walhay.gregifiedenergistics.api.capability.IRecipeMapAccessor;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionHandler;
-import com.walhay.gregifiedenergistics.api.patterns.impl.RecipePatternHelper;
+import com.walhay.gregifiedenergistics.api.patterns.implementations.RecipePatternHelper;
 import com.walhay.gregifiedenergistics.common.gui.GhostGridWidget;
 import gregtech.api.gui.Widget;
 import gregtech.api.metatileentity.MetaTileEntity;
@@ -42,6 +42,8 @@ import net.minecraftforge.common.capabilities.Capability;
 public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyLineHatch
 		implements IOpticalNetRecipeHandler {
 
+	private static final String OPTICAL_FACING_TAG = "OpticalFacing";
+
 	private List<RecipePatternHelper> patterns = Collections.emptyList();
 	private EnumFacing opticalFacing = EnumFacing.DOWN;
 
@@ -66,14 +68,14 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound data) {
 		super.writeToNBT(data);
-		data.setString("opticalFacing", opticalFacing.toString());
+		data.setString(OPTICAL_FACING_TAG, opticalFacing.toString());
 		return data;
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound data) {
 		super.readFromNBT(data);
-		opticalFacing = EnumFacing.byName(data.getString("opticalFacing"));
+		opticalFacing = EnumFacing.byName(data.getString(OPTICAL_FACING_TAG));
 	}
 
 	@Override

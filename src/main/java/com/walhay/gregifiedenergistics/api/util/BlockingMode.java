@@ -5,6 +5,8 @@ public enum BlockingMode {
 	BLOCKING_MODE,
 	CRAFTING_BLOCKING_MODE;
 
+	public static final String BLOCKING_MODE_TAG = "BlockingMode";
+
 	public boolean isBlockingEnabled() {
 		return this == BLOCKING_MODE || this == CRAFTING_BLOCKING_MODE;
 	}
