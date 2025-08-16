@@ -5,7 +5,9 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
 import com.walhay.gregifiedenergistics.api.capability.IRecipeAccessor;
 import com.walhay.gregifiedenergistics.api.capability.IRecipeMapAccessor;
+import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.patterns.impl.RecipePatternHelper;
+import com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionStorage;
 import com.walhay.gregifiedenergistics.mixins.interfaces.ITaskProgressAccessor;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMaps;
@@ -70,7 +72,9 @@ public class CraftingCPUClusterMixin {
 		if (entry.getKey() instanceof RecipePatternHelper helper) {
 			IRecipeAccessor recipe = (IRecipeAccessor) helper.getRecipe();
 
-			System.out.println("Write recipe id: " + recipe.getRecipeId());
+			ISubstitutionStorage storage = helper.getSubstitutionStorage();
+			if (storage != null) item.setTag(SubstitutionStorage.STORAGE_TAG, storage.serializeNBT());
+
 			item.setInteger("recipeId", recipe.getRecipeId());
 		}
 	}
@@ -97,10 +101,14 @@ public class CraftingCPUClusterMixin {
 		if (item.hasKey("recipeId")) {
 			int recipeId = item.getInteger("recipeId");
 
-			System.out.println("Read recipe id: " + recipeId);
+			ISubstitutionStorage storage = new SubstitutionStorage();
+			if (item.hasKey(SubstitutionStorage.STORAGE_TAG))
+				storage.deserializeNBT(item.getCompoundTag(SubstitutionStorage.STORAGE_TAG));
 
 			Recipe recipe = ((IRecipeMapAccessor) RecipeMaps.ASSEMBLY_LINE_RECIPES).getRecipeById(recipeId);
 			RecipePatternHelper helper = new RecipePatternHelper(recipe, stack);
+
+			helper.injectSubstitutions(storage);
 
 			tasks.put(helper, taskProgress);
 		}
