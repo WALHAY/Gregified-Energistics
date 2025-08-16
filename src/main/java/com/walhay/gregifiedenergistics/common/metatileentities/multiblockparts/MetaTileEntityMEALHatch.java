@@ -139,8 +139,7 @@ public class MetaTileEntityMEALHatch extends MetaTileEntityAbstractAssemblyLineH
 		}
 
 		@Override
-		protected void onContentsChanged(int slot) {
-			super.onContentsChanged(slot);
+		protected void onPatternUpdate() {
 			notifyPatternChange();
 		}
 

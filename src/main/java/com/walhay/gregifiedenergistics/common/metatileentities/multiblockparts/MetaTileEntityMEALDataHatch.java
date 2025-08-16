@@ -66,6 +66,12 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 	}
 
 	@Override
+	public void setFrontFacing(EnumFacing frontFacing) {
+		super.setFrontFacing(frontFacing);
+		notifyPatternChange();
+	}
+
+	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound data) {
 		super.writeToNBT(data);
 		data.setString(OPTICAL_FACING_TAG, opticalFacing.toString());

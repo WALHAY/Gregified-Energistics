@@ -2,6 +2,7 @@ package com.walhay.gregifiedenergistics.api.capability;
 
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.items.misc.ItemEncodedPattern;
+import com.google.common.base.Objects;
 import java.util.Arrays;
 import java.util.Collection;
 import javax.annotation.Nonnull;
@@ -21,15 +22,21 @@ public abstract class AbstractPatternItemHandler extends ItemStackHandler {
 	@Override
 	protected void onContentsChanged(int slot) {
 		ItemStack stack = getStackInSlot(slot);
-		if (stack.isEmpty()) {
+		ICraftingPatternDetails pattern = patterns[slot];
+		if (stack.isEmpty() && pattern != null) {
 			patterns[slot] = null;
+			onPatternUpdate();
 			return;
 		}
 
-		ICraftingPatternDetails pattern = getPatternDetails(slot);
-		if (pattern == null || !ItemStack.areItemStacksEqual(pattern.getPattern(), stack)) {
-			patterns[slot] = getPatternFromItemStack(stack);
-		}
+		if (ItemStack.areItemStacksEqual(pattern.getPattern(), stack)) return;
+
+		ICraftingPatternDetails newPattern = getPatternDetails(slot);
+
+		if (Objects.equal(pattern, newPattern)) return;
+
+		patterns[slot] = newPattern;
+		onPatternUpdate();
 	}
 
 	@Nullable public ICraftingPatternDetails getPatternDetails(int slot) {
@@ -53,6 +60,8 @@ public abstract class AbstractPatternItemHandler extends ItemStackHandler {
 
 	protected abstract ICraftingPatternDetails getPatternFromItemStack(ItemStack stack);
 
+	protected void onPatternUpdate() {}
+
 	@Override
 	protected void onLoad() {
 		super.onLoad();
@@ -62,5 +71,6 @@ public abstract class AbstractPatternItemHandler extends ItemStackHandler {
 				patterns[slot] = pattern;
 			}
 		}
+		onPatternUpdate();
 	}
 }
