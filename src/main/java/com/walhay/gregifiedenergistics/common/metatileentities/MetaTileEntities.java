@@ -3,21 +3,21 @@ package com.walhay.gregifiedenergistics.common.metatileentities;
 import static gregtech.common.metatileentities.MetaTileEntities.registerMetaTileEntity;
 
 import com.walhay.gregifiedenergistics.GregifiedEnergisticsMod;
-import com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts.MetaTileEntityMEALDataHatch;
-import com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts.MetaTileEntityMEALHatch;
+import com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts.MTEMEAssemblyLineBus;
+import com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts.MTEMEAssemblyLineOpticalBus;
 import net.minecraft.util.ResourceLocation;
 
 public class MetaTileEntities {
 	private static int id = 11000;
 
-	public static MetaTileEntityMEALHatch ME_ASSEMBLY_LINE_HATCH;
-	public static MetaTileEntityMEALDataHatch ME_ASSEMBLY_LINE_DATA_HATCH;
+	public static MTEMEAssemblyLineBus ME_ASSEBLY_LINE_BUS;
+	public static MTEMEAssemblyLineOpticalBus ME_ASSEMBLY_LINE_OPTICAL_BUS;
 
 	public static void init() {
-		ME_ASSEMBLY_LINE_HATCH =
-				registerMetaTileEntity(autoId(), new MetaTileEntityMEALHatch(location("me_assembly_line_hatch"), 5));
-		ME_ASSEMBLY_LINE_DATA_HATCH = registerMetaTileEntity(
-				autoId(), new MetaTileEntityMEALDataHatch(location("me_assembly_line_data_hatch"), 7));
+		ME_ASSEBLY_LINE_BUS =
+				registerMetaTileEntity(autoId(), new MTEMEAssemblyLineBus(location("me_assembly_line_bus"), 5));
+		ME_ASSEMBLY_LINE_OPTICAL_BUS = registerMetaTileEntity(
+				autoId(), new MTEMEAssemblyLineOpticalBus(location("me_assembly_line_optical_bus"), 7));
 	}
 
 	private static ResourceLocation location(String location) {

@@ -2,7 +2,7 @@ package com.walhay.gregifiedenergistics.api.render;
 
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
 
-public class GETextures {
+public class GregifiedEnergisticsTextures {
 
 	public static SimpleOverlayRenderer ME_AL_HATCH_CONNECTOR_ACTIVE;
 	public static SimpleOverlayRenderer ME_AL_HATCH_CONNECTOR_WAITING;

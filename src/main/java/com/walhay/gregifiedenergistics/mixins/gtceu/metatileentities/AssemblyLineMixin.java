@@ -1,7 +1,7 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.metatileentities;
 
-import static com.walhay.gregifiedenergistics.common.metatileentities.MetaTileEntities.ME_ASSEMBLY_LINE_DATA_HATCH;
-import static com.walhay.gregifiedenergistics.common.metatileentities.MetaTileEntities.ME_ASSEMBLY_LINE_HATCH;
+import static com.walhay.gregifiedenergistics.common.metatileentities.MetaTileEntities.ME_ASSEBLY_LINE_BUS;
+import static com.walhay.gregifiedenergistics.common.metatileentities.MetaTileEntities.ME_ASSEMBLY_LINE_OPTICAL_BUS;
 import static gregtech.api.metatileentity.multiblock.MultiblockControllerBase.abilities;
 import static gregtech.api.metatileentity.multiblock.MultiblockControllerBase.any;
 import static gregtech.api.metatileentity.multiblock.MultiblockControllerBase.metaTileEntities;
@@ -48,8 +48,8 @@ public class AssemblyLineMixin {
 						'E',
 						metaTileEntities(
 								MetaTileEntities.ITEM_IMPORT_BUS[GTValues.ULV],
-								ME_ASSEMBLY_LINE_DATA_HATCH,
-								ME_ASSEMBLY_LINE_HATCH))
+								ME_ASSEMBLY_LINE_OPTICAL_BUS,
+								ME_ASSEBLY_LINE_BUS))
 				.where(
 						'F',
 						states(getCasingState())

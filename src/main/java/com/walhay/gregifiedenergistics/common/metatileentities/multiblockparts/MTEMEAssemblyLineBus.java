@@ -27,19 +27,19 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
-public class MetaTileEntityMEALHatch extends MetaTileEntityAbstractAssemblyLineHatch {
+public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 
 	public static final String PATTERN_INVENTORY_TAG = "PatternInventory";
 
 	private final DataStickHandler patternHandler = new DataStickHandler(16);
 
-	public MetaTileEntityMEALHatch(ResourceLocation metaTileEntityId, int tier) {
+	public MTEMEAssemblyLineBus(ResourceLocation metaTileEntityId, int tier) {
 		super(metaTileEntityId, tier);
 	}
 
 	@Override
 	public MetaTileEntity createMetaTileEntity(IGregTechTileEntity metaTileEntity) {
-		return new MetaTileEntityMEALHatch(metaTileEntityId, getTier());
+		return new MTEMEAssemblyLineBus(metaTileEntityId, getTier());
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public class MetaTileEntityMEALHatch extends MetaTileEntityAbstractAssemblyLineH
 	@Override
 	public void readFromNBT(NBTTagCompound data) {
 		super.readFromNBT(data);
-		patternHandler.deserializeNBT(data.getCompoundTag("patterns"));
+		patternHandler.deserializeNBT(data.getCompoundTag(PATTERN_INVENTORY_TAG));
 	}
 
 	@Override

@@ -18,12 +18,12 @@ import codechicken.lib.raytracer.CuboidRayTraceResult;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
-import com.walhay.gregifiedenergistics.api.gui.GTEGuiTextures;
+import com.walhay.gregifiedenergistics.api.gui.GregifiedEnergisticsGuiTextures;
 import com.walhay.gregifiedenergistics.api.metatileentity.MetaTileEntityCraftingProvider;
 import com.walhay.gregifiedenergistics.api.patterns.AbstractPatternHelper;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionStorage;
-import com.walhay.gregifiedenergistics.api.render.GETextures;
+import com.walhay.gregifiedenergistics.api.render.GregifiedEnergisticsTextures;
 import com.walhay.gregifiedenergistics.api.util.BlockingMode;
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.GregtechTileCapabilities;
@@ -63,7 +63,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
-public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEntityCraftingProvider<IAEFluidStack>
+public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingProvider<IAEFluidStack>
 		implements IMultiblockAbilityPart<IItemHandlerModifiable> {
 
 	public static final String WORKING_ENABLED_TAG = "WorkingEnabled";
@@ -80,7 +80,7 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 	###     MTE METHODS     ###
 	########################### */
 
-	public MetaTileEntityAbstractAssemblyLineHatch(ResourceLocation metaTileEntityId, int tier) {
+	public MTEAbstractAssemblyLineBus(ResourceLocation metaTileEntityId, int tier) {
 		super(metaTileEntityId, tier, false, IFluidStorageChannel.class);
 	}
 
@@ -138,7 +138,7 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 								6,
 								16,
 								16,
-								GTEGuiTextures.BLOCKING_MODE,
+								GregifiedEnergisticsGuiTextures.BLOCKING_MODE,
 								BlockingMode.values().length,
 								() -> blockingMode.ordinal(),
 								index -> blockingMode = BlockingMode.values()[index])
@@ -148,7 +148,13 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 												.toString()
 												.toLowerCase())))
 				.widget(new ToggleButtonWidget(
-								-18, 24, 16, 16, GTEGuiTextures.FLUID_MODE, this::getUsingFluids, this::setUsingFluids)
+								-18,
+								24,
+								16,
+								16,
+								GregifiedEnergisticsGuiTextures.FLUID_MODE,
+								this::getUsingFluids,
+								this::setUsingFluids)
 						.setTooltipText("gregifiedenergistics.gui.fluid_mode"))
 				.bindPlayerInventory(entityPlayer.inventory, GuiTextures.SLOT, 7, 18 + 18 * 4 + 12)
 				.build(getHolder(), entityPlayer);
@@ -253,11 +259,11 @@ public abstract class MetaTileEntityAbstractAssemblyLineHatch extends MetaTileEn
 	protected SimpleOverlayRenderer getOverlay() {
 		if (isOnline) {
 			if (isWorkingEnabled()) {
-				return GETextures.ME_AL_HATCH_CONNECTOR_ACTIVE;
+				return GregifiedEnergisticsTextures.ME_AL_HATCH_CONNECTOR_ACTIVE;
 			}
-			return GETextures.ME_AL_HATCH_CONNECTOR_WAITING;
+			return GregifiedEnergisticsTextures.ME_AL_HATCH_CONNECTOR_WAITING;
 		}
-		return GETextures.ME_AL_HATCH_CONNECTOR_INACTIVE;
+		return GregifiedEnergisticsTextures.ME_AL_HATCH_CONNECTOR_INACTIVE;
 	}
 
 	@Override

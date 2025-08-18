@@ -1,6 +1,6 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
 
-import com.walhay.gregifiedenergistics.api.capability.GECapabilities;
+import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabilities;
 import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
 import com.walhay.gregifiedenergistics.api.capability.IOpticalNetRecipeHandler;
 import gregtech.api.recipes.Recipe;
@@ -37,8 +37,8 @@ public abstract class OpticalDataHatchMixin extends MetaTileEntityMultiblockNoti
 
 	@Inject(method = "getCapability", at = @At("HEAD"), remap = false, cancellable = true)
 	private <I> void injectNewCapability(Capability<I> capability, EnumFacing facing, CallbackInfoReturnable<I> cir) {
-		if (capability == GECapabilities.CAPABILITY_RECIPE_HANDLER) {
-			cir.setReturnValue(GECapabilities.CAPABILITY_RECIPE_HANDLER.cast(this));
+		if (capability == GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER) {
+			cir.setReturnValue(GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER.cast(this));
 		}
 	}
 
@@ -59,7 +59,7 @@ public abstract class OpticalDataHatchMixin extends MetaTileEntityMultiblockNoti
 
 				if (te instanceof TileEntityOpticalPipe) {
 					INetRecipeHandler cap = te.getCapability(
-							GECapabilities.CAPABILITY_RECIPE_HANDLER,
+							GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER,
 							getFrontFacing().getOpposite());
 
 					if (cap == null || seen.contains(cap)) return null;
@@ -79,7 +79,7 @@ public abstract class OpticalDataHatchMixin extends MetaTileEntityMultiblockNoti
 
 			if (te instanceof TileEntityOpticalPipe pipe) {
 				INetRecipeHandler data = pipe.getCapability(
-						GECapabilities.CAPABILITY_RECIPE_HANDLER,
+						GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER,
 						getFrontFacing().getOpposite());
 
 				if (data != null && !seen.contains(data)) data.onRecipesUpdate(seen);

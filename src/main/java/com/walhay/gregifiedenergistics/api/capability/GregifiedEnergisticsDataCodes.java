@@ -2,7 +2,7 @@ package com.walhay.gregifiedenergistics.api.capability;
 
 import gregtech.api.capability.GregtechDataCodes;
 
-public class GEDataCodes {
+public class GregifiedEnergisticsDataCodes {
 
 	public static final int ONLINE_STATUS_UPDATE = autoId();
 	public static final int PATTERNS_CHANGE = autoId();

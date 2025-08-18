@@ -1,6 +1,6 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
 
-import com.walhay.gregifiedenergistics.api.capability.GECapabilities;
+import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabilities;
 import gregtech.api.pipenet.tile.IPipeTile;
 import gregtech.common.pipelike.optical.BlockOpticalPipe;
 import gregtech.common.pipelike.optical.OpticalPipeProperties;
@@ -26,6 +26,7 @@ public class BlockOpticalPipeMixin {
 			EnumFacing side,
 			@Nullable TileEntity tile,
 			CallbackInfoReturnable<Boolean> cir) {
-		if (tile.hasCapability(GECapabilities.CAPABILITY_RECIPE_HANDLER, side.getOpposite())) cir.setReturnValue(true);
+		if (tile.hasCapability(GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER, side.getOpposite()))
+			cir.setReturnValue(true);
 	}
 }

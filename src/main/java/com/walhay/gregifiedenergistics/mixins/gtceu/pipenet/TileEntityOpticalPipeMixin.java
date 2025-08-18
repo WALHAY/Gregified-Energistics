@@ -1,6 +1,6 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
 
-import com.walhay.gregifiedenergistics.api.capability.GECapabilities;
+import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabilities;
 import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
 import gregtech.api.pipenet.tile.TileEntityPipeBase;
 import gregtech.api.recipes.Recipe;
@@ -41,9 +41,10 @@ public abstract class TileEntityOpticalPipeMixin extends TileEntityPipeBase<Opti
 
 	@Inject(method = "getCapabilityInternal", at = @At(value = "HEAD"), remap = false, cancellable = true)
 	private <I> void injectRecipeHandler(Capability<I> capability, EnumFacing facing, CallbackInfoReturnable<I> cir) {
-		if (capability == GECapabilities.CAPABILITY_RECIPE_HANDLER) {
+		if (capability == GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER) {
 			if (world.isRemote) {
-				cir.setReturnValue(GECapabilities.CAPABILITY_RECIPE_HANDLER.cast(clientRecipesHandler));
+				cir.setReturnValue(
+						GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER.cast(clientRecipesHandler));
 			}
 
 			if (handlers.isEmpty()) invokeInitHandlers();
@@ -51,7 +52,7 @@ public abstract class TileEntityOpticalPipeMixin extends TileEntityPipeBase<Opti
 			invokeCheckNetwork();
 			OpticalNetHandler handler = handlers.getOrDefault(facing, defaultHandler);
 			if (handler instanceof INetRecipeHandler dataHandler)
-				cir.setReturnValue(GECapabilities.CAPABILITY_RECIPE_HANDLER.cast(dataHandler));
+				cir.setReturnValue(GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER.cast(dataHandler));
 		}
 	}
 

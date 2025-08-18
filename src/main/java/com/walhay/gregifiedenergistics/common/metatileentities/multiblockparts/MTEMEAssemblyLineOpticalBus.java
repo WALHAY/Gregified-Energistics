@@ -1,14 +1,14 @@
 package com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts;
 
-import static com.walhay.gregifiedenergistics.api.capability.GEDataCodes.CHANGE_OPTICAL_SIDE;
+import static com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsDataCodes.CHANGE_OPTICAL_SIDE;
 
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import codechicken.lib.raytracer.CuboidRayTraceResult;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
-import com.walhay.gregifiedenergistics.api.capability.GECapabilities;
-import com.walhay.gregifiedenergistics.api.capability.GEDataCodes;
+import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabilities;
+import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsDataCodes;
 import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
 import com.walhay.gregifiedenergistics.api.capability.IOpticalNetRecipeHandler;
 import com.walhay.gregifiedenergistics.api.capability.IRecipeAccessor;
@@ -39,15 +39,14 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 
-public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyLineHatch
-		implements IOpticalNetRecipeHandler {
+public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus implements IOpticalNetRecipeHandler {
 
 	private static final String OPTICAL_FACING_TAG = "OpticalFacing";
 
 	private List<RecipePatternHelper> patterns = Collections.emptyList();
 	private EnumFacing opticalFacing = EnumFacing.DOWN;
 
-	public MetaTileEntityMEALDataHatch(ResourceLocation metaTileEntityId, int tier) {
+	public MTEMEAssemblyLineOpticalBus(ResourceLocation metaTileEntityId, int tier) {
 		super(metaTileEntityId, tier);
 	}
 
@@ -102,7 +101,7 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 		if (dataId == CHANGE_OPTICAL_SIDE) {
 			opticalFacing = buf.readEnumValue(EnumFacing.class);
 			scheduleRenderUpdate();
-		} else if (dataId == GEDataCodes.PATTERNS_CHANGE) {
+		} else if (dataId == GregifiedEnergisticsDataCodes.PATTERNS_CHANGE) {
 			patterns.clear();
 
 			int size = buf.readInt();
@@ -122,8 +121,8 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		if (facing == opticalFacing && capability == GECapabilities.CAPABILITY_RECIPE_HANDLER) {
-			return GECapabilities.CAPABILITY_RECIPE_HANDLER.cast(this);
+		if (facing == opticalFacing && capability == GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER) {
+			return GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER.cast(this);
 		}
 		return super.getCapability(capability, facing);
 	}
@@ -139,21 +138,21 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 
 		TileEntity te = getWorld().getTileEntity(getPos().offset(opticalFacing));
 		if (te instanceof TileEntityOpticalPipe) {
-			INetRecipeHandler data =
-					te.getCapability(GECapabilities.CAPABILITY_RECIPE_HANDLER, opticalFacing.getOpposite());
+			INetRecipeHandler data = te.getCapability(
+					GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER, opticalFacing.getOpposite());
 
 			if (data == null) return;
 
 			var recipes = data.getRecipes();
 			if (recipes == null) {
 				patterns = Collections.emptyList();
-				writeCustomData(GEDataCodes.PATTERNS_CHANGE, buf -> buf.writeInt(0));
+				writeCustomData(GregifiedEnergisticsDataCodes.PATTERNS_CHANGE, buf -> buf.writeInt(0));
 				return;
 			}
 
 			patterns = recipes.stream().map(RecipePatternHelper::new).collect(Collectors.toList());
 
-			writeCustomData(GEDataCodes.PATTERNS_CHANGE, buf -> {
+			writeCustomData(GregifiedEnergisticsDataCodes.PATTERNS_CHANGE, buf -> {
 				buf.writeInt(recipes.size());
 				for (Recipe recipe : recipes) {
 					if (recipe instanceof IRecipeAccessor accessor) buf.writeInt(accessor.getRecipeId());
@@ -185,7 +184,7 @@ public class MetaTileEntityMEALDataHatch extends MetaTileEntityAbstractAssemblyL
 
 	@Override
 	public MetaTileEntity createMetaTileEntity(IGregTechTileEntity metaTileEntity) {
-		return new MetaTileEntityMEALDataHatch(metaTileEntityId, getTier());
+		return new MTEMEAssemblyLineOpticalBus(metaTileEntityId, getTier());
 	}
 
 	@Override

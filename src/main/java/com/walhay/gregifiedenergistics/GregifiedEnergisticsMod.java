@@ -1,7 +1,7 @@
 package com.walhay.gregifiedenergistics;
 
-import com.walhay.gregifiedenergistics.api.capability.GECapabilities;
-import com.walhay.gregifiedenergistics.api.render.GETextures;
+import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabilities;
+import com.walhay.gregifiedenergistics.api.render.GregifiedEnergisticsTextures;
 import com.walhay.gregifiedenergistics.common.metatileentities.MetaTileEntities;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -24,7 +24,7 @@ public class GregifiedEnergisticsMod {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		MetaTileEntities.init();
-		GETextures.init();
-		GECapabilities.register();
+		GregifiedEnergisticsTextures.init();
+		GregifiedEnergisticsCapabilities.register();
 	}
 }
