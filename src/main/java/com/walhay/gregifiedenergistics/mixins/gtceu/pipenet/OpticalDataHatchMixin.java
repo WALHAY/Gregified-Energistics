@@ -7,6 +7,7 @@ import gregtech.api.recipes.Recipe;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityMultiblockNotifiablePart;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityOpticalDataHatch;
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
+import java.util.ArrayList;
 import java.util.Collection;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -35,9 +36,18 @@ public abstract class OpticalDataHatchMixin extends MetaTileEntityMultiblockNoti
 	@Final
 	private boolean isTransmitter;
 
+	@Override
+	public void setFrontFacing(EnumFacing facing) {
+		EnumFacing oldFacing = this.frontFacing;
+		super.setFrontFacing(facing);
+		if(isTransmitter)
+			onRecipesUpdatePipe(new ArrayList<>(), oldFacing);
+		onRecipesUpdate();
+	}
+
 	@Inject(method = "getCapability", at = @At("HEAD"), remap = false, cancellable = true)
 	private <I> void injectNewCapability(Capability<I> capability, EnumFacing facing, CallbackInfoReturnable<I> cir) {
-		if (capability == GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER) {
+		if (facing == frontFacing && capability == GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER) {
 			cir.setReturnValue(GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER.cast(this));
 		}
 	}
@@ -70,20 +80,24 @@ public abstract class OpticalDataHatchMixin extends MetaTileEntityMultiblockNoti
 		return null;
 	}
 
+	private void onRecipesUpdatePipe(Collection<INetRecipeHandler> seen, EnumFacing facing) {
+		if (getWorld() == null) return;
+		TileEntity te = getWorld().getTileEntity(getPos().offset(facing));
+
+		if (te instanceof TileEntityOpticalPipe pipe) {
+			INetRecipeHandler data = pipe.getCapability(
+					GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER, facing.getOpposite());
+
+			if (data != null && !seen.contains(data)) data.onRecipesUpdate(seen);
+		}
+	}
+
 	@Override
 	@Unique public void onRecipesUpdate(Collection<INetRecipeHandler> seen) {
 		seen.add(this);
 
 		if (isTransmitter) {
-			TileEntity te = getWorld().getTileEntity(getPos().offset(getFrontFacing()));
-
-			if (te instanceof TileEntityOpticalPipe pipe) {
-				INetRecipeHandler data = pipe.getCapability(
-						GregifiedEnergisticsCapabilities.CAPABILITY_RECIPE_HANDLER,
-						getFrontFacing().getOpposite());
-
-				if (data != null && !seen.contains(data)) data.onRecipesUpdate(seen);
-			}
+			onRecipesUpdatePipe(seen, getFrontFacing());
 		} else {
 			if (getController() instanceof INetRecipeHandler handler) {
 				if (seen.contains(handler)) return;
