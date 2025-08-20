@@ -25,6 +25,8 @@ import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.render.GregifiedEnergisticsTextures;
 import com.walhay.gregifiedenergistics.api.util.BlockingMode;
+import com.walhay.gregifiedenergistics.common.gui.SubstitutionGridWidget;
+import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.impl.MultiblockRecipeLogic;
@@ -32,12 +34,17 @@ import gregtech.api.capability.impl.NotifiableItemStackHandler;
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.ModularUI;
 import gregtech.api.gui.ModularUI.Builder;
+import gregtech.api.gui.widgets.AbstractWidgetGroup;
 import gregtech.api.gui.widgets.ImageCycleButtonWidget;
 import gregtech.api.gui.widgets.SlotWidget;
+import gregtech.api.gui.widgets.TabGroup;
+import gregtech.api.gui.widgets.TabGroup.TabLocation;
 import gregtech.api.gui.widgets.ToggleButtonWidget;
+import gregtech.api.gui.widgets.tab.ItemTabInfo;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
+import gregtech.api.util.Position;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.io.IOException;
@@ -74,7 +81,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 	private BlockingMode blockingMode = BlockingMode.NO_BLOCKING;
 	private boolean useFluids = true;
 	private boolean workingEnabled = true;
-	protected final ISubstitutionStorage substitutionStorage = new SubstitutionStorage();
+	protected final ISubstitutionStorage<String> substitutionStorage = new SubstitutionStorage();
 
 	/* ###########################
 	###     MTE METHODS     ###
@@ -115,8 +122,58 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 		return builder.build(getHolder(), player);
 	}
 
+	protected AbstractWidgetGroup createPatternsGrid() {
+		return null;
+	}
+
+	protected AbstractWidgetGroup createSubstitutionGrid() {
+		SubstitutionGridWidget grid = new SubstitutionGridWidget(0, 30, GTValues.VNF[3], substitutionStorage, this);
+		return grid;
+	}
+
 	private ModularUI.Builder createUITemplate(EntityPlayer player) {
 		Builder builder = ModularUI.builder(GuiTextures.BACKGROUND, 176, 18 + 18 * 4 + 94);
+
+		AbstractWidgetGroup patternsGrid = createPatternsGrid();
+		int patternsWidth = patternsGrid == null ? 0 : patternsGrid.getSize().width;
+
+		AbstractWidgetGroup substitutionGrid = createSubstitutionGrid();
+
+		int center = 176 / 2;
+
+		if (patternsGrid != null || substitutionGrid != null) {
+			TabGroup<AbstractWidgetGroup> tabGroup =
+					new TabGroup<AbstractWidgetGroup>(TabLocation.HORIZONTAL_TOP_LEFT, Position.ORIGIN);
+
+			if (patternsGrid != null) {
+				patternsGrid.setSelfPosition(new Position(center - patternsWidth / 2, 30));
+
+				tabGroup.addTab(
+						new ItemTabInfo(
+								"gregifiedenergistics.gui.patterns_grid",
+								AEApi.instance()
+										.definitions()
+										.items()
+										.encodedPattern()
+										.maybeStack(0)
+										.get()),
+						patternsGrid);
+			}
+
+			if (substitutionGrid != null)
+				tabGroup.addTab(
+						new ItemTabInfo(
+								"gregifiedenergistics.gui.substitutions_grid",
+								AEApi.instance()
+										.definitions()
+										.items()
+										.memoryCard()
+										.maybeStack(0)
+										.get()),
+						substitutionGrid);
+
+			builder.widget(tabGroup);
+		}
 
 		builder.label(10, 5, getMetaFullName());
 

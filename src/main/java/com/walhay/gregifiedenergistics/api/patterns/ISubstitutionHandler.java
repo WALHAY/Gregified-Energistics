@@ -3,10 +3,10 @@ package com.walhay.gregifiedenergistics.api.patterns;
 import gregtech.api.recipes.ingredients.GTRecipeInput;
 import java.util.Collection;
 
-public interface ISubstitutionHandler {
+public interface ISubstitutionHandler<T> {
 	Collection<GTRecipeInput> getSubstitutions();
 
-	void injectSubstitutions(ISubstitutionStorage storage);
+	void injectSubstitutions(ISubstitutionStorage<T> storage);
 
-	ISubstitutionStorage getSubstitutionStorage();
+	ISubstitutionStorage<T> getSubstitutionStorage();
 }

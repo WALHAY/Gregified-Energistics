@@ -2,6 +2,7 @@ package com.walhay.gregifiedenergistics.api.gui;
 
 import gregtech.api.gui.Widget;
 import gregtech.api.gui.widgets.WidgetGroup;
+import gregtech.api.util.Position;
 import gregtech.api.util.Size;
 import java.util.Collection;
 
@@ -16,24 +17,36 @@ public abstract class AbstractGridWidget<K> extends WidgetGroup {
 		this.columns = columns;
 	}
 
-	public void initGrid(Collection<K> items) {
+	protected void generateGrid(Collection<K> items) {
+		generateGrid(0, 0, items);
+	}
+
+	protected void generateGrid(int x, int y, Collection<K> items) {
 		int i = 0;
 		int width = 0;
 		int height = 0;
-		int current_width = 0;
+		int currentWidth = 0;
 		for (K item : items) {
 			Widget widget = createWidget(item, i % columns, i / columns);
-			if (i % columns == 0) height += widget.getSize().height;
 
-			current_width += widget.getSize().width;
-
+			if (widget == null) continue;
+			Position position = widget.getPosition();
+			widget.setSelfPosition(new Position(x + position.x, y + position.y));
 			addWidget(i++, widget);
+
+			Size size = widget.getSize();
+			currentWidth += size.width;
+
+			if (i % columns == 0) {
+				width = Math.max(currentWidth, width);
+
+				currentWidth = 0;
+				height += size.height;
+			}
 		}
 
-		if (current_width > width) width = current_width;
-
-		setSize(new Size(width, height));
+		setSize(new Size(width + x, height + y));
 	}
 
-	public abstract Widget createWidget(K item, int x, int y);
+	public abstract Widget createWidget(K item, int row, int column);
 }

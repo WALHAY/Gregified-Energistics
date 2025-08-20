@@ -8,19 +8,14 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
 import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabilities;
-import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsDataCodes;
 import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
 import com.walhay.gregifiedenergistics.api.capability.IOpticalNetRecipeHandler;
-import com.walhay.gregifiedenergistics.api.capability.IRecipeAccessor;
-import com.walhay.gregifiedenergistics.api.capability.IRecipeMapAccessor;
 import com.walhay.gregifiedenergistics.api.patterns.implementations.RecipePatternHelper;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.recipes.Recipe;
-import gregtech.api.recipes.RecipeMaps;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -96,21 +91,6 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 		if (dataId == CHANGE_OPTICAL_SIDE) {
 			opticalFacing = buf.readEnumValue(EnumFacing.class);
 			scheduleRenderUpdate();
-		} else if (dataId == GregifiedEnergisticsDataCodes.PATTERNS_CHANGE) {
-			patterns.clear();
-
-			int size = buf.readInt();
-			if (size == 0) return;
-
-			List<Integer> ids = new ArrayList<>(size);
-			for (int i = 0; i < size; ++i) ids.add(buf.readInt());
-
-			if (RecipeMaps.ASSEMBLY_LINE_RECIPES instanceof IRecipeMapAccessor recipeMap) {
-				patterns = ids.stream()
-						.map(recipeMap::getRecipeById)
-						.map(RecipePatternHelper::new)
-						.collect(Collectors.toList());
-			}
 		}
 	}
 
@@ -141,18 +121,10 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 			var recipes = data.getRecipes();
 			if (recipes == null) {
 				patterns = Collections.emptyList();
-				writeCustomData(GregifiedEnergisticsDataCodes.PATTERNS_CHANGE, buf -> buf.writeInt(0));
 				return;
 			}
 
 			patterns = recipes.stream().map(RecipePatternHelper::new).collect(Collectors.toList());
-
-			writeCustomData(GregifiedEnergisticsDataCodes.PATTERNS_CHANGE, buf -> {
-				buf.writeInt(recipes.size());
-				for (Recipe recipe : recipes) {
-					if (recipe instanceof IRecipeAccessor accessor) buf.writeInt(accessor.getRecipeId());
-				}
-			});
 		}
 	}
 

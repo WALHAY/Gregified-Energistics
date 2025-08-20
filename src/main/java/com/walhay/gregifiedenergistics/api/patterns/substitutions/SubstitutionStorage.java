@@ -1,6 +1,7 @@
 package com.walhay.gregifiedenergistics.api.patterns.substitutions;
 
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.nbt.NBTBase;
@@ -8,21 +9,16 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
 
-public class SubstitutionStorage implements ISubstitutionStorage {
+public class SubstitutionStorage implements ISubstitutionStorage<String> {
 
 	public static final String STORAGE_TAG = "SubstitutionStorage";
 
 	private Map<String, Integer> subMap = new HashMap<>();
 
 	@Override
-	public void registerNewOption(String input) {
-		subMap.putIfAbsent(input, 0);
-	}
-
-	@Override
 	public int getOption(String name) {
 		if (!subMap.containsKey(name)) {
-			registerNewOption(name);
+			subMap.put(name, 0);
 			return 0;
 		}
 
@@ -63,5 +59,10 @@ public class SubstitutionStorage implements ISubstitutionStorage {
 				subMap.put(key, option);
 			}
 		}
+	}
+
+	@Override
+	public Collection<String> getOptions() {
+		return subMap.keySet();
 	}
 }
