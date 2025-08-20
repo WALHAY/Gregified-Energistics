@@ -31,7 +31,7 @@ import gregtech.api.capability.impl.MultiblockRecipeLogic;
 import gregtech.api.capability.impl.NotifiableItemStackHandler;
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.ModularUI;
-import gregtech.api.gui.Widget;
+import gregtech.api.gui.ModularUI.Builder;
 import gregtech.api.gui.widgets.ImageCycleButtonWidget;
 import gregtech.api.gui.widgets.SlotWidget;
 import gregtech.api.gui.widgets.ToggleButtonWidget;
@@ -109,55 +109,54 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 
 	// GUI helpers
 
-	protected abstract Widget createPatternListWidget(int x, int y);
-
-	protected abstract String usedPatternsInfo();
-
 	@Override
-	protected ModularUI createUI(EntityPlayer entityPlayer) {
-		return ModularUI.builder(GuiTextures.BACKGROUND, 176, 18 + 18 * 4 + 94)
-				.label(10, 5, getMetaFullName())
-				.dynamicLabel(
-						10,
-						15,
-						() -> isOnline
-								? I18n.format("gregtech.gui.me_network.online")
-								: I18n.format("gregtech.gui.me_network.offline"),
-						0xFFFFFFFF)
-				.dynamicLabel(
-						10,
-						25,
-						() -> I18n.format("gregifiedenergistics.gui.pattern_list", usedPatternsInfo()),
-						0x404040)
-				.widget(createPatternListWidget(10, 35))
-				.widget(new SlotWidget(importItems, 0, 140, 14)
-						.setBackgroundTexture(GuiTextures.SLOT)
-						.setTooltipText(I18n.format("gregifiedenergistics.gui.item_slot")))
-				.widget(new ImageCycleButtonWidget(
-								-18,
-								6,
-								16,
-								16,
-								GregifiedEnergisticsGuiTextures.BLOCKING_MODE,
-								BlockingMode.values().length,
-								() -> blockingMode.ordinal(),
-								index -> blockingMode = BlockingMode.values()[index])
-						.setTooltipHoverString(
-								index -> I18n.format("gregifiedenergistics.machine.me_assembly_line_hatch.gui."
-										+ BlockingMode.values()[index]
-												.toString()
-												.toLowerCase())))
-				.widget(new ToggleButtonWidget(
-								-18,
-								24,
-								16,
-								16,
-								GregifiedEnergisticsGuiTextures.FLUID_MODE,
-								this::getUsingFluids,
-								this::setUsingFluids)
-						.setTooltipText("gregifiedenergistics.gui.fluid_mode"))
-				.bindPlayerInventory(entityPlayer.inventory, GuiTextures.SLOT, 7, 18 + 18 * 4 + 12)
-				.build(getHolder(), entityPlayer);
+	protected ModularUI createUI(EntityPlayer player) {
+		ModularUI.Builder builder = createUITemplate(player);
+		return builder.build(getHolder(), player);
+	}
+
+	private ModularUI.Builder createUITemplate(EntityPlayer player) {
+		Builder builder = ModularUI.builder(GuiTextures.BACKGROUND, 176, 18 + 18 * 4 + 94);
+
+		builder.label(10, 5, getMetaFullName());
+
+		builder.dynamicLabel(
+				10,
+				15,
+				() -> isOnline
+						? I18n.format("gregtech.gui.me_network.online")
+						: I18n.format("gregtech.gui.me_network.offline"),
+				0xFFFFFFFF);
+
+		builder.widget(new SlotWidget(importItems, 0, 140, 14)
+				.setBackgroundTexture(GuiTextures.SLOT)
+				.setTooltipText(I18n.format("gregifiedenergistics.gui.item_slot")));
+
+		builder.widget(new ImageCycleButtonWidget(
+						-18,
+						6,
+						16,
+						16,
+						GregifiedEnergisticsGuiTextures.BLOCKING_MODE,
+						BlockingMode.values().length,
+						() -> blockingMode.ordinal(),
+						index -> blockingMode = BlockingMode.values()[index])
+				.setTooltipHoverString(index -> I18n.format("gregifiedenergistics.machine.me_assembly_line_hatch.gui."
+						+ BlockingMode.values()[index].toString().toLowerCase())));
+
+		builder.widget(new ToggleButtonWidget(
+						-18,
+						24,
+						16,
+						16,
+						GregifiedEnergisticsGuiTextures.FLUID_MODE,
+						this::getUsingFluids,
+						this::setUsingFluids)
+				.setTooltipText("gregifiedenergistics.gui.fluid_mode"));
+
+		builder.bindPlayerInventory(player.inventory, GuiTextures.SLOT, 7, 18 + 18 * 4 + 12);
+
+		return builder;
 	}
 
 	@Override

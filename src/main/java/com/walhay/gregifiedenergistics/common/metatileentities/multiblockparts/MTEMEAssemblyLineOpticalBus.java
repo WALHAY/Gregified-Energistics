@@ -13,22 +13,17 @@ import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
 import com.walhay.gregifiedenergistics.api.capability.IOpticalNetRecipeHandler;
 import com.walhay.gregifiedenergistics.api.capability.IRecipeAccessor;
 import com.walhay.gregifiedenergistics.api.capability.IRecipeMapAccessor;
-import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionHandler;
 import com.walhay.gregifiedenergistics.api.patterns.implementations.RecipePatternHelper;
-import com.walhay.gregifiedenergistics.common.gui.GhostGridWidget;
-import gregtech.api.gui.Widget;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMaps;
-import gregtech.api.recipes.ingredients.GTRecipeInput;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -159,27 +154,6 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 				}
 			});
 		}
-	}
-
-	@Override
-	protected String usedPatternsInfo() {
-		return Integer.toString(patterns.size());
-	}
-
-	@Override
-	protected Widget createPatternListWidget(int x, int y) {
-		Set<GTRecipeInput> inputs = getPatterns().stream()
-				.filter(ISubstitutionHandler.class::isInstance)
-				.map(ISubstitutionHandler.class::cast)
-				.map(ISubstitutionHandler::getSubstitutions)
-				.flatMap(Collection::stream)
-				.collect(Collectors.toSet());
-
-		GhostGridWidget grid = new GhostGridWidget(10, 40, substitutionStorage, this);
-
-		grid.initGrid(inputs);
-
-		return grid;
 	}
 
 	@Override
