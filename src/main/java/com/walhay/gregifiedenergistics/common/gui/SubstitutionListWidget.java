@@ -1,7 +1,9 @@
 package com.walhay.gregifiedenergistics.common.gui;
 
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
+import com.walhay.gregifiedenergistics.api.util.GTHelperUtility;
 import com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts.MTEAbstractAssemblyLineBus;
+import gregtech.api.GTValues;
 import gregtech.api.gui.widgets.ScrollableListWidget;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.Material;
@@ -9,6 +11,9 @@ import gregtech.api.unification.stack.MaterialStack;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 
@@ -40,13 +45,16 @@ public class SubstitutionListWidget extends ScrollableListWidget {
 		}
 
 		clearAllWidgets();
-		for (var entry : tierMap.entrySet()) {
-			addGridWidget(entry.getKey().getName(), entry.getValue());
+		for (var entry :
+				tierMap.entrySet().stream().sorted(new TierComparator()).collect(Collectors.toList())) {
+			int tier = GTHelperUtility.getTierFromName(entry.getKey().getName());
+			String name = tier >= 0 ? GTValues.VNF[tier] : "Misc";
+			addGridWidget(name, entry.getValue());
 		}
 	}
 
 	protected void addGridWidget(String label, Collection<String> subInputs) {
-		SubstitutionGridWidget grid = new SubstitutionGridWidget(0, 0, label, subInputs, storage, mte);
+		SubstitutionGridWidget grid = new SubstitutionGridWidget(label, subInputs, storage, mte);
 		addWidget(grid);
 	}
 
@@ -69,6 +77,16 @@ public class SubstitutionListWidget extends ScrollableListWidget {
 		if (descriptor == 10) {
 			this.previousSize = buf.readInt();
 			recalculateList();
+		}
+	}
+
+	private static class TierComparator implements Comparator<Entry<Material, Collection<String>>> {
+
+		@Override
+		public int compare(Entry<Material, Collection<String>> first, Entry<Material, Collection<String>> second) {
+			int firstTier = GTHelperUtility.getTierFromName(first.getKey().getName());
+			int secondTier = GTHelperUtility.getTierFromName(second.getKey().getName());
+			return firstTier - secondTier;
 		}
 	}
 }

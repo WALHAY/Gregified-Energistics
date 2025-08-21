@@ -1,14 +1,11 @@
 package com.walhay.gregifiedenergistics.api.capability;
 
-import gregtech.api.capability.GregtechDataCodes;
+import static gregtech.api.capability.GregtechDataCodes.assignId;
 
 public class GregifiedEnergisticsDataCodes {
 
-	public static final int ONLINE_STATUS_UPDATE = autoId();
-	public static final int PATTERNS_CHANGE = autoId();
-	public static final int CHANGE_OPTICAL_SIDE = autoId();
-
-	private static int autoId() {
-		return GregtechDataCodes.assignId();
-	}
+	public static final int ONLINE_STATUS_UPDATE = assignId();
+	public static final int PATTERNS_CHANGE = assignId();
+	public static final int CHANGE_OPTICAL_SIDE = assignId();
+	public static final int SUBSTITUTION_CHANGE = assignId();
 }

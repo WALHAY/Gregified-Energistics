@@ -1,11 +1,10 @@
 package com.walhay.gregifiedenergistics.api.util;
 
+import gregtech.api.GTValues;
 import gregtech.api.recipes.ingredients.GTRecipeInput;
-import java.util.ArrayList;
-import java.util.Collection;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class GTRecipeInputHelper {
+public class GTHelperUtility {
 
 	public static String getRecipeInputName(GTRecipeInput input) {
 		if (input == null) return null;
@@ -19,13 +18,15 @@ public class GTRecipeInputHelper {
 		return input.toString();
 	}
 
-	public static Collection<GTRecipeInput> filterUniqueInputs(Collection<GTRecipeInput> inputs) {
-		Collection<GTRecipeInput> result = new ArrayList<>();
+	public static int getTierFromName(String name) {
+		if (name == null || name.isEmpty()) return -1;
 
-		inputs.stream()
-				.filter(input -> result.stream().noneMatch(i -> i.equalIgnoreAmount(input)))
-				.forEach(result::add);
+		for (int i = 0; i < GTValues.VN.length; ++i) {
+			if (GTValues.VN[i].equalsIgnoreCase(name)) {
+				return i;
+			}
+		}
 
-		return result;
+		return -1;
 	}
 }

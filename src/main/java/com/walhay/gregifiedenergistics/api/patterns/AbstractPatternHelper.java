@@ -7,7 +7,7 @@ import appeng.api.storage.channels.IFluidStorageChannel;
 import appeng.api.storage.channels.IItemStorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
-import com.walhay.gregifiedenergistics.api.util.GTRecipeInputHelper;
+import com.walhay.gregifiedenergistics.api.util.GTHelperUtility;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.ingredients.GTRecipeInput;
 import java.lang.ref.WeakReference;
@@ -72,7 +72,7 @@ public abstract class AbstractPatternHelper implements IPatternProvidable, ISubs
 
 		for (Map.Entry<Integer, GTRecipeInput> entry : subMap.entrySet()) {
 			GTRecipeInput input = entry.getValue();
-			String name = GTRecipeInputHelper.getRecipeInputName(input);
+			String name = GTHelperUtility.getRecipeInputName(input);
 
 			ItemStack stack = input.getInputStacks()[storage.getOption(name)];
 

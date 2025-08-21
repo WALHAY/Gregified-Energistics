@@ -1,5 +1,6 @@
 package com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts;
 
+import static com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsDataCodes.SUBSTITUTION_CHANGE;
 import static com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionStorage.STORAGE_TAG;
 import static com.walhay.gregifiedenergistics.api.util.BlockingMode.BLOCKING_MODE_TAG;
 
@@ -145,7 +146,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 					new TabGroup<AbstractWidgetGroup>(TabLocation.HORIZONTAL_TOP_LEFT, Position.ORIGIN);
 
 			if (patternsGrid != null) {
-				patternsGrid.setSelfPosition(new Position(center - patternsWidth / 2, 30));
+				patternsGrid.setSelfPosition(new Position(center - patternsWidth / 2, 40));
 
 				tabGroup.addTab(
 						new ItemTabInfo(
@@ -154,7 +155,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 										.definitions()
 										.items()
 										.encodedPattern()
-										.maybeStack(0)
+										.maybeStack(1)
 										.get()),
 						patternsGrid);
 			}
@@ -167,7 +168,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 										.definitions()
 										.items()
 										.memoryCard()
-										.maybeStack(0)
+										.maybeStack(1)
 										.get()),
 						substitutionGrid);
 
@@ -290,6 +291,11 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 		if (descriptor == GregtechDataCodes.WORKING_ENABLED) {
 			this.workingEnabled = buf.readBoolean();
 			scheduleRenderUpdate();
+		} else if (descriptor == SUBSTITUTION_CHANGE) {
+			try {
+				this.substitutionStorage.deserializeNBT(buf.readCompoundTag());
+			} catch (IOException ignored) {
+			}
 		}
 	}
 
@@ -339,6 +345,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 					craftingHelper.addCraftingOption(getCraftingProvider(), details);
 				}
 			}
+			notifySubstitutionChange();
 		}
 	}
 
@@ -580,6 +587,12 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 			} catch (GridAccessException ignored) {
 			}
 		}
+	}
+
+	private void notifySubstitutionChange() {
+		if (substitutionStorage == null) return;
+
+		writeCustomData(SUBSTITUTION_CHANGE, buf -> buf.writeCompoundTag(substitutionStorage.serializeNBT()));
 	}
 
 	/* ###################################

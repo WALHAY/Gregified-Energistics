@@ -16,10 +16,9 @@ import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.recipes.Recipe;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -33,7 +32,7 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 
 	private static final String OPTICAL_FACING_TAG = "OpticalFacing";
 
-	private List<RecipePatternHelper> patterns = Collections.emptyList();
+	private List<RecipePatternHelper> patterns = new ArrayList<>();
 	private EnumFacing opticalFacing = EnumFacing.DOWN;
 
 	public MTEMEAssemblyLineOpticalBus(ResourceLocation metaTileEntityId, int tier) {
@@ -43,27 +42,26 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 	@Override
 	public boolean onScrewdriverClick(
 			EntityPlayer playerIn, EnumHand hand, EnumFacing facing, CuboidRayTraceResult hitResult) {
-		if (playerIn.isSneaking()) {
-			if (opticalFacing != facing) {
-				opticalFacing = facing;
-				writeCustomData(CHANGE_OPTICAL_SIDE, buf -> buf.writeEnumValue(opticalFacing));
-			}
-
+		if (opticalFacing != facing) {
+			opticalFacing = facing;
+			writeCustomData(CHANGE_OPTICAL_SIDE, buf -> buf.writeEnumValue(opticalFacing));
+			updatePatternData();
 			return true;
 		}
+
 		return super.onScrewdriverClick(playerIn, hand, facing, hitResult);
 	}
 
 	@Override
 	public void setFrontFacing(EnumFacing frontFacing) {
 		super.setFrontFacing(frontFacing);
-		notifyPatternChange();
+		updatePatternData();
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound data) {
 		super.writeToNBT(data);
-		data.setString(OPTICAL_FACING_TAG, opticalFacing.toString());
+		data.setString(OPTICAL_FACING_TAG, opticalFacing.name());
 		return data;
 	}
 
@@ -120,11 +118,13 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 
 			var recipes = data.getRecipes();
 			if (recipes == null) {
-				patterns = Collections.emptyList();
+				patterns.clear();
 				return;
 			}
 
-			patterns = recipes.stream().map(RecipePatternHelper::new).collect(Collectors.toList());
+			recipes.stream().map(RecipePatternHelper::new).forEach(patterns::add);
+
+			notifyPatternChange();
 		}
 	}
 
@@ -142,7 +142,6 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 	public void onRecipesUpdate(Collection<INetRecipeHandler> seen) {
 		seen.add(this);
 		updatePatternData();
-		notifyPatternChange();
 	}
 
 	@Override

@@ -4,6 +4,8 @@ import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.items.misc.ItemEncodedPattern;
 import com.walhay.gregifiedenergistics.api.capability.AbstractPatternItemHandler;
 import com.walhay.gregifiedenergistics.api.patterns.implementations.DataStickPatternHelper;
+import com.walhay.gregifiedenergistics.common.gui.DataStickGridWidget;
+import gregtech.api.gui.widgets.AbstractWidgetGroup;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.util.AssemblyLineManager;
@@ -19,7 +21,7 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 
 	public static final String PATTERN_INVENTORY_TAG = "PatternInventory";
 
-	private final DataStickHandler patternHandler = new DataStickHandler(16);
+	private final DataStickHandler patternHandler = new DataStickHandler(36);
 
 	public MTEMEAssemblyLineBus(ResourceLocation metaTileEntityId, int tier) {
 		super(metaTileEntityId, tier);
@@ -28,6 +30,11 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 	@Override
 	public MetaTileEntity createMetaTileEntity(IGregTechTileEntity metaTileEntity) {
 		return new MTEMEAssemblyLineBus(metaTileEntityId, getTier());
+	}
+
+	@Override
+	protected AbstractWidgetGroup createPatternsGrid() {
+		return new DataStickGridWidget(patternHandler);
 	}
 
 	@Override
