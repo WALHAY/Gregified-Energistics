@@ -45,7 +45,9 @@ public abstract class AbstractGridWidget<K> extends WidgetGroup {
 			}
 		}
 
-		setSize(new Size(width + x, height + y));
+		int size = items.size();
+		setSize(new Size(
+				Math.min(size, columns) * 18 + x, (int) Math.min(rows, Math.ceil((double) size / columns)) * 18 + y));
 	}
 
 	public abstract Widget createWidget(K item, int row, int column);

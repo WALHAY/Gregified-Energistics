@@ -1,6 +1,7 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.recipes;
 
-import com.walhay.gregifiedenergistics.api.capability.*;
+import com.walhay.gregifiedenergistics.mixins.interfaces.IRecipeAccessor;
+import com.walhay.gregifiedenergistics.mixins.interfaces.IRecipeMapAccessor;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;

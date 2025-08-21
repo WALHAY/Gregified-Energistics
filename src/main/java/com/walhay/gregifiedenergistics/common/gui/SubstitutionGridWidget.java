@@ -17,19 +17,24 @@ public class SubstitutionGridWidget extends AbstractGridWidget<String> {
 	private final String name;
 
 	public SubstitutionGridWidget(
-			int x, int y, String label, ISubstitutionStorage<String> storage, MTEAbstractAssemblyLineBus mte) {
+			int x,
+			int y,
+			String label,
+			Collection<String> options,
+			ISubstitutionStorage<String> storage,
+			MTEAbstractAssemblyLineBus mte) {
 		super(x, y, 4, 9);
 		this.storage = storage;
 		this.mte = mte;
 		this.name = label;
 
-		generateGrid(storage.getOptions());
+		generateGrid(options);
 	}
 
 	@Override
 	protected void generateGrid(int x, int y, Collection<String> items) {
-		addWidget(new LabelWidget(x, y, name));
-		super.generateGrid(x + 10, y + 10, items);
+		addWidget(new LabelWidget(x, y + 1, name));
+		super.generateGrid(x, y + 10, items);
 	}
 
 	@Override

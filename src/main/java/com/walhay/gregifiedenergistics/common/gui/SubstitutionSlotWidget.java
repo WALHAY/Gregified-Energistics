@@ -27,12 +27,6 @@ public class SubstitutionSlotWidget extends Widget {
 	public void drawInBackground(int mouseX, int mouseY, float partialTicks, IRenderContext context) {
 		Position pos = getPosition();
 		GuiTextures.SLOT.draw(pos.x, pos.y, 18, 18);
-	}
-
-	@Override
-	public void drawInForeground(int mouseX, int mouseY) {
-		super.drawInForeground(mouseX, mouseY);
-		Position pos = getPosition();
 		ItemStack stack = inputs.get(selected);
 		drawItemStack(stack, pos.x + 1, pos.y + 1, "");
 	}

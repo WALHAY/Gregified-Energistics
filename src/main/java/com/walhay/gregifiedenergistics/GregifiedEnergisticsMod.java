@@ -3,6 +3,7 @@ package com.walhay.gregifiedenergistics;
 import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabilities;
 import com.walhay.gregifiedenergistics.api.render.GregifiedEnergisticsTextures;
 import com.walhay.gregifiedenergistics.common.metatileentities.MetaTileEntities;
+import gregtech.api.unification.ore.OrePrefix;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -26,5 +27,7 @@ public class GregifiedEnergisticsMod {
 		MetaTileEntities.init();
 		GregifiedEnergisticsTextures.init();
 		GregifiedEnergisticsCapabilities.register();
+		OrePrefix.circuit.setMarkerPrefix(false);
+		OrePrefix.battery.setMarkerPrefix(false);
 	}
 }

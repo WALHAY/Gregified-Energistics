@@ -1,6 +1,6 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.recipes;
 
-import com.walhay.gregifiedenergistics.api.capability.IRecipeAccessor;
+import com.walhay.gregifiedenergistics.mixins.interfaces.IRecipeAccessor;
 import gregtech.api.recipes.Recipe;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;

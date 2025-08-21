@@ -25,8 +25,7 @@ import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.render.GregifiedEnergisticsTextures;
 import com.walhay.gregifiedenergistics.api.util.BlockingMode;
-import com.walhay.gregifiedenergistics.common.gui.SubstitutionGridWidget;
-import gregtech.api.GTValues;
+import com.walhay.gregifiedenergistics.common.gui.SubstitutionListWidget;
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.GregtechTileCapabilities;
 import gregtech.api.capability.impl.MultiblockRecipeLogic;
@@ -127,8 +126,8 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 	}
 
 	protected AbstractWidgetGroup createSubstitutionGrid() {
-		SubstitutionGridWidget grid = new SubstitutionGridWidget(0, 30, GTValues.VNF[3], substitutionStorage, this);
-		return grid;
+		SubstitutionListWidget list = new SubstitutionListWidget(10, 30, substitutionStorage, this);
+		return list;
 	}
 
 	private ModularUI.Builder createUITemplate(EntityPlayer player) {

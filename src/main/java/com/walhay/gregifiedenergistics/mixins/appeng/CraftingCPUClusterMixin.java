@@ -3,11 +3,11 @@ package com.walhay.gregifiedenergistics.mixins.appeng;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
-import com.walhay.gregifiedenergistics.api.capability.IRecipeAccessor;
-import com.walhay.gregifiedenergistics.api.capability.IRecipeMapAccessor;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.patterns.implementations.RecipePatternHelper;
 import com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionStorage;
+import com.walhay.gregifiedenergistics.mixins.interfaces.IRecipeAccessor;
+import com.walhay.gregifiedenergistics.mixins.interfaces.IRecipeMapAccessor;
 import com.walhay.gregifiedenergistics.mixins.interfaces.ITaskProgressAccessor;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMaps;
@@ -72,7 +72,7 @@ public class CraftingCPUClusterMixin {
 		if (entry.getKey() instanceof RecipePatternHelper helper) {
 			IRecipeAccessor recipe = (IRecipeAccessor) helper.getRecipe();
 
-			ISubstitutionStorage storage = helper.getSubstitutionStorage();
+			ISubstitutionStorage<String> storage = helper.getSubstitutionStorage();
 			if (storage != null) item.setTag(SubstitutionStorage.STORAGE_TAG, storage.serializeNBT());
 
 			item.setInteger("recipeId", recipe.getRecipeId());
@@ -101,7 +101,7 @@ public class CraftingCPUClusterMixin {
 		if (item.hasKey("recipeId")) {
 			int recipeId = item.getInteger("recipeId");
 
-			ISubstitutionStorage storage = new SubstitutionStorage();
+			ISubstitutionStorage<String> storage = new SubstitutionStorage();
 			if (item.hasKey(SubstitutionStorage.STORAGE_TAG))
 				storage.deserializeNBT(item.getCompoundTag(SubstitutionStorage.STORAGE_TAG));
 
