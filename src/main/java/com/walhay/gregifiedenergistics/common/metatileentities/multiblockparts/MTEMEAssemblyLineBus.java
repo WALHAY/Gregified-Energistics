@@ -82,7 +82,9 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 			if (stack.isEmpty()) return null;
 
 			if (AssemblyLineManager.isStackDataItem(stack, true)) {
-				return new DataStickPatternHelper(stack);
+				DataStickPatternHelper helper = new DataStickPatternHelper(stack);
+				helper.injectSubstitutions(substitutionStorage);
+				return helper;
 			} else if (stack.getItem() instanceof ItemEncodedPattern itemPattern) {
 				return itemPattern.getPatternForItem(stack, getWorld());
 			}

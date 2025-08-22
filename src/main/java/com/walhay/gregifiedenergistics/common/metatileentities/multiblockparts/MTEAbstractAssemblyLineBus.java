@@ -360,13 +360,11 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 		if (isAttachedToMultiBlock() && isWorkingEnabled()) {
 			for (ICraftingPatternDetails details : getPatterns()) {
 				if (details instanceof AbstractPatternHelper helper) {
-					helper.injectSubstitutions(substitutionStorage);
 					helper.providePatterns(getCraftingProvider(), craftingHelper);
 				} else if (details != null) {
 					craftingHelper.addCraftingOption(getCraftingProvider(), details);
 				}
 			}
-			notifySubstitutionChange();
 		}
 	}
 
@@ -604,10 +602,24 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 	}
 
 	@Override
-	public void notifySubstitutionChange() {
+	public void notifySubstitutionRegister() {
 		if (substitutionStorage == null) return;
 
 		writeCustomData(SUBSTITUTION_CHANGE, buf -> buf.writeCompoundTag(substitutionStorage.serializeNBT()));
+	}
+
+	@Override
+	public void notifySubstitutionChange() {
+		if (substitutionStorage == null) return;
+
+		for (ICraftingPatternDetails details : getPatterns()) {
+			if (details instanceof AbstractPatternHelper helper) {
+				helper.injectSubstitutions(substitutionStorage);
+			}
+		}
+
+		writeCustomData(SUBSTITUTION_CHANGE, buf -> buf.writeCompoundTag(substitutionStorage.serializeNBT()));
+		notifyPatternChange();
 	}
 
 	/* ###################################

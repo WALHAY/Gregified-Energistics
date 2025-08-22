@@ -29,11 +29,19 @@ public class SubstitutionStorage implements ISubstitutionStorage<String> {
 		}
 	}
 
+	protected void onSubstitutionRegister() {
+		for (ISubstitutionNotifiable notifiable : notifiables) {
+			if (notifiable == null) continue;
+
+			notifiable.notifySubstitutionRegister();
+		}
+	}
+
 	@Override
 	public int getOption(String name) {
 		if (!subMap.containsKey(name)) {
 			subMap.put(name, 0);
-			onSubstitutionChange();
+			onSubstitutionRegister();
 			return 0;
 		}
 

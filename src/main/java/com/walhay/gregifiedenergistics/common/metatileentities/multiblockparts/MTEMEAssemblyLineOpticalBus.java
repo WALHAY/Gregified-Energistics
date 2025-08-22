@@ -117,12 +117,16 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 			if (data == null) return;
 
 			var recipes = data.getRecipes();
-			if (recipes == null) {
+			if (recipes == null || recipes.isEmpty()) {
 				patterns.clear();
+				notifyPatternChange();
 				return;
 			}
 
-			recipes.stream().map(RecipePatternHelper::new).forEach(patterns::add);
+			recipes.stream().map(RecipePatternHelper::new).forEach(pattern -> {
+				pattern.injectSubstitutions(substitutionStorage);
+				patterns.add(pattern);
+			});
 
 			notifyPatternChange();
 		}
