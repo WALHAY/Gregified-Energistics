@@ -1,15 +1,14 @@
 package com.walhay.gregifiedenergistics.api.patterns.implementations;
 
 import appeng.api.networking.crafting.ICraftingMedium;
-import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.networking.crafting.ICraftingProviderHelper;
 import com.walhay.gregifiedenergistics.api.patterns.AbstractPatternHelper;
+import com.walhay.gregifiedenergistics.api.patterns.IProvidablePattern;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.recipes.machines.IResearchRecipeMap;
 import gregtech.api.util.AssemblyLineManager;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Arrays;
 import java.util.Collection;
 import javax.annotation.Nonnull;
@@ -30,7 +29,7 @@ public class DataStickPatternHelper extends AbstractPatternHelper {
 
 		if (researchId == null) return;
 
-		ObjectOpenHashSet<Recipe> recipes = (ObjectOpenHashSet<Recipe>)
+		Collection<Recipe> recipes =
 				((IResearchRecipeMap) RecipeMaps.ASSEMBLY_LINE_RECIPES).getDataStickEntry(researchId);
 
 		if (recipes == null) return;
@@ -46,7 +45,7 @@ public class DataStickPatternHelper extends AbstractPatternHelper {
 	}
 
 	@Override
-	public void injectSubstitutions(ISubstitutionStorage storage) {
+	public void injectSubstitutions(ISubstitutionStorage<String> storage) {
 		if (patterns == null) return;
 
 		for (AbstractPatternHelper pattern : patterns) {
@@ -57,23 +56,18 @@ public class DataStickPatternHelper extends AbstractPatternHelper {
 	}
 
 	@Override
-	public void providePattern(ICraftingMedium medium, ICraftingProviderHelper helper) {
+	public void providePatterns(ICraftingMedium medium, ICraftingProviderHelper helper) {
 		if (patterns == null) return;
 
 		for (AbstractPatternHelper pattern : patterns) {
 			if (pattern == null) continue;
 
-			pattern.providePattern(medium, helper);
+			pattern.providePatterns(medium, helper);
 		}
 	}
 
-	public boolean contains(ICraftingPatternDetails pattern) {
-		if (patterns == null) return false;
-
-		return Arrays.asList(patterns).contains(pattern);
-	}
-
-	public Collection<AbstractPatternHelper> getPatterns() {
+	@Override
+	public Collection<IProvidablePattern> getProvidedPatterns() {
 		return Arrays.asList(patterns);
 	}
 }

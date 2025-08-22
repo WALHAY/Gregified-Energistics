@@ -1,4 +1,4 @@
-package com.walhay.gregifiedenergistics.api.capability;
+package com.walhay.gregifiedenergistics.mixins.interfaces;
 
 import gregtech.api.recipes.Recipe;
 

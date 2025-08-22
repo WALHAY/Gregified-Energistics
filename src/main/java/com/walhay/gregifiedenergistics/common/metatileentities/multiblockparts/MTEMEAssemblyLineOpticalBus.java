@@ -8,28 +8,17 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
 import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabilities;
-import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsDataCodes;
 import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
 import com.walhay.gregifiedenergistics.api.capability.IOpticalNetRecipeHandler;
-import com.walhay.gregifiedenergistics.api.capability.IRecipeAccessor;
-import com.walhay.gregifiedenergistics.api.capability.IRecipeMapAccessor;
-import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionHandler;
 import com.walhay.gregifiedenergistics.api.patterns.implementations.RecipePatternHelper;
-import com.walhay.gregifiedenergistics.common.gui.GhostGridWidget;
-import gregtech.api.gui.Widget;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.recipes.Recipe;
-import gregtech.api.recipes.RecipeMaps;
-import gregtech.api.recipes.ingredients.GTRecipeInput;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -43,7 +32,7 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 
 	private static final String OPTICAL_FACING_TAG = "OpticalFacing";
 
-	private List<RecipePatternHelper> patterns = Collections.emptyList();
+	private List<RecipePatternHelper> patterns = new ArrayList<>();
 	private EnumFacing opticalFacing = EnumFacing.DOWN;
 
 	public MTEMEAssemblyLineOpticalBus(ResourceLocation metaTileEntityId, int tier) {
@@ -53,27 +42,26 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 	@Override
 	public boolean onScrewdriverClick(
 			EntityPlayer playerIn, EnumHand hand, EnumFacing facing, CuboidRayTraceResult hitResult) {
-		if (playerIn.isSneaking()) {
-			if (opticalFacing != facing) {
-				opticalFacing = facing;
-				writeCustomData(CHANGE_OPTICAL_SIDE, buf -> buf.writeEnumValue(opticalFacing));
-			}
-
+		if (opticalFacing != facing) {
+			opticalFacing = facing;
+			writeCustomData(CHANGE_OPTICAL_SIDE, buf -> buf.writeEnumValue(opticalFacing));
+			updatePatternData();
 			return true;
 		}
+
 		return super.onScrewdriverClick(playerIn, hand, facing, hitResult);
 	}
 
 	@Override
 	public void setFrontFacing(EnumFacing frontFacing) {
 		super.setFrontFacing(frontFacing);
-		notifyPatternChange();
+		updatePatternData();
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound data) {
 		super.writeToNBT(data);
-		data.setString(OPTICAL_FACING_TAG, opticalFacing.toString());
+		data.setString(OPTICAL_FACING_TAG, opticalFacing.name());
 		return data;
 	}
 
@@ -101,21 +89,6 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 		if (dataId == CHANGE_OPTICAL_SIDE) {
 			opticalFacing = buf.readEnumValue(EnumFacing.class);
 			scheduleRenderUpdate();
-		} else if (dataId == GregifiedEnergisticsDataCodes.PATTERNS_CHANGE) {
-			patterns.clear();
-
-			int size = buf.readInt();
-			if (size == 0) return;
-
-			List<Integer> ids = new ArrayList<>(size);
-			for (int i = 0; i < size; ++i) ids.add(buf.readInt());
-
-			if (RecipeMaps.ASSEMBLY_LINE_RECIPES instanceof IRecipeMapAccessor recipeMap) {
-				patterns = ids.stream()
-						.map(recipeMap::getRecipeById)
-						.map(RecipePatternHelper::new)
-						.collect(Collectors.toList());
-			}
 		}
 	}
 
@@ -145,41 +118,14 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 
 			var recipes = data.getRecipes();
 			if (recipes == null) {
-				patterns = Collections.emptyList();
-				writeCustomData(GregifiedEnergisticsDataCodes.PATTERNS_CHANGE, buf -> buf.writeInt(0));
+				patterns.clear();
 				return;
 			}
 
-			patterns = recipes.stream().map(RecipePatternHelper::new).collect(Collectors.toList());
+			recipes.stream().map(RecipePatternHelper::new).forEach(patterns::add);
 
-			writeCustomData(GregifiedEnergisticsDataCodes.PATTERNS_CHANGE, buf -> {
-				buf.writeInt(recipes.size());
-				for (Recipe recipe : recipes) {
-					if (recipe instanceof IRecipeAccessor accessor) buf.writeInt(accessor.getRecipeId());
-				}
-			});
+			notifyPatternChange();
 		}
-	}
-
-	@Override
-	protected String usedPatternsInfo() {
-		return Integer.toString(patterns.size());
-	}
-
-	@Override
-	protected Widget createPatternListWidget(int x, int y) {
-		Set<GTRecipeInput> inputs = getPatterns().stream()
-				.filter(ISubstitutionHandler.class::isInstance)
-				.map(ISubstitutionHandler.class::cast)
-				.map(ISubstitutionHandler::getSubstitutions)
-				.flatMap(Collection::stream)
-				.collect(Collectors.toSet());
-
-		GhostGridWidget grid = new GhostGridWidget(10, 40, substitutionStorage, this);
-
-		grid.initGrid(inputs);
-
-		return grid;
 	}
 
 	@Override
@@ -196,7 +142,6 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 	public void onRecipesUpdate(Collection<INetRecipeHandler> seen) {
 		seen.add(this);
 		updatePatternData();
-		notifyPatternChange();
 	}
 
 	@Override

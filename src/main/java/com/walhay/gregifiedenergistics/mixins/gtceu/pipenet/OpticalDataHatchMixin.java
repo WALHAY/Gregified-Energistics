@@ -40,8 +40,7 @@ public abstract class OpticalDataHatchMixin extends MetaTileEntityMultiblockNoti
 	public void setFrontFacing(EnumFacing facing) {
 		EnumFacing oldFacing = this.frontFacing;
 		super.setFrontFacing(facing);
-		if(isTransmitter)
-			onRecipesUpdatePipe(new ArrayList<>(), oldFacing);
+		if (isTransmitter) onRecipesUpdatePipe(new ArrayList<>(), oldFacing);
 		onRecipesUpdate();
 	}
 

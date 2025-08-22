@@ -7,6 +7,7 @@ import appeng.api.storage.channels.IFluidStorageChannel;
 import appeng.api.storage.channels.IItemStorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import com.walhay.gregifiedenergistics.api.util.GTHelperUtility;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.ingredients.GTRecipeInput;
 import java.lang.ref.WeakReference;
@@ -18,7 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
-public abstract class AbstractPatternHelper implements IPatternProvidable, ISubstitutionHandler {
+public abstract class AbstractPatternHelper implements IProvidablePattern, ISubstitutionHandler<String> {
 
 	protected static final IItemStorageChannel itemChannel =
 			AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
@@ -29,7 +30,8 @@ public abstract class AbstractPatternHelper implements IPatternProvidable, ISubs
 	protected IAEFluidStack[] fluidInputs;
 	private int priority = 0;
 	private final Map<Integer, GTRecipeInput> subMap = new HashMap<>();
-	protected WeakReference<ISubstitutionStorage> substitutionStorage = new WeakReference<ISubstitutionStorage>(null);
+	protected WeakReference<ISubstitutionStorage<String>> substitutionStorage =
+			new WeakReference<ISubstitutionStorage<String>>(null);
 
 	protected void parseRecipe(Recipe recipe) {
 		inputs = recipe.getInputs().stream()
@@ -63,26 +65,28 @@ public abstract class AbstractPatternHelper implements IPatternProvidable, ISubs
 	}
 
 	@Override
-	public void injectSubstitutions(ISubstitutionStorage storage) {
+	public void injectSubstitutions(ISubstitutionStorage<String> storage) {
 		if (storage == null) return;
 
 		if (substitutionStorage.get() != storage) substitutionStorage = new WeakReference<>(storage);
 
 		for (Map.Entry<Integer, GTRecipeInput> entry : subMap.entrySet()) {
 			GTRecipeInput input = entry.getValue();
-			ItemStack stack = input.getInputStacks()[storage.getOption(input.toString())];
+			String name = GTHelperUtility.getRecipeInputName(input);
+
+			ItemStack stack = input.getInputStacks()[storage.getOption(name)];
 
 			inputs[entry.getKey()] = itemChannel.createStack(stack);
 		}
 	}
 
 	@Override
-	public ISubstitutionStorage getSubstitutionStorage() {
+	public ISubstitutionStorage<String> getSubstitutionStorage() {
 		return substitutionStorage.get();
 	}
 
 	@Override
-	public void providePattern(ICraftingMedium medium, ICraftingProviderHelper helper) {
+	public void providePatterns(ICraftingMedium medium, ICraftingProviderHelper helper) {
 		if (helper == null) return;
 
 		helper.addCraftingOption(medium, this);
