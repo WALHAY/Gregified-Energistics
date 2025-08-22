@@ -38,18 +38,6 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 	}
 
 	@Override
-	protected boolean containsPattern(ICraftingPatternDetails pattern) {
-		for (ICraftingPatternDetails details : getPatterns()) {
-			if (details == null) continue;
-
-			if (details.equals(pattern)) return true;
-
-			if (details instanceof DataStickPatternHelper helper) if (helper.contains(pattern)) return true;
-		}
-		return false;
-	}
-
-	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound data) {
 		super.writeToNBT(data);
 		data.setTag(PATTERN_INVENTORY_TAG, patternHandler.serializeNBT());

@@ -1,20 +1,20 @@
 package com.walhay.gregifiedenergistics.common.gui;
 
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
-import com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts.MTEAbstractAssemblyLineBus;
+import gregtech.api.gui.GuiTextures;
+import gregtech.api.gui.widgets.AbstractWidgetGroup;
+import gregtech.api.gui.widgets.DrawableWidget;
 import gregtech.api.gui.widgets.LabelWidget;
-import gregtech.api.gui.widgets.WidgetGroup;
 import gregtech.api.unification.OreDictUnifier;
-import gregtech.api.util.Size;
+import gregtech.api.util.Position;
 import java.util.Collection;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
-public class SubstitutionGridWidget extends WidgetGroup {
+public class SubstitutionGridWidget extends AbstractWidgetGroup {
 
 	private final ISubstitutionStorage<String> storage;
-	private final MTEAbstractAssemblyLineBus mte;
 	private final String label;
 	private Collection<String> options;
 	private final int slotsPerLine;
@@ -25,30 +25,21 @@ public class SubstitutionGridWidget extends WidgetGroup {
 			int slotsPerLine,
 			String label,
 			Collection<String> options,
-			ISubstitutionStorage<String> storage,
-			MTEAbstractAssemblyLineBus mte) {
+			ISubstitutionStorage<String> storage) {
+		super(new Position(x, y));
 		this.storage = storage;
-		this.mte = mte;
 		this.label = label;
 		this.options = options;
 		this.slotsPerLine = slotsPerLine;
 	}
 
 	public SubstitutionGridWidget(
-			int slotsPerLine,
-			String label,
-			Collection<String> options,
-			ISubstitutionStorage<String> storage,
-			MTEAbstractAssemblyLineBus mte) {
-		this(0, 0, slotsPerLine, label, options, storage, mte);
+			int slotsPerLine, String label, Collection<String> options, ISubstitutionStorage<String> storage) {
+		this(0, 0, slotsPerLine, label, options, storage);
 	}
 
-	public SubstitutionGridWidget(
-			String label,
-			Collection<String> options,
-			ISubstitutionStorage<String> storage,
-			MTEAbstractAssemblyLineBus mte) {
-		this(0, 0, 9, label, options, storage, mte);
+	public SubstitutionGridWidget(String label, Collection<String> options, ISubstitutionStorage<String> storage) {
+		this(0, 0, 9, label, options, storage);
 	}
 
 	@Override
@@ -57,7 +48,7 @@ public class SubstitutionGridWidget extends WidgetGroup {
 
 		int i = 0;
 		int textWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(label);
-		addWidget(new LabelWidget(18 / 2 * slotsPerLine - textWidth / 2, 0, label));
+		addWidget(new LabelWidget(18 / 2 * slotsPerLine - textWidth / 2, 2, label));
 
 		for (String option : options) {
 			List<ItemStack> items = OreDictUnifier.getAllWithOreDictionaryName(option);
@@ -65,15 +56,19 @@ public class SubstitutionGridWidget extends WidgetGroup {
 			int x = (i % slotsPerLine) * 18;
 			int y = (i++ / slotsPerLine) * 18 + 10;
 
-			// FIXME: change so that storage will accept notifiable and will notify mte on change instead of that cringe
-			SubstitutionSlotWidget slot = new SubstitutionSlotWidget(x, y, storage.getOption(option), items, o -> {
-				storage.setOption(option, o);
-				mte.notifyPatternChange();
-			});
+			SubstitutionSlotWidget slot = new SubstitutionSlotWidget(
+					x, y, storage.getOption(option), items, o -> storage.setOption(option, o));
 
 			addWidget(slot);
 		}
 
-		setSize(new Size(slotsPerLine * 18, 10 + 18 * (int) Math.ceil((double) i / slotsPerLine)));
+		int y = (i / slotsPerLine) * 18 + 10;
+		for (int j = i % slotsPerLine; j < slotsPerLine; ++j) {
+			int x = j * 18;
+			addWidget(new DrawableWidget(x, y, 18, 18).setBackgroundDrawer((a, b, c, d, e) -> {
+				Position position = e.getPosition();
+				GuiTextures.SLOT_DARK.draw(position.x, position.y, 18, 18);
+			}));
+		}
 	}
 }

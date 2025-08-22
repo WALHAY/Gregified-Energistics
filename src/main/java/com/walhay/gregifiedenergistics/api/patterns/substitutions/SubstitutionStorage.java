@@ -1,5 +1,6 @@
 package com.walhay.gregifiedenergistics.api.patterns.substitutions;
 
+import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionNotifiable;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,11 +15,25 @@ public class SubstitutionStorage implements ISubstitutionStorage<String> {
 	public static final String STORAGE_TAG = "SubstitutionStorage";
 
 	private Map<String, Integer> subMap = new HashMap<>();
+	private final ISubstitutionNotifiable[] notifiables;
+
+	public SubstitutionStorage(ISubstitutionNotifiable... notifiable) {
+		this.notifiables = notifiable;
+	}
+
+	protected void onSubstitutionChange() {
+		for (ISubstitutionNotifiable notifiable : notifiables) {
+			if (notifiable == null) continue;
+
+			notifiable.notifySubstitutionChange();
+		}
+	}
 
 	@Override
 	public int getOption(String name) {
 		if (!subMap.containsKey(name)) {
 			subMap.put(name, 0);
+			onSubstitutionChange();
 			return 0;
 		}
 
@@ -27,7 +42,10 @@ public class SubstitutionStorage implements ISubstitutionStorage<String> {
 
 	@Override
 	public void setOption(String name, int option) {
-		subMap.put(name, option);
+		if (subMap.get(name) != option) {
+			subMap.put(name, option);
+			onSubstitutionChange();
+		}
 	}
 
 	@Override

@@ -22,6 +22,7 @@ import codechicken.lib.vec.Matrix4;
 import com.walhay.gregifiedenergistics.api.gui.GregifiedEnergisticsGuiTextures;
 import com.walhay.gregifiedenergistics.api.metatileentity.MetaTileEntityCraftingProvider;
 import com.walhay.gregifiedenergistics.api.patterns.AbstractPatternHelper;
+import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionNotifiable;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.render.GregifiedEnergisticsTextures;
@@ -45,6 +46,7 @@ import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
 import gregtech.api.util.Position;
+import gregtech.api.util.Size;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.io.IOException;
@@ -71,7 +73,7 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingProvider<IAEFluidStack>
-		implements IMultiblockAbilityPart<IItemHandlerModifiable> {
+		implements IMultiblockAbilityPart<IItemHandlerModifiable>, ISubstitutionNotifiable {
 
 	public static final String WORKING_ENABLED_TAG = "WorkingEnabled";
 	public static final String USE_FLUID_TAG = "FluidMode";
@@ -81,7 +83,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 	private BlockingMode blockingMode = BlockingMode.NO_BLOCKING;
 	private boolean useFluids = true;
 	private boolean workingEnabled = true;
-	protected final ISubstitutionStorage<String> substitutionStorage = new SubstitutionStorage();
+	protected final ISubstitutionStorage<String> substitutionStorage = new SubstitutionStorage(this);
 
 	/* ###########################
 	###     MTE METHODS     ###
@@ -127,26 +129,40 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 	}
 
 	protected AbstractWidgetGroup createSubstitutionGrid() {
-		SubstitutionListWidget list = new SubstitutionListWidget(10, 30, substitutionStorage, this);
-		return list;
+		return new SubstitutionListWidget(substitutionStorage);
 	}
 
 	private ModularUI.Builder createUITemplate(EntityPlayer player) {
-		Builder builder = ModularUI.builder(GuiTextures.BACKGROUND, 176, 18 + 18 * 4 + 94);
+		Size patternsSize = Size.ZERO;
+		Size substitutionSize = Size.ZERO;
 
 		AbstractWidgetGroup patternsGrid = createPatternsGrid();
-		int patternsWidth = patternsGrid == null ? 0 : patternsGrid.getSize().width;
-
 		AbstractWidgetGroup substitutionGrid = createSubstitutionGrid();
 
-		int center = 176 / 2;
+		if (patternsGrid != null) {
+			patternsSize = patternsGrid.getSize();
+		}
+
+		if (substitutionGrid != null) {
+			substitutionSize = substitutionGrid.getSize();
+		}
+
+		int backgroundWidth = Math.max(176, Math.max(patternsSize.width, substitutionSize.width) + 14);
+
+		int height = Math.max(18 * 4, Math.max(patternsSize.height, substitutionSize.height));
+		int center = backgroundWidth / 2;
+
+		int inventoryStartX = center - 9 - 4 * 18;
+		int inventoryStartY = 40 + height + 12;
+
+		Builder builder = ModularUI.builder(GuiTextures.BACKGROUND, backgroundWidth, 40 + height + 94);
 
 		if (patternsGrid != null || substitutionGrid != null) {
 			TabGroup<AbstractWidgetGroup> tabGroup =
 					new TabGroup<AbstractWidgetGroup>(TabLocation.HORIZONTAL_TOP_LEFT, Position.ORIGIN);
 
 			if (patternsGrid != null) {
-				patternsGrid.setSelfPosition(new Position(center - patternsWidth / 2, 40));
+				patternsGrid.setSelfPosition(new Position(center - patternsSize.width / 2, 40));
 
 				tabGroup.addTab(
 						new ItemTabInfo(
@@ -160,7 +176,9 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 						patternsGrid);
 			}
 
-			if (substitutionGrid != null)
+			if (substitutionGrid != null) {
+				substitutionGrid.setSelfPosition(new Position(center - substitutionSize.width / 2, 40));
+
 				tabGroup.addTab(
 						new ItemTabInfo(
 								"gregifiedenergistics.gui.substitutions_grid",
@@ -171,6 +189,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 										.maybeStack(1)
 										.get()),
 						substitutionGrid);
+			}
 
 			builder.widget(tabGroup);
 		}
@@ -211,7 +230,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 						this::setUsingFluids)
 				.setTooltipText("gregifiedenergistics.gui.fluid_mode"));
 
-		builder.bindPlayerInventory(player.inventory, GuiTextures.SLOT, 7, 18 + 18 * 4 + 12);
+		builder.bindPlayerInventory(player.inventory, GuiTextures.SLOT, inventoryStartX, inventoryStartY);
 
 		return builder;
 	}
@@ -340,7 +359,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 			for (ICraftingPatternDetails details : getPatterns()) {
 				if (details instanceof AbstractPatternHelper helper) {
 					helper.injectSubstitutions(substitutionStorage);
-					helper.providePattern(getCraftingProvider(), craftingHelper);
+					helper.providePatterns(getCraftingProvider(), craftingHelper);
 				} else if (details != null) {
 					craftingHelper.addCraftingOption(getCraftingProvider(), details);
 				}
@@ -374,17 +393,10 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 		return false;
 	}
 
-	protected boolean containsPattern(ICraftingPatternDetails pattern) {
-		return getPatterns().contains(pattern);
-	}
-
 	// try to push pattern to import buses
 	@Override
 	public boolean pushPattern(ICraftingPatternDetails pattern, InventoryCrafting inventoryCrafting) {
-		if (hasItemsToSend()
-				|| (useFluids && hasFluidsToSend())
-				|| !getProxy().isActive()
-				|| !containsPattern(pattern)) {
+		if (hasItemsToSend() || (useFluids && hasFluidsToSend()) || !getProxy().isActive()) {
 			return false;
 		}
 
@@ -589,7 +601,8 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 		}
 	}
 
-	private void notifySubstitutionChange() {
+	@Override
+	public void notifySubstitutionChange() {
 		if (substitutionStorage == null) return;
 
 		writeCustomData(SUBSTITUTION_CHANGE, buf -> buf.writeCompoundTag(substitutionStorage.serializeNBT()));

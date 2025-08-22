@@ -2,7 +2,6 @@ package com.walhay.gregifiedenergistics.common.gui;
 
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.util.GTHelperUtility;
-import com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts.MTEAbstractAssemblyLineBus;
 import gregtech.api.GTValues;
 import gregtech.api.gui.widgets.ScrollableListWidget;
 import gregtech.api.unification.OreDictUnifier;
@@ -19,14 +18,22 @@ import net.minecraft.network.PacketBuffer;
 
 public class SubstitutionListWidget extends ScrollableListWidget {
 
-	private final MTEAbstractAssemblyLineBus mte;
 	private final ISubstitutionStorage<String> storage;
 	private int previousSize = 0;
+	private final int slotsPerLine;
 
-	public SubstitutionListWidget(int x, int y, ISubstitutionStorage<String> storage, MTEAbstractAssemblyLineBus mte) {
-		super(x, y, 18 * 9, 18 * 4);
+	public SubstitutionListWidget(ISubstitutionStorage<String> storage) {
+		this(9, storage);
+	}
+
+	public SubstitutionListWidget(int slotsPerLine, ISubstitutionStorage<String> storage) {
+		this(0, 0, slotsPerLine, storage);
+	}
+
+	public SubstitutionListWidget(int x, int y, int slotsPerLine, ISubstitutionStorage<String> storage) {
+		super(x, y, 18 * slotsPerLine + scrollPaneWidth, 18 * 4);
 		this.storage = storage;
-		this.mte = mte;
+		this.slotsPerLine = slotsPerLine;
 	}
 
 	protected void recalculateList() {
@@ -54,7 +61,7 @@ public class SubstitutionListWidget extends ScrollableListWidget {
 	}
 
 	protected void addGridWidget(String label, Collection<String> subInputs) {
-		SubstitutionGridWidget grid = new SubstitutionGridWidget(label, subInputs, storage, mte);
+		SubstitutionGridWidget grid = new SubstitutionGridWidget(slotsPerLine, label, subInputs, storage);
 		addWidget(grid);
 	}
 

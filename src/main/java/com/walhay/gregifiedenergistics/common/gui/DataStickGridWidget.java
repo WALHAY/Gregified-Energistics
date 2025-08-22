@@ -11,7 +11,7 @@ public class DataStickGridWidget extends WidgetGroup {
 	private final int slotsPerLine;
 
 	public DataStickGridWidget(int x, int y, int slotsPerLine, AbstractPatternItemHandler handler) {
-		super(x, y, 18 * slotsPerLine, handler.getSlots() / slotsPerLine * 18);
+		super(x, y, 18 * slotsPerLine, (handler.getSlots() + slotsPerLine - 1) / slotsPerLine * 18);
 		this.slotsPerLine = slotsPerLine;
 		this.handler = handler;
 	}
@@ -29,10 +29,10 @@ public class DataStickGridWidget extends WidgetGroup {
 		super.initWidget();
 
 		for (int i = 0; i < handler.getSlots(); ++i) {
-			int row = i / slotsPerLine;
-			int col = i % slotsPerLine;
+			int x = i % slotsPerLine * 18;
+			int y = i / slotsPerLine * 18;
 
-			SlotWidget slot = new SlotWidget(handler, i, row * 18, col * 18).setBackgroundTexture(GuiTextures.SLOT);
+			SlotWidget slot = new SlotWidget(handler, i, x, y).setBackgroundTexture(GuiTextures.SLOT);
 			addWidget(i, slot);
 		}
 	}

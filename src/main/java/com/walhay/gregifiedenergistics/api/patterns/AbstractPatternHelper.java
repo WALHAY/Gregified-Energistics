@@ -19,7 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
-public abstract class AbstractPatternHelper implements IPatternProvidable, ISubstitutionHandler<String> {
+public abstract class AbstractPatternHelper implements IProvidablePattern, ISubstitutionHandler<String> {
 
 	protected static final IItemStorageChannel itemChannel =
 			AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
@@ -86,7 +86,7 @@ public abstract class AbstractPatternHelper implements IPatternProvidable, ISubs
 	}
 
 	@Override
-	public void providePattern(ICraftingMedium medium, ICraftingProviderHelper helper) {
+	public void providePatterns(ICraftingMedium medium, ICraftingProviderHelper helper) {
 		if (helper == null) return;
 
 		helper.addCraftingOption(medium, this);
