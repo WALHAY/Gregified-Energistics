@@ -50,14 +50,14 @@ public class SubstitutionGridWidget extends AbstractWidgetGroup {
 		int textWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(label);
 		addWidget(new LabelWidget(18 / 2 * slotsPerLine - textWidth / 2, 2, label));
 
-		for (String option : options) {
-			List<ItemStack> items = OreDictUnifier.getAllWithOreDictionaryName(option);
+		for (String oreName : options) {
+			List<ItemStack> items = OreDictUnifier.getAllWithOreDictionaryName(oreName);
 
 			int x = (i % slotsPerLine) * 18;
 			int y = (i++ / slotsPerLine) * 18 + 10;
 
 			SubstitutionSlotWidget slot = new SubstitutionSlotWidget(
-					x, y, storage.getOption(option), items, o -> storage.setOption(option, o));
+					x, y, storage.getOption(oreName), items, option -> storage.setOption(oreName, option));
 
 			addWidget(slot);
 		}

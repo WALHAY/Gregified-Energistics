@@ -5,8 +5,10 @@ import gregtech.api.gui.IRenderContext;
 import gregtech.api.gui.Widget;
 import gregtech.api.util.Position;
 import gregtech.api.util.Size;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 
@@ -28,7 +30,29 @@ public class SubstitutionSlotWidget extends Widget {
 		Position pos = getPosition();
 		GuiTextures.SLOT.draw(pos.x, pos.y, 18, 18);
 		ItemStack stack = inputs.get(selected);
-		drawItemStack(stack, pos.x + 1, pos.y + 1, "");
+		drawItemStack(stack, pos.x + 1, pos.y + 1, null);
+	}
+
+	@Override
+	public void drawInForeground(int mouseX, int mouseY) {
+		super.drawInForeground(mouseX, mouseY);
+		if (isMouseOverElement(mouseX, mouseY)) {
+			if (isShiftDown()) {
+				for (int i = 0; i < inputs.size(); ++i) {
+					ItemStack stack = inputs.get(i);
+					int x = mouseX;
+					int y = mouseY + 18 * i;
+
+					GuiTextures.SLOT_DARK.draw(x, y, 18, 18);
+					drawItemStack(stack, x + 1, y + 1, null);
+				}
+			} else {
+				ItemStack selectedStack = inputs.get(selected);
+				String name = "Selected: " + selectedStack.getDisplayName();
+				int width = Minecraft.getMinecraft().fontRenderer.getStringWidth(name);
+				drawHoveringText(selectedStack, Arrays.asList(name, "Press shift to see more"), width, mouseX, mouseY);
+			}
+		}
 	}
 
 	@Override
