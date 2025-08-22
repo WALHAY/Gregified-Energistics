@@ -1,8 +1,18 @@
 gregifiedenergistics.machine.me_assembly_line_bus.name=ME Шина Сборочной Линии
 gregifiedenergistics.machine.me_assembly_line_optical_bus.name=ME Оптическая Шина Сборочной Линии
+
 gregifiedenergistics.gui.no_blocking=Режим Блокировки Отключен
 gregifiedenergistics.gui.blocking_mode=Режим Блокировки
 gregifiedenergistics.gui.crafting_blocking_mode=Режим Блокировки При Крафте
+
 gregifiedenergistics.gui.fluid_mode.enabled=Использовать жидкость
 gregifiedenergistics.gui.fluid_mode.disabled=Не использовать жидкость
-gregifiedenergistics.gui.pattern_list=Шаблоны: %s
+
+gregifiedenergistics.gui.substitutions_grid=Замены
+gregifiedenergistics.gui.patterns_grid=Шаблоны
+
+gregifiedenergistics.tool_action.memory_card.copy_substitution=§8Используйте отвертку, чтобы сохранить и вставить Данные замен
+
+gregifiedenergistics.machine.me.import_copy_settings=Настройки сохранены на Карту данных
+gregifiedenergistics.machine.me.import_paste_settings=Настройки из Карты данных применены
+

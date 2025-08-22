@@ -55,7 +55,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryCrafting;
@@ -110,13 +109,13 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 		return new NotifiableItemStackHandler(this, 1, getController(), false);
 	}
 
-	@Override
-	public void addInformation(ItemStack stack, @Nullable World player, List<String> tooltip, boolean advanced) {
-		tooltip.add(I18n.format("gregifiedenergistics.machine.me_assembly_line_hatch.info0"));
-		tooltip.add(I18n.format("gregifiedenergistics.machine.me_assembly_line_hatch.info1"));
-	}
-
 	// GUI helpers
+
+	@Override
+	public void addToolUsages(ItemStack stack, World world, List<String> tooltip, boolean advanced) {
+		super.addToolUsages(stack, world, tooltip, advanced);
+		tooltip.add(I18n.format("gregifiedenergistics.tool_action.memory_card.copy_substitution"));
+	}
 
 	@Override
 	protected ModularUI createUI(EntityPlayer player) {
@@ -217,7 +216,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 						BlockingMode.values().length,
 						() -> blockingMode.ordinal(),
 						index -> blockingMode = BlockingMode.values()[index])
-				.setTooltipHoverString(index -> I18n.format("gregifiedenergistics.machine.me_assembly_line_hatch.gui."
+				.setTooltipHoverString(index -> I18n.format("gregifiedenergistics.gui."
 						+ BlockingMode.values()[index].toString().toLowerCase())));
 
 		builder.widget(new ToggleButtonWidget(
@@ -248,14 +247,17 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 				nbt.setTag(STORAGE_TAG, substitutionStorage.serializeNBT());
 
 				heldItem.setTagCompound(nbt);
-				player.sendStatusMessage(new TextComponentString("Settings Saved"), true);
+				player.sendStatusMessage(
+						new TextComponentString(I18n.format("gregifiedenergistics.machine.me.copy_settings")), true);
 			} else {
 				var tag = heldItem.getSubCompound(STORAGE_TAG);
 				if (tag != null) {
 					substitutionStorage.deserializeNBT(tag);
 
 					notifyPatternChange();
-					player.sendStatusMessage(new TextComponentString("Settings Copied"), true);
+					player.sendStatusMessage(
+							new TextComponentString(I18n.format("gregifiedenergistics.machine.me.paste_settings")),
+							true);
 				}
 			}
 			return true;

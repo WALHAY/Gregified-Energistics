@@ -28,20 +28,4 @@ public class RecipePatternHelper extends AbstractPatternHelper {
 	public ItemStack getPattern() {
 		return item;
 	}
-
-	@Override
-	public int hashCode() {
-		return recipe.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Recipe rec) {
-			return rec.equals(recipe);
-		} else if (obj instanceof RecipePatternHelper rh) {
-			return rh.getRecipe().equals(recipe);
-		}
-
-		return false;
-	}
 }
