@@ -1,4 +1,4 @@
-package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
+package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet.net;
 
 import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabilities;
 import gregtech.common.pipelike.optical.net.OpticalNetWalker;

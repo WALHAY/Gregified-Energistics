@@ -1,4 +1,4 @@
-package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
+package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet.block;
 
 import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabilities;
 import gregtech.api.pipenet.tile.IPipeTile;

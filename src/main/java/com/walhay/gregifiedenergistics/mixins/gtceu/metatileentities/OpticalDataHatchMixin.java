@@ -1,4 +1,4 @@
-package com.walhay.gregifiedenergistics.mixins.gtceu.pipenet;
+package com.walhay.gregifiedenergistics.mixins.gtceu.metatileentities;
 
 import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabilities;
 import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
