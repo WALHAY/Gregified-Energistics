@@ -1,7 +1,7 @@
 package com.walhay.gregifiedenergistics.mixins.gtceu.metatileentities;
 
-import static com.walhay.gregifiedenergistics.common.metatileentities.MetaTileEntities.ME_ASSEBLY_LINE_BUS;
-import static com.walhay.gregifiedenergistics.common.metatileentities.MetaTileEntities.ME_ASSEMBLY_LINE_OPTICAL_BUS;
+import static com.walhay.gregifiedenergistics.common.metatileentities.GregifiedEnergisticsMetaTileEntities.ME_ASSEBLY_LINE_BUS;
+import static com.walhay.gregifiedenergistics.common.metatileentities.GregifiedEnergisticsMetaTileEntities.ME_ASSEMBLY_LINE_OPTICAL_BUS;
 import static gregtech.api.metatileentity.multiblock.MultiblockControllerBase.abilities;
 import static gregtech.api.metatileentity.multiblock.MultiblockControllerBase.any;
 import static gregtech.api.metatileentity.multiblock.MultiblockControllerBase.metaTileEntities;

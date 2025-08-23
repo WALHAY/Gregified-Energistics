@@ -7,7 +7,7 @@ import com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts.M
 import com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts.MTEMEAssemblyLineOpticalBus;
 import net.minecraft.util.ResourceLocation;
 
-public class MetaTileEntities {
+public class GregifiedEnergisticsMetaTileEntities {
 	private static int id = 11000;
 
 	public static MTEMEAssemblyLineBus ME_ASSEBLY_LINE_BUS;

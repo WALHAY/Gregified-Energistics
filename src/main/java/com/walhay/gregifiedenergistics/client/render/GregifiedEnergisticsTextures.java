@@ -1,4 +1,4 @@
-package com.walhay.gregifiedenergistics.api.render;
+package com.walhay.gregifiedenergistics.client.render;
 
 import com.walhay.gregifiedenergistics.GregifiedEnergisticsMod;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;

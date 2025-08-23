@@ -7,7 +7,6 @@ import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import gregtech.api.metatileentity.MTETrait;
 import gregtech.api.metatileentity.MetaTileEntity;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -27,13 +26,11 @@ public class SubstitutionStorage extends MTETrait implements ISubstitutionStorag
 
 	public SubstitutionStorage(MetaTileEntity mte) {
 		super(mte);
-		if (mte instanceof ISubstitutionNotifiable)
-			this.notifiable = (ISubstitutionNotifiable) mte;
+		if (mte instanceof ISubstitutionNotifiable) this.notifiable = (ISubstitutionNotifiable) mte;
 	}
 
 	protected void onSubstitutionChange() {
-		if (notifiable != null)
-			notifiable.notifySubstitutionChange();
+		if (notifiable != null) notifiable.notifySubstitutionChange();
 	}
 
 	@Override

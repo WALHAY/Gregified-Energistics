@@ -1,4 +1,4 @@
-package com.walhay.gregifiedenergistics.api.gui;
+package com.walhay.gregifiedenergistics.client.gui;
 
 import com.walhay.gregifiedenergistics.api.util.GEUtility;
 import gregtech.api.gui.resources.TextureArea;

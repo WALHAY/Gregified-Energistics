@@ -1,11 +1,9 @@
 package com.walhay.gregifiedenergistics;
 
-import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabilities;
-import com.walhay.gregifiedenergistics.api.render.GregifiedEnergisticsTextures;
-import com.walhay.gregifiedenergistics.common.metatileentities.MetaTileEntities;
-import gregtech.api.unification.ore.OrePrefix;
+import com.walhay.gregifiedenergistics.common.CommonProxy;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(
@@ -22,12 +20,14 @@ public class GregifiedEnergisticsMod {
 	@Mod.Instance
 	public static GregifiedEnergisticsMod INSTANCE;
 
+	@SidedProxy(
+			modId = GregifiedEnergisticsMod.MOD_ID,
+			clientSide = "com.walhay.gregifiedenergistics.client.ClientProxy",
+			serverSide = "com.walhay.gregifiedenergistics.common.CommonProxy")
+	public static CommonProxy proxy;
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		MetaTileEntities.init();
-		GregifiedEnergisticsTextures.init();
-		GregifiedEnergisticsCapabilities.register();
-		OrePrefix.circuit.setMarkerPrefix(false);
-		OrePrefix.battery.setMarkerPrefix(false);
+		proxy.preInit(event);
 	}
 }
