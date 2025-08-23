@@ -1,19 +1,17 @@
 package com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts;
 
+import static gregtech.api.GTValues.LuV;
+
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.items.misc.ItemEncodedPattern;
 import com.walhay.gregifiedenergistics.GregifiedEnergisticsConfig;
 import com.walhay.gregifiedenergistics.api.capability.AbstractPatternItemHandler;
 import com.walhay.gregifiedenergistics.api.patterns.implementations.DataStickPatternHelper;
 import com.walhay.gregifiedenergistics.common.gui.DataStickGridWidget;
-
 import gregtech.api.gui.widgets.AbstractWidgetGroup;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.util.AssemblyLineManager;
-
-import static gregtech.api.GTValues.LuV;
-
 import java.io.IOException;
 import java.util.Collection;
 import javax.annotation.Nonnull;
