@@ -18,14 +18,15 @@ import codechicken.lib.raytracer.CuboidRayTraceResult;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
-import com.walhay.gregifiedenergistics.client.gui.GregifiedEnergisticsGuiTextures;
+import com.walhay.gregifiedenergistics.GregifiedEnergisticsConfig;
 import com.walhay.gregifiedenergistics.api.metatileentity.MetaTileEntityCraftingProvider;
 import com.walhay.gregifiedenergistics.api.patterns.AbstractPatternHelper;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionNotifiable;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionStorage;
-import com.walhay.gregifiedenergistics.client.render.GregifiedEnergisticsTextures;
 import com.walhay.gregifiedenergistics.api.util.BlockingMode;
+import com.walhay.gregifiedenergistics.client.gui.GregifiedEnergisticsGuiTextures;
+import com.walhay.gregifiedenergistics.client.render.GregifiedEnergisticsTextures;
 import com.walhay.gregifiedenergistics.common.gui.SubstitutionListWidget;
 import gregtech.api.capability.GregtechDataCodes;
 import gregtech.api.capability.GregtechTileCapabilities;
@@ -126,7 +127,8 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 	}
 
 	protected AbstractWidgetGroup createSubstitutionGrid() {
-		return new SubstitutionListWidget(substitutionStorage);
+		int slotsPerLine = GregifiedEnergisticsConfig.guiConfig.substitutionSlotsPerLine;
+		return new SubstitutionListWidget(slotsPerLine, substitutionStorage);
 	}
 
 	private ModularUI.Builder createUITemplate(EntityPlayer player) {
@@ -252,7 +254,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 				if (tag != null) {
 					substitutionStorage.deserializeNBT(tag);
 
-					notifyPatternChange();
+					notifySubstitutionChange();
 					player.sendStatusMessage(
 							new TextComponentString(I18n.format("gregifiedenergistics.machine.me.paste_settings")),
 							true);

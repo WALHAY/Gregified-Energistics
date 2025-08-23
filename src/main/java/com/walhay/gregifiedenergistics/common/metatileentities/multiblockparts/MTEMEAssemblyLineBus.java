@@ -2,6 +2,7 @@ package com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts;
 
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.items.misc.ItemEncodedPattern;
+import com.walhay.gregifiedenergistics.GregifiedEnergisticsConfig;
 import com.walhay.gregifiedenergistics.api.capability.AbstractPatternItemHandler;
 import com.walhay.gregifiedenergistics.api.patterns.implementations.DataStickPatternHelper;
 import com.walhay.gregifiedenergistics.common.gui.DataStickGridWidget;
@@ -21,7 +22,8 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 
 	public static final String PATTERN_INVENTORY_TAG = "PatternInventory";
 
-	private final DataStickHandler patternHandler = new DataStickHandler(36);
+	private final DataStickHandler patternHandler =
+			new DataStickHandler(GregifiedEnergisticsConfig.machineConfig.patternHandlerSize);
 
 	public MTEMEAssemblyLineBus(ResourceLocation metaTileEntityId, int tier) {
 		super(metaTileEntityId, tier);
@@ -34,7 +36,9 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 
 	@Override
 	protected AbstractWidgetGroup createPatternsGrid() {
-		return new DataStickGridWidget(patternHandler);
+		int slotsPerLine = GregifiedEnergisticsConfig.guiConfig.patternSlotsPerLine;
+		if (slotsPerLine == 0) slotsPerLine = (int) Math.sqrt(patternHandler.getSlots());
+		return new DataStickGridWidget(slotsPerLine, patternHandler);
 	}
 
 	@Override

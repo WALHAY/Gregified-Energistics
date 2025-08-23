@@ -31,7 +31,7 @@ public class SubstitutionListWidget extends ScrollableListWidget {
 	}
 
 	public SubstitutionListWidget(int x, int y, int slotsPerLine, ISubstitutionStorage storage) {
-		super(x, y, 18 * slotsPerLine + scrollPaneWidth, 18 * 4);
+		super(x, y, 18 * slotsPerLine + scrollPaneWidth, 18 * 5);
 		this.storage = storage;
 		this.slotsPerLine = slotsPerLine;
 	}
