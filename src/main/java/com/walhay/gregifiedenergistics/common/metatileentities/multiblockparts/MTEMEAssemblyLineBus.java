@@ -6,10 +6,14 @@ import com.walhay.gregifiedenergistics.GregifiedEnergisticsConfig;
 import com.walhay.gregifiedenergistics.api.capability.AbstractPatternItemHandler;
 import com.walhay.gregifiedenergistics.api.patterns.implementations.DataStickPatternHelper;
 import com.walhay.gregifiedenergistics.common.gui.DataStickGridWidget;
+
 import gregtech.api.gui.widgets.AbstractWidgetGroup;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.util.AssemblyLineManager;
+
+import static gregtech.api.GTValues.LuV;
+
 import java.io.IOException;
 import java.util.Collection;
 import javax.annotation.Nonnull;
@@ -25,13 +29,13 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 	private final DataStickHandler patternHandler =
 			new DataStickHandler(GregifiedEnergisticsConfig.machineConfig.patternHandlerSize);
 
-	public MTEMEAssemblyLineBus(ResourceLocation metaTileEntityId, int tier) {
-		super(metaTileEntityId, tier);
+	public MTEMEAssemblyLineBus(ResourceLocation metaTileEntityId) {
+		super(metaTileEntityId, LuV);
 	}
 
 	@Override
 	public MetaTileEntity createMetaTileEntity(IGregTechTileEntity metaTileEntity) {
-		return new MTEMEAssemblyLineBus(metaTileEntityId, getTier());
+		return new MTEMEAssemblyLineBus(metaTileEntityId);
 	}
 
 	@Override

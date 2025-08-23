@@ -1,6 +1,7 @@
 package com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts;
 
 import static com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsDataCodes.CHANGE_OPTICAL_SIDE;
+import static gregtech.api.GTValues.ZPM;
 
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import codechicken.lib.raytracer.CuboidRayTraceResult;
@@ -11,6 +12,7 @@ import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabi
 import com.walhay.gregifiedenergistics.api.capability.INetRecipeHandler;
 import com.walhay.gregifiedenergistics.api.capability.IOpticalNetRecipeHandler;
 import com.walhay.gregifiedenergistics.api.patterns.implementations.RecipePatternHelper;
+
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.recipes.Recipe;
@@ -35,8 +37,13 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 	private List<RecipePatternHelper> patterns = new ArrayList<>();
 	private EnumFacing opticalFacing = EnumFacing.DOWN;
 
-	public MTEMEAssemblyLineOpticalBus(ResourceLocation metaTileEntityId, int tier) {
-		super(metaTileEntityId, tier);
+	public MTEMEAssemblyLineOpticalBus(ResourceLocation metaTileEntityId) {
+		super(metaTileEntityId, ZPM);
+	}
+
+	@Override
+	public MetaTileEntity createMetaTileEntity(IGregTechTileEntity metaTileEntity) {
+		return new MTEMEAssemblyLineOpticalBus(metaTileEntityId);
 	}
 
 	@Override
@@ -130,11 +137,6 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 
 			notifyPatternChange();
 		}
-	}
-
-	@Override
-	public MetaTileEntity createMetaTileEntity(IGregTechTileEntity metaTileEntity) {
-		return new MTEMEAssemblyLineOpticalBus(metaTileEntityId, getTier());
 	}
 
 	@Override
