@@ -1,70 +1,90 @@
 package com.walhay.gregifiedenergistics.api.patterns.substitutions;
 
+import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsCapabilities;
+import com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsDataCodes;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionNotifiable;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
+import gregtech.api.metatileentity.MTETrait;
+import gregtech.api.metatileentity.MetaTileEntity;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+
+import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants.NBT;
 
-public class SubstitutionStorage implements ISubstitutionStorage<String> {
+public class SubstitutionStorage extends MTETrait implements ISubstitutionStorage {
 
 	public static final String STORAGE_TAG = "SubstitutionStorage";
 
-	private Map<String, Integer> subMap = new HashMap<>();
-	private final ISubstitutionNotifiable[] notifiables;
+	private Object2IntOpenHashMap<String> substitutionMap = new Object2IntOpenHashMap<>();
+	private ISubstitutionNotifiable notifiable;
 
-	public SubstitutionStorage(ISubstitutionNotifiable... notifiable) {
-		this.notifiables = notifiable;
+	public SubstitutionStorage(MetaTileEntity mte) {
+		super(mte);
+		if (mte instanceof ISubstitutionNotifiable)
+			this.notifiable = (ISubstitutionNotifiable) mte;
 	}
 
 	protected void onSubstitutionChange() {
-		for (ISubstitutionNotifiable notifiable : notifiables) {
-			if (notifiable == null) continue;
-
+		if (notifiable != null)
 			notifiable.notifySubstitutionChange();
-		}
-	}
-
-	protected void onSubstitutionRegister() {
-		for (ISubstitutionNotifiable notifiable : notifiables) {
-			if (notifiable == null) continue;
-
-			notifiable.notifySubstitutionRegister();
-		}
 	}
 
 	@Override
 	public int getOption(String name) {
-		if (!subMap.containsKey(name)) {
-			subMap.put(name, 0);
-			onSubstitutionRegister();
+		if (!substitutionMap.containsKey(name)) {
+			substitutionMap.put(name, 0);
+			writeCustomData(GregifiedEnergisticsDataCodes.SUBSTITUTION_CHANGE, buf -> buf.writeString(name)
+					.writeInt(0));
 			return 0;
 		}
 
-		return subMap.get(name);
+		return substitutionMap.getInt(name);
 	}
 
 	@Override
 	public void setOption(String name, int option) {
-		if (subMap.get(name) != option) {
-			subMap.put(name, option);
+		if (substitutionMap.getInt(name) != option) {
+			substitutionMap.put(name, option);
+			writeCustomData(GregifiedEnergisticsDataCodes.SUBSTITUTION_CHANGE, buf -> buf.writeString(name)
+					.writeInt(option));
 			onSubstitutionChange();
 		}
+	}
+
+	@Override
+	public Collection<String> getOptions() {
+		return substitutionMap.keySet();
+	}
+
+	@Override
+	public <T> T getCapability(Capability<T> capability) {
+		if (capability == GregifiedEnergisticsCapabilities.CAPABILITY_SUBSTITUTION_STORAGE) {
+			return GregifiedEnergisticsCapabilities.CAPABILITY_SUBSTITUTION_STORAGE.cast(this);
+		}
+		return null;
+	}
+
+	@Override
+	public String getName() {
+		return STORAGE_TAG;
 	}
 
 	@Override
 	public NBTTagCompound serializeNBT() {
 		NBTTagCompound compound = new NBTTagCompound();
 		NBTTagList list = new NBTTagList();
-		for (Map.Entry<String, Integer> entry : subMap.entrySet()) {
+		for (Map.Entry<String, Integer> entry : substitutionMap.entrySet()) {
 			NBTTagCompound tag = new NBTTagCompound();
 
-			tag.setString("ingredient", entry.getKey());
-			tag.setInteger("option", entry.getValue());
+			tag.setString("Ingredient", entry.getKey());
+			tag.setInteger("Option", entry.getValue());
 
 			list.appendTag(tag);
 		}
@@ -79,16 +99,38 @@ public class SubstitutionStorage implements ISubstitutionStorage<String> {
 		NBTTagList nbt = compound.getTagList("Data", NBT.TAG_COMPOUND);
 		for (NBTBase base : nbt) {
 			if (base instanceof NBTTagCompound tag) {
-				String key = tag.getString("ingredient");
-				int option = tag.getInteger("option");
+				String key = tag.getString("Ingredient");
+				int option = tag.getInteger("Option");
 
-				subMap.put(key, option);
+				substitutionMap.put(key, option);
 			}
 		}
 	}
 
 	@Override
-	public Collection<String> getOptions() {
-		return subMap.keySet();
+	public void writeInitialSyncData(PacketBuffer buf) {
+		super.writeInitialSyncData(buf);
+		buf.writeCompoundTag(serializeNBT());
+	}
+
+	@Override
+	public void receiveInitialSyncData(PacketBuffer buf) {
+		super.receiveInitialSyncData(buf);
+		try {
+			deserializeNBT(buf.readCompoundTag());
+		} catch (IOException e) {
+
+		}
+	}
+
+	@Override
+	public void receiveCustomData(int discriminator, PacketBuffer buf) {
+		super.receiveCustomData(discriminator, buf);
+		if (discriminator == GregifiedEnergisticsDataCodes.SUBSTITUTION_CHANGE) {
+			String name = buf.readString(64);
+			int option = buf.readInt();
+
+			substitutionMap.put(name, option);
+		}
 	}
 }

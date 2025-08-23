@@ -19,7 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
-public abstract class AbstractPatternHelper implements IProvidablePattern, ISubstitutionHandler<String> {
+public abstract class AbstractPatternHelper implements IProvidablePattern, ISubstitutionHandler {
 
 	protected static final IItemStorageChannel itemChannel =
 			AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
@@ -30,8 +30,7 @@ public abstract class AbstractPatternHelper implements IProvidablePattern, ISubs
 	protected IAEFluidStack[] fluidInputs;
 	private int priority = 0;
 	private final Map<Integer, GTRecipeInput> subMap = new HashMap<>();
-	protected WeakReference<ISubstitutionStorage<String>> substitutionStorage =
-			new WeakReference<ISubstitutionStorage<String>>(null);
+	protected WeakReference<ISubstitutionStorage> substitutionStorage = new WeakReference<ISubstitutionStorage>(null);
 
 	protected void parseRecipe(Recipe recipe) {
 		inputs = recipe.getInputs().stream()
@@ -65,7 +64,7 @@ public abstract class AbstractPatternHelper implements IProvidablePattern, ISubs
 	}
 
 	@Override
-	public void injectSubstitutions(ISubstitutionStorage<String> storage) {
+	public void injectSubstitutions(ISubstitutionStorage storage) {
 		if (storage == null) return;
 
 		if (substitutionStorage.get() != storage) substitutionStorage = new WeakReference<>(storage);
@@ -81,7 +80,7 @@ public abstract class AbstractPatternHelper implements IProvidablePattern, ISubs
 	}
 
 	@Override
-	public ISubstitutionStorage<String> getSubstitutionStorage() {
+	public ISubstitutionStorage getSubstitutionStorage() {
 		return substitutionStorage.get();
 	}
 

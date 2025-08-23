@@ -14,18 +14,13 @@ import net.minecraft.item.ItemStack;
 
 public class SubstitutionGridWidget extends AbstractWidgetGroup {
 
-	private final ISubstitutionStorage<String> storage;
+	private final ISubstitutionStorage storage;
 	private final String label;
 	private Collection<String> options;
 	private final int slotsPerLine;
 
 	public SubstitutionGridWidget(
-			int x,
-			int y,
-			int slotsPerLine,
-			String label,
-			Collection<String> options,
-			ISubstitutionStorage<String> storage) {
+			int x, int y, int slotsPerLine, String label, Collection<String> options, ISubstitutionStorage storage) {
 		super(new Position(x, y));
 		this.storage = storage;
 		this.label = label;
@@ -34,11 +29,11 @@ public class SubstitutionGridWidget extends AbstractWidgetGroup {
 	}
 
 	public SubstitutionGridWidget(
-			int slotsPerLine, String label, Collection<String> options, ISubstitutionStorage<String> storage) {
+			int slotsPerLine, String label, Collection<String> options, ISubstitutionStorage storage) {
 		this(0, 0, slotsPerLine, label, options, storage);
 	}
 
-	public SubstitutionGridWidget(String label, Collection<String> options, ISubstitutionStorage<String> storage) {
+	public SubstitutionGridWidget(String label, Collection<String> options, ISubstitutionStorage storage) {
 		this(0, 0, 9, label, options, storage);
 	}
 

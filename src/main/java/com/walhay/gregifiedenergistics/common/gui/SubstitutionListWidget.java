@@ -18,19 +18,19 @@ import net.minecraft.network.PacketBuffer;
 
 public class SubstitutionListWidget extends ScrollableListWidget {
 
-	private final ISubstitutionStorage<String> storage;
+	private final ISubstitutionStorage storage;
 	private int previousSize = 0;
 	private final int slotsPerLine;
 
-	public SubstitutionListWidget(ISubstitutionStorage<String> storage) {
+	public SubstitutionListWidget(ISubstitutionStorage storage) {
 		this(9, storage);
 	}
 
-	public SubstitutionListWidget(int slotsPerLine, ISubstitutionStorage<String> storage) {
+	public SubstitutionListWidget(int slotsPerLine, ISubstitutionStorage storage) {
 		this(0, 0, slotsPerLine, storage);
 	}
 
-	public SubstitutionListWidget(int x, int y, int slotsPerLine, ISubstitutionStorage<String> storage) {
+	public SubstitutionListWidget(int x, int y, int slotsPerLine, ISubstitutionStorage storage) {
 		super(x, y, 18 * slotsPerLine + scrollPaneWidth, 18 * 4);
 		this.storage = storage;
 		this.slotsPerLine = slotsPerLine;

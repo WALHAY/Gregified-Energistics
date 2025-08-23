@@ -4,11 +4,11 @@ import java.util.Collection;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public interface ISubstitutionStorage<T> extends INBTSerializable<NBTTagCompound> {
+public interface ISubstitutionStorage extends INBTSerializable<NBTTagCompound> {
 
-	void setOption(T input, int option);
+	void setOption(String input, int option);
 
-	int getOption(T input);
+	int getOption(String input);
 
-	Collection<T> getOptions();
+	Collection<String> getOptions();
 }

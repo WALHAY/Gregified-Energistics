@@ -72,7 +72,7 @@ public class CraftingCPUClusterMixin {
 		if (entry.getKey() instanceof RecipePatternHelper helper) {
 			IRecipeAccessor recipe = (IRecipeAccessor) helper.getRecipe();
 
-			ISubstitutionStorage<String> storage = helper.getSubstitutionStorage();
+			ISubstitutionStorage storage = helper.getSubstitutionStorage();
 			if (storage != null) item.setTag(SubstitutionStorage.STORAGE_TAG, storage.serializeNBT());
 
 			item.setInteger("recipeId", recipe.getRecipeId());
@@ -101,7 +101,7 @@ public class CraftingCPUClusterMixin {
 		if (item.hasKey("recipeId")) {
 			int recipeId = item.getInteger("recipeId");
 
-			ISubstitutionStorage<String> storage = new SubstitutionStorage();
+			ISubstitutionStorage storage = new SubstitutionStorage(null);
 			if (item.hasKey(SubstitutionStorage.STORAGE_TAG))
 				storage.deserializeNBT(item.getCompoundTag(SubstitutionStorage.STORAGE_TAG));
 

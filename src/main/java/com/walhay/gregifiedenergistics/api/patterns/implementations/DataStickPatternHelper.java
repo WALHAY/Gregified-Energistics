@@ -45,7 +45,7 @@ public class DataStickPatternHelper extends AbstractPatternHelper {
 	}
 
 	@Override
-	public void injectSubstitutions(ISubstitutionStorage<String> storage) {
+	public void injectSubstitutions(ISubstitutionStorage storage) {
 		if (patterns == null) return;
 
 		for (AbstractPatternHelper pattern : patterns) {

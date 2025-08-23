@@ -1,6 +1,5 @@
 package com.walhay.gregifiedenergistics.common.metatileentities.multiblockparts;
 
-import static com.walhay.gregifiedenergistics.api.capability.GregifiedEnergisticsDataCodes.SUBSTITUTION_CHANGE;
 import static com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionStorage.STORAGE_TAG;
 import static com.walhay.gregifiedenergistics.api.util.BlockingMode.BLOCKING_MODE_TAG;
 
@@ -49,7 +48,6 @@ import gregtech.api.util.Position;
 import gregtech.api.util.Size;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -82,7 +80,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 	private BlockingMode blockingMode = BlockingMode.NO_BLOCKING;
 	private boolean useFluids = true;
 	private boolean workingEnabled = true;
-	protected final ISubstitutionStorage<String> substitutionStorage = new SubstitutionStorage(this);
+	protected final ISubstitutionStorage substitutionStorage = new SubstitutionStorage(this);
 
 	/* ###########################
 	###     MTE METHODS     ###
@@ -271,7 +269,6 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 		data.setBoolean(WORKING_ENABLED_TAG, workingEnabled);
 		data.setString(BLOCKING_MODE_TAG, blockingMode.toString());
 		data.setBoolean(USE_FLUID_TAG, useFluids);
-		data.setTag(STORAGE_TAG, substitutionStorage.serializeNBT());
 		return data;
 	}
 
@@ -281,7 +278,6 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 		workingEnabled = data.getBoolean(WORKING_ENABLED_TAG);
 		blockingMode = BlockingMode.valueOf(data.getString(BLOCKING_MODE_TAG));
 		useFluids = data.getBoolean(USE_FLUID_TAG);
-		substitutionStorage.deserializeNBT(data.getCompoundTag(STORAGE_TAG));
 	}
 
 	@Override
@@ -290,7 +286,6 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 		buf.writeBoolean(workingEnabled);
 		buf.writeEnumValue(blockingMode);
 		buf.writeBoolean(useFluids);
-		buf.writeCompoundTag(substitutionStorage.serializeNBT());
 	}
 
 	@Override
@@ -299,11 +294,6 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 		workingEnabled = buf.readBoolean();
 		blockingMode = buf.readEnumValue(BlockingMode.class);
 		useFluids = buf.readBoolean();
-		try {
-			substitutionStorage.deserializeNBT(buf.readCompoundTag());
-		} catch (IOException ignored) {
-			// :#
-		}
 	}
 
 	@Override
@@ -312,11 +302,6 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 		if (descriptor == GregtechDataCodes.WORKING_ENABLED) {
 			this.workingEnabled = buf.readBoolean();
 			scheduleRenderUpdate();
-		} else if (descriptor == SUBSTITUTION_CHANGE) {
-			try {
-				this.substitutionStorage.deserializeNBT(buf.readCompoundTag());
-			} catch (IOException ignored) {
-			}
 		}
 	}
 
@@ -602,13 +587,6 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 	}
 
 	@Override
-	public void notifySubstitutionRegister() {
-		if (substitutionStorage == null) return;
-
-		writeCustomData(SUBSTITUTION_CHANGE, buf -> buf.writeCompoundTag(substitutionStorage.serializeNBT()));
-	}
-
-	@Override
 	public void notifySubstitutionChange() {
 		if (substitutionStorage == null) return;
 
@@ -618,7 +596,6 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 			}
 		}
 
-		writeCustomData(SUBSTITUTION_CHANGE, buf -> buf.writeCompoundTag(substitutionStorage.serializeNBT()));
 		notifyPatternChange();
 	}
 
