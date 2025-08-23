@@ -2,7 +2,10 @@ package com.walhay.gregifiedenergistics.client.render;
 
 import com.walhay.gregifiedenergistics.GregifiedEnergisticsMod;
 import gregtech.client.renderer.texture.cube.SimpleOverlayRenderer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class GregifiedEnergisticsTextures {
 
 	public static SimpleOverlayRenderer ME_AL_HATCH_CONNECTOR_ACTIVE;

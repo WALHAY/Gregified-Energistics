@@ -1,6 +1,7 @@
 package com.walhay.gregifiedenergistics;
 
 import com.walhay.gregifiedenergistics.common.CommonProxy;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -29,5 +30,9 @@ public class GregifiedEnergisticsMod {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		proxy.preInit(event);
+	}
+
+	public static ResourceLocation gregifiedEnergisticsId(String path) {
+		return new ResourceLocation(GregifiedEnergisticsMod.MOD_ID, path);
 	}
 }
