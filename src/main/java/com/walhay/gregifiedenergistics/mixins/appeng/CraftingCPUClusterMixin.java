@@ -5,9 +5,9 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.patterns.implementations.RecipePatternHelper;
+import com.walhay.gregifiedenergistics.api.patterns.substitutions.AESubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.patterns.substitutions.SubstitutionStorage;
-import com.walhay.gregifiedenergistics.mixins.interfaces.IRecipeAccessor;
-import com.walhay.gregifiedenergistics.mixins.interfaces.IRecipeMapAccessor;
+import com.walhay.gregifiedenergistics.mixins.interfaces.IResearchRecipeMapAccessor;
 import com.walhay.gregifiedenergistics.mixins.interfaces.ITaskProgressAccessor;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMaps;
@@ -70,12 +70,19 @@ public class CraftingCPUClusterMixin {
 			Map.Entry<ICraftingPatternDetails, Object> entry,
 			NBTTagCompound item) {
 		if (entry.getKey() instanceof RecipePatternHelper helper) {
-			IRecipeAccessor recipe = (IRecipeAccessor) helper.getRecipe();
+			Recipe recipe = helper.getRecipe();
+
+			IResearchRecipeMapAccessor researchMap = (IResearchRecipeMapAccessor) RecipeMaps.ASSEMBLY_LINE_RECIPES;
+
+			if (researchMap == null) return;
+			int recipeId = researchMap.getIdFromRecipe(recipe);
+
+			if (recipeId < 0) return;
+
+			item.setInteger("recipeId", recipeId);
 
 			ISubstitutionStorage storage = helper.getSubstitutionStorage();
 			if (storage != null) item.setTag(SubstitutionStorage.STORAGE_TAG, storage.serializeNBT());
-
-			item.setInteger("recipeId", recipe.getRecipeId());
 		}
 	}
 
@@ -101,14 +108,22 @@ public class CraftingCPUClusterMixin {
 		if (item.hasKey("recipeId")) {
 			int recipeId = item.getInteger("recipeId");
 
-			ISubstitutionStorage storage = new SubstitutionStorage(null);
-			if (item.hasKey(SubstitutionStorage.STORAGE_TAG))
-				storage.deserializeNBT(item.getCompoundTag(SubstitutionStorage.STORAGE_TAG));
+			if (recipeId < 0) return;
 
-			Recipe recipe = ((IRecipeMapAccessor) RecipeMaps.ASSEMBLY_LINE_RECIPES).getRecipeById(recipeId);
+			IResearchRecipeMapAccessor researchMap = (IResearchRecipeMapAccessor) RecipeMaps.ASSEMBLY_LINE_RECIPES;
+			if (researchMap == null) return;
+
+			Recipe recipe = researchMap.getRecipeById(recipeId);
+			if(recipe == null) return;
+
 			RecipePatternHelper helper = new RecipePatternHelper(recipe, stack);
 
-			helper.injectSubstitutions(storage);
+			if (item.hasKey(SubstitutionStorage.STORAGE_TAG)) {
+				ISubstitutionStorage storage =
+						new AESubstitutionStorage(item.getCompoundTag(SubstitutionStorage.STORAGE_TAG));
+
+				helper.injectSubstitutions(storage);
+			}
 
 			tasks.put(helper, taskProgress);
 		}
