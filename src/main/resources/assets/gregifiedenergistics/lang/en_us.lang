@@ -1,5 +1,12 @@
 gregifiedenergistics.machine.me_assembly_line_bus.name=ME Assembly Line Bus
+gregifiedenergistics.machine.me_assembly_line_bus.tooltip=Place this block instead of first Assembly line Input bus
+gregifiedenergistics.machine.me_assembly_line_bus.datastick=Can use Data sticks to provide recipes
+gregifiedenergistics.machine.me_assembly_line_bus.pattern_slots=In pattern each slot relies to same Input bus of Assembly line
+gregifiedenergistics.machine.me_assembly_line_bus.fluid_mode=Fluid mode working only with Data sticks
+
 gregifiedenergistics.machine.me_assembly_line_optical_bus.name=ME Assembly Line Optical Bus
+gregifiedenergistics.machine.me_assembly_line_optical_bus.tooltip=Place this block instead of first Assembly line Input bus
+gregifiedenergistics.machine.me_assembly_line_optical_bus.optical_pipe=Connect to Data bank using optical pipe to provide recipes
 
 gregifiedenergistics.gui.no_blocking=No Blocking
 gregifiedenergistics.gui.blocking_mode=Blocking Mode
@@ -8,10 +15,13 @@ gregifiedenergistics.gui.crafting_blocking_mode=Crafting Blocking Mode
 gregifiedenergistics.gui.fluid_mode.enabled=Fluid Mode: Enabled
 gregifiedenergistics.gui.fluid_mode.disabled=Fluid Mode: Disabled
 
+gregifiedenergistics.gui.item_slot=Input Item Slot
+
 gregifiedenergistics.gui.substitutions_grid=Substitutions
 gregifiedenergistics.gui.patterns_grid=Patterns
 
 gregifiedenergistics.tool_action.memory_card.copy_substitution=§8Use Memory card to copy and paste Substitution data
+gregifiedenergistics.tool_action.screwdriwer.optical_facing=§8Use Screwdriwer to change Optical facing
 
 gregifiedenergistics.machine.me.copy_settings=Saved settings to Memory Card
 gregifiedenergistics.machine.me.paste_settings=Applied settings from Memory Card

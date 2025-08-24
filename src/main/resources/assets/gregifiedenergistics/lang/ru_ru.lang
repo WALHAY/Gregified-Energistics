@@ -1,5 +1,12 @@
 gregifiedenergistics.machine.me_assembly_line_bus.name=ME Шина Сборочной Линии
+gregifiedenergistics.machine.me_assembly_line_bus.tooltip=Разместите этот блок вместо первой входной шины сборочной линии
+gregifiedenergistics.machine.me_assembly_line_bus.datastick=Может использовать флешки с закодированными шаблонами
+gregifiedenergistics.machine.me_assembly_line_bus.pattern_slots=Каждый слот шаблона отвечает за соответствующую шину сборочной линии
+gregifiedenergistics.machine.me_assembly_line_bus.fluid_mode=Использование жидкостей работает только с флешками
+
 gregifiedenergistics.machine.me_assembly_line_optical_bus.name=ME Оптическая Шина Сборочной Линии
+gregifiedenergistics.machine.me_assembly_line_optical_bus.tooltip=Разместите этот блок вместо первой входной шины сборочной линии
+gregifiedenergistics.machine.me_assembly_line_optical_bus.optical_pipe=Присоединяется к банку данных с помощью оптической трубы
 
 gregifiedenergistics.gui.no_blocking=Режим Блокировки Отключен
 gregifiedenergistics.gui.blocking_mode=Режим Блокировки
@@ -8,10 +15,13 @@ gregifiedenergistics.gui.crafting_blocking_mode=Режим Блокировки 
 gregifiedenergistics.gui.fluid_mode.enabled=Использовать жидкость
 gregifiedenergistics.gui.fluid_mode.disabled=Не использовать жидкость
 
+gregifiedenergistics.gui.item_slot=Входной Слот
+
 gregifiedenergistics.gui.substitutions_grid=Замены
 gregifiedenergistics.gui.patterns_grid=Шаблоны
 
 gregifiedenergistics.tool_action.memory_card.copy_substitution=§8Используйте отвертку, чтобы сохранить и вставить Данные замен
+gregifiedenergistics.tool_action.screwdriwer.optical_facing=§8Используйте отвертку, чтобы повернуть оптический вход
 
 gregifiedenergistics.machine.me.import_copy_settings=Настройки сохранены на Карту данных
 gregifiedenergistics.machine.me.import_paste_settings=Настройки из Карты данных применены

@@ -14,11 +14,14 @@ import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.util.AssemblyLineManager;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import javax.annotation.Nonnull;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 
 public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 
@@ -29,6 +32,14 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 
 	public MTEMEAssemblyLineBus(ResourceLocation metaTileEntityId) {
 		super(metaTileEntityId, LuV);
+	}
+
+	@Override
+	public void addInformation(ItemStack stack, World world, List<String> tooltip, boolean advanced) {
+		super.addInformation(stack, world, tooltip, advanced);
+		tooltip.add(I18n.format("gregifiedenergistics.machine.me_assembly_line_bus.datastick"));
+		tooltip.add(I18n.format("gregifiedenergistics.machine.me_assembly_line_bus.pattern_slots"));
+		tooltip.add(I18n.format("gregifiedenergistics.machine.me_assembly_line_bus.fluid_mode"));
 	}
 
 	@Override

@@ -20,13 +20,16 @@ import gregtech.common.pipelike.optical.tile.TileEntityOpticalPipe;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 
 public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus implements IOpticalNetRecipeHandler {
@@ -43,6 +46,18 @@ public class MTEMEAssemblyLineOpticalBus extends MTEAbstractAssemblyLineBus impl
 	@Override
 	public MetaTileEntity createMetaTileEntity(IGregTechTileEntity metaTileEntity) {
 		return new MTEMEAssemblyLineOpticalBus(metaTileEntityId);
+	}
+
+	@Override
+	public void addInformation(ItemStack stack, World world, List<String> tooltip, boolean advanced) {
+		super.addInformation(stack, world, tooltip, advanced);
+		tooltip.add(I18n.format("gregifiedenergistics.machine.me_assembly_line_optical_bus.optical_pipe"));
+	}
+
+	@Override
+	public void addToolUsages(ItemStack stack, World world, List<String> tooltip, boolean advanced) {
+		super.addToolUsages(stack, world, tooltip, advanced);
+		tooltip.add(I18n.format("gregifiedenergistics.tool_action.screwdriwer.optical_facing"));
 	}
 
 	@Override
