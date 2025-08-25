@@ -114,7 +114,7 @@ public class CraftingCPUClusterMixin {
 			if (researchMap == null) return;
 
 			Recipe recipe = researchMap.getRecipeById(recipeId);
-			if(recipe == null) return;
+			if (recipe == null) return;
 
 			RecipePatternHelper helper = new RecipePatternHelper(recipe, stack);
 
