@@ -145,6 +145,8 @@ dependencies {
         testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
+
+    compileOnly 'org.jetbrains:annotations:26.0.2'
 }
 
 apply from: 'gradle/scripts/dependencies.gradle'

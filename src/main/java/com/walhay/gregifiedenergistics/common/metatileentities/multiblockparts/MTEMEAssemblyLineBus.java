@@ -22,6 +22,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
 public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 
@@ -35,7 +36,7 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, World world, List<String> tooltip, boolean advanced) {
+	public void addInformation(ItemStack stack, World world, @NotNull List<String> tooltip, boolean advanced) {
 		super.addInformation(stack, world, tooltip, advanced);
 		tooltip.add(I18n.format("gregifiedenergistics.machine.me_assembly_line_bus.datastick"));
 		tooltip.add(I18n.format("gregifiedenergistics.machine.me_assembly_line_bus.pattern_slots"));
@@ -77,7 +78,11 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 	public void receiveInitialSyncData(PacketBuffer buf) {
 		super.receiveInitialSyncData(buf);
 		try {
-			patternHandler.deserializeNBT(buf.readCompoundTag());
+			NBTTagCompound nbt = buf.readCompoundTag();
+
+			if (nbt == null) return;
+
+			patternHandler.deserializeNBT(nbt);
 		} catch (IOException ignored) {
 			// :#
 		}

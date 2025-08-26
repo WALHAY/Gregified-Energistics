@@ -16,7 +16,7 @@ public class SubstitutionGridWidget extends AbstractWidgetGroup {
 
 	private final ISubstitutionStorage storage;
 	private final String label;
-	private Collection<String> options;
+	private final Collection<String> options;
 	private final int slotsPerLine;
 
 	public SubstitutionGridWidget(

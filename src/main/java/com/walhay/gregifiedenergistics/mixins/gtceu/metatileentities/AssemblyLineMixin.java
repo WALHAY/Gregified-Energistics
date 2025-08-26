@@ -40,7 +40,7 @@ public class AssemblyLineMixin {
 						'B',
 						metaTileEntities(
 								MetaTileEntities.ITEM_IMPORT_BUS[0],
-								GregifiedEnergisticsMetaTileEntities.ME_ASSEBLY_LINE_BUS,
+								GregifiedEnergisticsMetaTileEntities.ME_ASSEMBLY_LINE_BUS,
 								GregifiedEnergisticsMetaTileEntities.ME_ASSEMBLY_LINE_OPTICAL_BUS));
 	}
 }

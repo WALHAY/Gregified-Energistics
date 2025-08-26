@@ -26,7 +26,7 @@ public abstract class AbstractPatternItemHandler extends ItemStackHandler {
 		ItemStack stack = getStackInSlot(slot);
 		ICraftingPatternDetails pattern = patterns[slot];
 
-		if (stack == null || stack.isEmpty()) {
+		if (stack.isEmpty()) {
 			if (pattern != null) {
 				patterns[slot] = null;
 				onPatternUpdate();

@@ -1,13 +1,12 @@
 package com.walhay.gregifiedenergistics.loader.recipes;
 
-import static com.walhay.gregifiedenergistics.common.metatileentities.GregifiedEnergisticsMetaTileEntities.*;
-import static gregtech.api.GTValues.L;
-import static gregtech.api.GTValues.LuV;
-import static gregtech.api.GTValues.VA;
-import static gregtech.api.GTValues.ZPM;
+import static com.walhay.gregifiedenergistics.common.metatileentities.GregifiedEnergisticsMetaTileEntities.ME_ASSEMBLY_LINE_BUS;
+import static com.walhay.gregifiedenergistics.common.metatileentities.GregifiedEnergisticsMetaTileEntities.ME_ASSEMBLY_LINE_OPTICAL_BUS;
+import static gregtech.api.GTValues.*;
 import static gregtech.api.recipes.RecipeMaps.ASSEMBLY_LINE_RECIPES;
 import static gregtech.api.unification.material.Materials.*;
-import static gregtech.api.unification.ore.OrePrefix.*;
+import static gregtech.api.unification.ore.OrePrefix.circuit;
+import static gregtech.api.unification.ore.OrePrefix.wireGtQuadruple;
 import static gregtech.common.blocks.MetaBlocks.OPTICAL_PIPES;
 import static gregtech.common.items.MetaItems.*;
 import static gregtech.common.metatileentities.MetaTileEntities.ADVANCED_DATA_ACCESS_HATCH;
@@ -34,7 +33,7 @@ public class GregifiedEnergisticsRecipes {
 				.input(wireGtQuadruple, IndiumTinBariumTitaniumCuprate, 8)
 				.fluidInputs(SolderingAlloy.getFluid(8 * L))
 				.fluidInputs(VanadiumGallium.getFluid(8 * L))
-				.output(ME_ASSEBLY_LINE_BUS)
+				.output(ME_ASSEMBLY_LINE_BUS)
 				.EUt(VA[LuV])
 				.duration(1200)
 				.scannerResearch(r -> r.researchStack(iface.getDefaultInstance())
@@ -45,7 +44,7 @@ public class GregifiedEnergisticsRecipes {
 		ASSEMBLY_LINE_RECIPES
 				.recipeBuilder()
 				.input(ADVANCED_DATA_ACCESS_HATCH)
-				.input(ME_ASSEBLY_LINE_BUS)
+				.input(ME_ASSEMBLY_LINE_BUS)
 				.input(ROBOT_ARM_ZPM, 2)
 				.input(ELECTRIC_MOTOR_ZPM, 4)
 				.input(CONVEYOR_MODULE_ZPM, 2)
@@ -58,7 +57,7 @@ public class GregifiedEnergisticsRecipes {
 				.output(ME_ASSEMBLY_LINE_OPTICAL_BUS)
 				.EUt(100000)
 				.duration(1200)
-				.stationResearch(r -> r.researchStack(ME_ASSEBLY_LINE_BUS.getStackForm())
+				.stationResearch(r -> r.researchStack(ME_ASSEMBLY_LINE_BUS.getStackForm())
 						.CWUt(8)
 						.EUt(VA[ZPM]))
 				.buildAndRegister();

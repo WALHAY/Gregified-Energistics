@@ -7,7 +7,7 @@ import gregtech.api.gui.widgets.WidgetGroup;
 
 public class DataStickGridWidget extends WidgetGroup {
 
-	private AbstractPatternItemHandler handler;
+	private final AbstractPatternItemHandler handler;
 	private final int slotsPerLine;
 
 	public DataStickGridWidget(int x, int y, int slotsPerLine, AbstractPatternItemHandler handler) {

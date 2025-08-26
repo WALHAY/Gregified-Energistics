@@ -16,12 +16,13 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants.NBT;
+import org.jetbrains.annotations.NotNull;
 
 public class SubstitutionStorage extends MTETrait implements ISubstitutionStorage {
 
 	public static final String STORAGE_TAG = "SubstitutionStorage";
 
-	private Object2IntOpenHashMap<String> substitutionMap = new Object2IntOpenHashMap<>();
+	private final Object2IntOpenHashMap<String> substitutionMap = new Object2IntOpenHashMap<>();
 	private ISubstitutionNotifiable notifiable;
 
 	public SubstitutionStorage(MetaTileEntity mte) {
@@ -105,23 +106,26 @@ public class SubstitutionStorage extends MTETrait implements ISubstitutionStorag
 	}
 
 	@Override
-	public void writeInitialSyncData(PacketBuffer buf) {
+	public void writeInitialSyncData(@NotNull PacketBuffer buf) {
 		super.writeInitialSyncData(buf);
 		buf.writeCompoundTag(serializeNBT());
 	}
 
 	@Override
-	public void receiveInitialSyncData(PacketBuffer buf) {
+	public void receiveInitialSyncData(@NotNull PacketBuffer buf) {
 		super.receiveInitialSyncData(buf);
 		try {
-			deserializeNBT(buf.readCompoundTag());
-		} catch (IOException e) {
+			NBTTagCompound nbt = buf.readCompoundTag();
 
+			if (nbt == null) return;
+
+			deserializeNBT(nbt);
+		} catch (IOException ignored) {
 		}
 	}
 
 	@Override
-	public void receiveCustomData(int discriminator, PacketBuffer buf) {
+	public void receiveCustomData(int discriminator, @NotNull PacketBuffer buf) {
 		super.receiveCustomData(discriminator, buf);
 		if (discriminator == GregifiedEnergisticsDataCodes.SUBSTITUTION_CHANGE) {
 			String name = buf.readString(64);

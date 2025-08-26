@@ -21,14 +21,12 @@ public abstract class MetaTileEntityHolderMixin implements ICraftingProvider {
 
 	@Override
 	public boolean isBusy() {
-		return metaTileEntity == null ? true : ((ICraftingProviderAccessor) metaTileEntity).isBusy();
+		return metaTileEntity == null || ((ICraftingProviderAccessor) metaTileEntity).isBusy();
 	}
 
 	@Override
 	public boolean pushPattern(ICraftingPatternDetails details, InventoryCrafting inventory) {
-		return metaTileEntity == null
-				? false
-				: ((ICraftingProviderAccessor) metaTileEntity).pushPattern(details, inventory);
+		return metaTileEntity != null && ((ICraftingProviderAccessor) metaTileEntity).pushPattern(details, inventory);
 	}
 
 	@Override

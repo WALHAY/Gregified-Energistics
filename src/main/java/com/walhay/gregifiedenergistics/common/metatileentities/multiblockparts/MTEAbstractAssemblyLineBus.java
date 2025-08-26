@@ -35,12 +35,8 @@ import gregtech.api.capability.impl.NotifiableItemStackHandler;
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.ModularUI;
 import gregtech.api.gui.ModularUI.Builder;
-import gregtech.api.gui.widgets.AbstractWidgetGroup;
-import gregtech.api.gui.widgets.ImageCycleButtonWidget;
-import gregtech.api.gui.widgets.SlotWidget;
-import gregtech.api.gui.widgets.TabGroup;
+import gregtech.api.gui.widgets.*;
 import gregtech.api.gui.widgets.TabGroup.TabLocation;
-import gregtech.api.gui.widgets.ToggleButtonWidget;
 import gregtech.api.gui.widgets.tab.ItemTabInfo;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
@@ -383,7 +379,10 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 	// try to push pattern to import buses
 	@Override
 	public boolean pushPattern(ICraftingPatternDetails pattern, InventoryCrafting inventoryCrafting) {
-		if (hasItemsToSend() || (useFluids && hasFluidsToSend()) || !getProxy().isActive()) {
+		if (hasItemsToSend()
+				|| (useFluids && hasFluidsToSend())
+				|| getProxy() == null
+				|| !getProxy().isActive()) {
 			return false;
 		}
 
@@ -444,6 +443,8 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 	}
 
 	private boolean containsFluids(IAEFluidStack[] fluids) {
+		if (getProxy() == null) return false;
+
 		for (IAEFluidStack fluidStack : fluids) {
 			try {
 				IAEFluidStack find = getProxy()
@@ -466,7 +467,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 			return true;
 		}
 
-		if (!containsFluids(inputs)) {
+		if (getProxy() == null || !containsFluids(inputs)) {
 			return false;
 		}
 
@@ -536,6 +537,8 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 	}
 
 	private void pushFluidsOut() {
+		if (getProxy() == null) return;
+
 		List<IFluidTank> inputHandlers = getController().getAbilities(MultiblockAbility.IMPORT_FLUIDS);
 
 		Iterator<Map.Entry<Integer, FluidStack>> it =
@@ -577,7 +580,7 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 
 	// notify grid network when patterns should be recalculated
 	public void notifyPatternChange() {
-		if (Platform.isServer()) {
+		if (Platform.isServer() && getProxy() != null) {
 			try {
 				getProxy()
 						.getGrid()
@@ -590,8 +593,6 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 
 	@Override
 	public void notifySubstitutionChange() {
-		if (substitutionStorage == null) return;
-
 		for (ICraftingPatternDetails details : getPatterns()) {
 			if (details instanceof AbstractPatternHelper helper) {
 				helper.injectSubstitutions(substitutionStorage);

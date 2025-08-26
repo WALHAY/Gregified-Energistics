@@ -10,7 +10,7 @@ import net.minecraftforge.common.util.Constants.NBT;
 
 public class AESubstitutionStorage implements ISubstitutionStorage {
 
-	private Object2IntOpenHashMap<String> substitutionMap = new Object2IntOpenHashMap<>();
+	private final Object2IntOpenHashMap<String> substitutionMap = new Object2IntOpenHashMap<>();
 
 	public AESubstitutionStorage(NBTTagCompound tag) {
 		deserializeNBT(tag);

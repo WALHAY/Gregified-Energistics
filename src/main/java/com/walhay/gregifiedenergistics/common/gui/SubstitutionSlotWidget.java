@@ -40,11 +40,10 @@ public class SubstitutionSlotWidget extends Widget {
 			if (isShiftDown()) {
 				for (int i = 0; i < inputs.size(); ++i) {
 					ItemStack stack = inputs.get(i);
-					int x = mouseX;
 					int y = mouseY + 18 * i;
 
-					GuiTextures.SLOT_DARK.draw(x, y, 18, 18);
-					drawItemStack(stack, x + 1, y + 1, null);
+					GuiTextures.SLOT_DARK.draw(mouseX, y, 18, 18);
+					drawItemStack(stack, mouseX + 1, y + 1, null);
 				}
 			} else {
 				ItemStack selectedStack = inputs.get(selected);

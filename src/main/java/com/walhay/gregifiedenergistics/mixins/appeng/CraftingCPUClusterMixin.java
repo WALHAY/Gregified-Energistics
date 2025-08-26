@@ -3,6 +3,7 @@ package com.walhay.gregifiedenergistics.mixins.appeng;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
+import com.walhay.gregifiedenergistics.GregifiedEnergisticsMod;
 import com.walhay.gregifiedenergistics.api.patterns.ISubstitutionStorage;
 import com.walhay.gregifiedenergistics.api.patterns.implementations.RecipePatternHelper;
 import com.walhay.gregifiedenergistics.api.patterns.substitutions.AESubstitutionStorage;
@@ -45,10 +46,11 @@ public class CraftingCPUClusterMixin {
 		}
 
 		try {
+			assert clazz != null : "Class with name TaskProgress not found";
 			taskProgressConstructor = clazz.getDeclaredConstructor();
 			taskProgressConstructor.setAccessible(true);
 		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
-			e.printStackTrace();
+			GregifiedEnergisticsMod.LOGGER.error(e);
 		}
 	}
 

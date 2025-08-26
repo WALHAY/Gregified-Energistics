@@ -15,10 +15,9 @@
 	"pipenet.net.OpticalRoutePathMixin",
 	"pipenet.net.OpticalNetWalkerMixin",
 	"pipenet.net.OpticalPipeNetMixin",
-	"recipes.RecipeMixin",
 	"recipes.RecipeMapMixin",
 	"metatileentity.MetaTileEntityMixin",
-	"metatileentity.MetaTileEntityHolderMixin",
+	"metatileentity.MetaTileEntityHolderMixin"
   ],
   "client": [],
   "server" : []

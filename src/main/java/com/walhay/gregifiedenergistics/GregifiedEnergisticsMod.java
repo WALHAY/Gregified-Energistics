@@ -6,6 +6,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Mod(
 		modid = GregifiedEnergisticsMod.MOD_ID,
@@ -19,6 +21,8 @@ public class GregifiedEnergisticsMod {
 
 	@Mod.Instance
 	public static GregifiedEnergisticsMod INSTANCE;
+
+	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
 	@SidedProxy(
 			modId = GregifiedEnergisticsMod.MOD_ID,
