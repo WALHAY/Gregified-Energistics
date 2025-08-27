@@ -20,6 +20,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -86,6 +87,12 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 		} catch (IOException ignored) {
 			// :#
 		}
+	}
+
+	@Override
+	public void clearMachineInventory(NonNullList<ItemStack> itemBuffer) {
+		super.clearMachineInventory(itemBuffer);
+		clearInventory(itemBuffer, patternHandler);
 	}
 
 	@Override

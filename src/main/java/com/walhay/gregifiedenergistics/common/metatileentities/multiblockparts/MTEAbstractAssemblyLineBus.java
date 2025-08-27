@@ -58,6 +58,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -102,6 +103,12 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 	@Override
 	protected IItemHandlerModifiable createImportItemHandler() {
 		return new NotifiableItemStackHandler(this, 1, getController(), false);
+	}
+
+	@Override
+	public void clearMachineInventory(NonNullList<ItemStack> itemBuffer) {
+		super.clearMachineInventory(itemBuffer);
+		clearInventory(itemBuffer, importItems);
 	}
 
 	// GUI helpers
