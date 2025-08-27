@@ -55,6 +55,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -63,6 +64,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -72,6 +74,9 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 
 	public static final String WORKING_ENABLED_TAG = "WorkingEnabled";
 	public static final String USE_FLUID_TAG = "FluidMode";
+	public static final String FLUID_TO_SEND_TAG = "FluidToSend";
+	public static final String ITEM_TO_SEND_TAG = "ItemToSend";
+	public static final String SEND_SLOT_TAG = "Slot";
 
 	private Int2ObjectOpenHashMap<ItemStack> waitingToSend;
 	private Int2ObjectOpenHashMap<FluidStack> fluidWaitingToSend;
@@ -109,6 +114,13 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 	public void clearMachineInventory(NonNullList<ItemStack> itemBuffer) {
 		super.clearMachineInventory(itemBuffer);
 		clearInventory(itemBuffer, importItems);
+		if (hasItemsToSend()) {
+			for (ItemStack stack : waitingToSend.values()) {
+				itemBuffer.add(stack);
+			}
+
+			waitingToSend = null;
+		}
 	}
 
 	// GUI helpers
@@ -274,6 +286,33 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 		data.setBoolean(WORKING_ENABLED_TAG, workingEnabled);
 		data.setString(BLOCKING_MODE_TAG, blockingMode.toString());
 		data.setBoolean(USE_FLUID_TAG, useFluids);
+
+		if (hasItemsToSend()) {
+			NBTTagList itemList = new NBTTagList();
+			for (var entry : waitingToSend.entrySet()) {
+				NBTTagCompound tag = new NBTTagCompound();
+
+				entry.getValue().writeToNBT(tag);
+				tag.setInteger(SEND_SLOT_TAG, entry.getKey());
+
+				itemList.appendTag(tag);
+			}
+			data.setTag(ITEM_TO_SEND_TAG, itemList);
+		}
+
+		if (hasFluidsToSend()) {
+			NBTTagList fluidList = new NBTTagList();
+			for (var entry : fluidWaitingToSend.entrySet()) {
+				NBTTagCompound tag = new NBTTagCompound();
+
+				entry.getValue().writeToNBT(tag);
+				tag.setInteger(SEND_SLOT_TAG, entry.getKey());
+
+				fluidList.appendTag(tag);
+			}
+			data.setTag(FLUID_TO_SEND_TAG, fluidList);
+		}
+
 		return data;
 	}
 
@@ -283,6 +322,32 @@ public abstract class MTEAbstractAssemblyLineBus extends MetaTileEntityCraftingP
 		workingEnabled = data.getBoolean(WORKING_ENABLED_TAG);
 		blockingMode = BlockingMode.valueOf(data.getString(BLOCKING_MODE_TAG));
 		useFluids = data.getBoolean(USE_FLUID_TAG);
+
+		if (data.hasKey(ITEM_TO_SEND_TAG)) {
+			NBTTagList itemList = data.getTagList(ITEM_TO_SEND_TAG, NBT.TAG_COMPOUND);
+
+			for (int i = 0; i < itemList.tagCount(); ++i) {
+				NBTTagCompound tag = itemList.getCompoundTagAt(i);
+
+				int slot = tag.getInteger(SEND_SLOT_TAG);
+				ItemStack stack = new ItemStack(tag);
+
+				waitingToSend.put(slot, stack);
+			}
+		}
+
+		if (data.hasKey(FLUID_TO_SEND_TAG)) {
+			NBTTagList fluidList = data.getTagList(FLUID_TO_SEND_TAG, NBT.TAG_COMPOUND);
+
+			for (int i = 0; i < fluidList.tagCount(); ++i) {
+				NBTTagCompound tag = fluidList.getCompoundTagAt(i);
+
+				int slot = tag.getInteger(SEND_SLOT_TAG);
+				FluidStack stack = FluidStack.loadFluidStackFromNBT(tag);
+
+				fluidWaitingToSend.put(slot, stack);
+			}
+		}
 	}
 
 	@Override
