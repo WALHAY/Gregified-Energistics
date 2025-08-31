@@ -17,9 +17,8 @@ Use data bank and optical data pipes to connect. Provide recipes from data bank.
 
 ## Links
 
-[CurseForge](https://www.curseforge.com/minecraft/mc-mods/gregified-energistics)
-
-[Modrinth](https://modrinth.com/mod/gregified-energistics)
+- [CurseForge](https://www.curseforge.com/minecraft/mc-mods/gregified-energistics)
+- [Modrinth](https://modrinth.com/mod/gregified-energistics)
 
 ## Screenshots
 
