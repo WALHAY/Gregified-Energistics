@@ -7,9 +7,9 @@
     <a href="https://www.curseforge.com/minecraft/mc-mods/gregified-energistics"><img src="https://img.shields.io/badge/Available%20for-MC%201.12.2%20-informational?style=for-the-badge" alt="Supported Versions"></a>
     <a href="https://github.com/WALHAY/Gregified-Energistics/blob/master/LICENSE"><img src="https://img.shields.io/github/license/GregTechCEu/GregTech?style=for-the-badge" alt="License"></a>
     <br>
-    <a href="https://www.curseforge.com/minecraft/mc-mods/gregified-energistics"><img src="https://cf.way2muchnoise.eu/557242.svg?badge_style=for_the_badge" alt="CurseForge"></a>
-    <a href="https://modrinth.com/mod/gregified-energistics"><img src="https://img.shields.io/modrinth/dt/gregtech-ce-unofficial?logo=modrinth&label=&suffix=%20&style=for-the-badge&color=2d2d2d&labelColor=5ca424&logoColor=1c1c1c" alt="Modrinth"></a>
-    <a href="https://github.com/WALHAY/Gregified-Energistics/releases"><img src="https://img.shields.io/github/downloads/GregTechCEu/GregTech/total?sort=semver&logo=github&label=&style=for-the-badge&color=2d2d2d&labelColor=545454&logoColor=FFFFFF" alt="GitHub"></a>
+    <a href="https://www.curseforge.com/minecraft/mc-mods/gregified-energistics"><img src="https://cf.way2muchnoise.eu/1333309.svg?badge_style=for_the_badge" alt="CurseForge"></a>
+    <a href="https://modrinth.com/mod/gregified-energistics"><img src="https://img.shields.io/modrinth/dt/gregified-energistics?logo=modrinth&label=&suffix=%20&style=for-the-badge&color=2d2d2d&labelColor=5ca424&logoColor=1c1c1c" alt="Modrinth"></a>
+    <a href="https://github.com/WALHAY/Gregified-Energistics/releases"><img src="https://img.shields.io/github/downloads/wALHAY/Gregified-Energistics/total?sort=semver&logo=github&label=&style=for-the-badge&color=2d2d2d&labelColor=545454&logoColor=FFFFFF" alt="GitHub"></a>
 </h1>
 
 ## New multiblock parts
