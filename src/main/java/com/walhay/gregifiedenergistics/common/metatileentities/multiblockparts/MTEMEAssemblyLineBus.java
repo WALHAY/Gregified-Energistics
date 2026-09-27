@@ -4,13 +4,21 @@ import static gregtech.api.GTValues.LuV;
 
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.items.misc.ItemEncodedPattern;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.cleanroommc.modularui.value.sync.SyncHandlers;
+import com.cleanroommc.modularui.widget.Widget;
+import com.cleanroommc.modularui.widgets.SlotGroupWidget;
+import com.cleanroommc.modularui.widgets.layout.Flow;
+import com.cleanroommc.modularui.widgets.slot.ItemSlot;
 import com.walhay.gregifiedenergistics.GregifiedEnergisticsConfig;
 import com.walhay.gregifiedenergistics.api.capability.AbstractPatternItemHandler;
+import com.walhay.gregifiedenergistics.api.mui.GregifiedEnergisticsGuiTextures;
 import com.walhay.gregifiedenergistics.api.patterns.implementations.DataStickPatternHelper;
-import com.walhay.gregifiedenergistics.common.gui.DataStickGridWidget;
-import gregtech.api.gui.widgets.AbstractWidgetGroup;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.util.AssemblyLineManager;
 import java.io.IOException;
 import java.util.Collection;
@@ -20,7 +28,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -50,10 +57,37 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 	}
 
 	@Override
-	protected AbstractWidgetGroup createPatternsGrid() {
-		int slotsPerLine = GregifiedEnergisticsConfig.guiConfig.patternSlotsPerLine;
-		if (slotsPerLine == 0) slotsPerLine = (int) Math.sqrt(patternHandler.getSlots());
-		return new DataStickGridWidget(slotsPerLine, patternHandler);
+	@SuppressWarnings("UnstableApiUsage")
+	public Widget<?> createPatternList(ModularPanel panel, PanelSyncManager syncHandler) {
+		panel.child(SlotGroupWidget.playerInventory(false).left(7).bottom(7));
+		syncHandler.registerSlotGroup("item_inv", 4);
+
+		return Flow.column()
+				.name("pattern list")
+				.widthRel(0.9f)
+				.horizontalCenter()
+				.coverChildrenHeight()
+				.child(IKey.lang("gregifiedenergistics.gui.pattern_list").asWidget())
+				.child(SlotGroupWidget.builder()
+						.slotGroup("item_inv")
+						.row("IIII")
+						.row("IIII")
+						.row("IIII")
+						.row("IIII")
+						.key(
+								'I',
+								index -> new ItemSlot()
+										.slot(SyncHandlers.itemSlot(patternHandler, index)
+												.changeListener((newItem, onlyAmountChanged, client, init) ->
+														patternHandler.onContentsChanged(index)))
+										.background(
+												GTGuiTextures.SLOT,
+												GregifiedEnergisticsGuiTextures.PATTERN_OVERLAY
+														.asIcon()
+														.size(16)))
+						.build()
+						.coverChildren()
+						.horizontalCenter());
 	}
 
 	@Override
@@ -90,7 +124,7 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 	}
 
 	@Override
-	public void clearMachineInventory(NonNullList<ItemStack> itemBuffer) {
+	public void clearMachineInventory(@NotNull List<@NotNull ItemStack> itemBuffer) {
 		super.clearMachineInventory(itemBuffer);
 		clearInventory(itemBuffer, patternHandler);
 	}
@@ -103,7 +137,7 @@ public class MTEMEAssemblyLineBus extends MTEAbstractAssemblyLineBus {
 	class DataStickHandler extends AbstractPatternItemHandler {
 
 		public DataStickHandler(int size) {
-			super(size);
+			super(MTEMEAssemblyLineBus.this, size);
 		}
 
 		@Override

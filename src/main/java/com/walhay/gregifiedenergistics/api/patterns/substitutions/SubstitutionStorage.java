@@ -38,8 +38,9 @@ public class SubstitutionStorage extends MTETrait implements ISubstitutionStorag
 	public int getOption(String name) {
 		if (!substitutionMap.containsKey(name)) {
 			substitutionMap.put(name, 0);
-			writeCustomData(GregifiedEnergisticsDataCodes.SUBSTITUTION_CHANGE, buf -> buf.writeString(name)
-					.writeInt(0));
+			writeCustomData(
+					GregifiedEnergisticsDataCodes.SUBSTITUTION_CHANGE,
+					buf -> buf.writeString(name).writeInt(0));
 			return 0;
 		}
 
@@ -50,8 +51,9 @@ public class SubstitutionStorage extends MTETrait implements ISubstitutionStorag
 	public void setOption(String name, int option) {
 		if (substitutionMap.getInt(name) != option) {
 			substitutionMap.put(name, option);
-			writeCustomData(GregifiedEnergisticsDataCodes.SUBSTITUTION_CHANGE, buf -> buf.writeString(name)
-					.writeInt(option));
+			writeCustomData(
+					GregifiedEnergisticsDataCodes.SUBSTITUTION_CHANGE,
+					buf -> buf.writeString(name).writeInt(option));
 			onSubstitutionChange();
 		}
 	}
